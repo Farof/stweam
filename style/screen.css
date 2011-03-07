@@ -1,0 +1,99 @@
+body, div, p {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  color: #3E3D40;
+  font-family: "Tahoma";
+  font-size: 0.9em;
+}
+
+#config {
+  float: left;
+}
+
+#input {
+  border: 1px solid red;
+  padding: 1em;
+}
+
+#filter {
+  border: 1px solid red;
+  padding: 1em;
+}
+
+#output {
+  border: 1px solid red;
+  padding: 1em;
+}
+
+#list {
+  border: 1px solid blue;
+  display: inline-block;
+  width: 450px;
+}
+
+#library {
+  float: right;
+  border: 1px solid red;
+  padding: 0.5em;
+}
+.library-category {
+  
+}
+.library-category-name {
+  border: 1px solid blue;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0.2em;
+}
+.library-category-list {
+  border: 1px solid green;
+  padding: 0.2em;
+}
+.library-item {
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.33s;
+  border: 1px solid orange;
+  padding: 0.1em 0.3em;
+}
+.library-item:hover {
+  background-color: #B0B0B0;
+  cursor: pointer;
+}
+
+#input-type-list-box {
+  
+}
+#input-type-list {
+  
+}
+#input-type-list > .input-type {
+  
+}
+
+
+
+.tweet-box {
+  border: 1px solid green;
+  display: block;
+  padding: 0.4em;
+}
+.tweet-box ~ .tweet-box {
+  margin-top: 0.4em;
+}
+
+.tweet-data {
+  border: 1px solid orange;
+}
+
+.tweet-author {
+  border: 1px solid orange;
+  padding: 0.2em;
+}
+
+.tweet {
+  border: 1px solid red;
+  padding: 0.2em;
+}
