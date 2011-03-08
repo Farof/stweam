@@ -10,6 +10,13 @@ body {
   font-size: 0.9em;
 }
 
+#credits {
+  bottom: 0px;
+  font-size: 12px;
+  position: fixed;
+  right: 0px;
+}
+
 #config {
   float: left;
 }
