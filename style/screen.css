@@ -137,8 +137,11 @@ body {
 .work-item {
   background-color: grey;
   border: 1px solid red;
-  height: 50px;
-  width: 50px;
+  min-width: 50px;
+  min-height: 50px;
+  padding: 5px;
+  text-align: center;
+  white-space: nowrap;
 }
 .work-item:hover {
   border-width: 2px;
