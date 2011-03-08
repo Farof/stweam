@@ -10,7 +10,7 @@
   });
   
   var filter = TweetFilter.add({
-    input: input,
+    input: input.uid,
     param: 'text',
     operator: 'contains',
     value: 'ou'
@@ -18,11 +18,19 @@
   
   var output = TweetOutput.add({
     type: 'DOM',
-    input: filter,
+    input: filter.uid,
     node: document.getElementById('list')
   });
   
-  output.generate();
-  /* */
+  var process = Process.add({
+    name: 'My first Process',
+    items: [
+      input,
+      filter,
+      output
+    ]
+  });
+  
+  process.generate();
   
 }(window));

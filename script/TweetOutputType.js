@@ -48,10 +48,13 @@
     type: 'DOM',
     label: 'DOM',
     generate: function () {
-      Element.empty(this.node);
+      var element = new Element('div', {
+        class: 'tweet-list'
+      });
       this.tweets.forEach(function (tweet) {
-        this.node.appendChild(tweet.toDebugElement());
-      }.bind(this));
+        element.appendChild(tweet.toDebugElement());
+      });
+      this.node.appendChild(element);
     }
   });
   

@@ -4,6 +4,9 @@
     for (var key in options) {
       this[key] = options[key];
     }
+    if (!this.uid) {
+      this.uid = Twitter.uid;
+    }
     this.type = TweetOutputType.items[this.type];
   };
   
@@ -16,6 +19,8 @@
     
     serialize: function () {
       return {
+        uid: this.uid,
+        input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         type: this.type.type
       };
     },

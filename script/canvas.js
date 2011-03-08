@@ -2,6 +2,7 @@
   
   var
   workspace = document.getElementById('workspace'),
+  item1 = document.getElementById('item1'), item2 = document.getElementById('item2'),
   
   movingItem, oriX, oriY, offsetX, offsetY,
   startDrag = function (e) {
@@ -16,31 +17,30 @@
   drag = function (e) {
     movingItem.style.top = (offsetY + (e.clientY - oriY)) + 'px';
     movingItem.style.left = (offsetX + (e.clientX - oriX)) + 'px';
-    updatePath();
+    updateLineBetween(item1, item2);
   },
   stopDrag = function (e) {
     workspace.removeEventListener('mousemove', drag, false);
     workspace.removeEventListener('mouseup', stopDrag, true);
   },
   
-  item1 = document.getElementById('item1'), item2 = document.getElementById('item2'),
   canvas = document.getElementById('workCanvas'), ctx = canvas.getContext('2d'),
   clearCanvas = function () {
     canvas.width = canvas.width;
   },
-  updatePath = function () {
+  updateLineBetween = function (source, dest) {
     var
-    onTop = (item1.offsetTop < item2.offsetTop) ? item1 : item2,
-    onLeft = (item1.offsetLeft < item2.offsetLeft) ? item1 : item2,
-    diffX = Math.abs(item1.offsetLeft - item2.offsetLeft),
-    diffY = Math.abs(item1.offsetTop - item2.offsetTop);
+    onTop = (source.offsetTop < dest.offsetTop) ? source : dest,
+    onLeft = (source.offsetLeft < dest.offsetLeft) ? source : dest,
+    diffX = Math.abs(source.offsetLeft - dest.offsetLeft),
+    diffY = Math.abs(source.offsetTop - dest.offsetTop);
     
     clearCanvas();
     
-    ctx.moveTo(item1.offsetLeft + ((diffY > diffX) ? (item1.scrollWidth / 2) : ((item1 === onLeft) ? item1.scrollWidth : 0)), 
-                item1.offsetTop + ((diffY < diffX) ? (item1.scrollHeight / 2) : ((item1 === onTop) ? item1.scrollHeight : 0)));
-    ctx.lineTo(item2.offsetLeft + ((diffY > diffX) ? (item2.scrollWidth / 2) : ((item2 === onLeft) ? item2.scrollWidth : 0)),
-                item2.offsetTop + ((diffY < diffX) ? (item2.scrollHeight / 2) : ((item2 === onTop) ? item2.scrollHeight : 0)));
+    ctx.moveTo(source.offsetLeft + ((diffY > diffX) ? (source.scrollWidth / 2) : ((source === onLeft) ? source.scrollWidth : 0)), 
+                source.offsetTop + ((diffY < diffX) ? (source.scrollHeight / 2) : ((source === onTop) ? source.scrollHeight : 0)));
+    ctx.lineTo(dest.offsetLeft + ((diffY > diffX) ? (dest.scrollWidth / 2) : ((dest === onLeft) ? dest.scrollWidth : 0)),
+                dest.offsetTop + ((diffY < diffX) ? (dest.scrollHeight / 2) : ((dest === onTop) ? dest.scrollHeight : 0)));
                 
     ctx.lineWidth = 5;
     ctx.strokeStyle = '#3E3D40';
@@ -52,6 +52,6 @@
     el.addEventListener('mousedown', startDrag, false);
   });
   
-  updatePath();
+  updateLineBetween(item1, item2);
   
 }(window));

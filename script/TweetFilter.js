@@ -4,6 +4,9 @@
     for (var key in options) {
       this[key] = options[key];
     }
+    if (!this.uid) {
+      this.uid = Twitter.uid;
+    }
     this.param = TweetFilterType.items[this.param];
     this.operator = TweetOperatorType.items[this.operator];
     this.save();
@@ -18,6 +21,8 @@
     
     serialize: function () {
       return {
+        uid: this.uid,
+        input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         param: this.param.type,
         operator: this.operator.type,
         value: this.value

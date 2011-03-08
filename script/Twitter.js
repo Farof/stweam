@@ -1,6 +1,15 @@
 (function (exports) {
+  var
+  uid = 0,
+  nextUID = function () {
+    return (uid++).toString();
+  };
   
   exports.Twitter = {
+    get uid() {
+      return nextUID();
+    },
+    
     tweets: [],
     
     get tweetsId() {

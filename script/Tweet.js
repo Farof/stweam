@@ -1,11 +1,24 @@
 (function (exports) {
   
-  exports.Tweet = function (data) {
+  exports.Tweet = function (data, options) {
     this.data = data;
+    for (var key in (options || {})) {
+      this[key] = options[key];
+    }
+    if (!this.uid) {
+      this.uid = Twitter.uid;
+    }
   };
   
   exports.Tweet.prototype = {
     constructor: exports.Tweet,
+    
+    serialize: function () {
+      return {
+        uid: this.uid,
+        data: this.data
+      };
+    },
     
     toElement: function () {
       var element, tweet, userName, data = this.data;
