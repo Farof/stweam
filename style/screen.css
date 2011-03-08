@@ -5,6 +5,7 @@ body, div, p {
 
 body {
   color: #3E3D40;
+  background-color: #EDEDED;
   font-family: "Tahoma";
   font-size: 0.9em;
 }
@@ -30,6 +31,7 @@ body {
 
 #list {
   border: 1px solid blue;
+  float: left;
   display: inline-block;
   width: 450px;
 }
@@ -103,3 +105,47 @@ body {
   border: 1px solid red;
   padding: 0.2em;
 }
+
+
+#workspace {
+  border-radius: 5px;
+  box-shadow: 0px 0px 4px 0px #3E3D40;
+  display: inline-block;
+  height: 500px;
+  margin: 10px;
+  padding: 5px;
+  position: relative;
+  width: 600px;
+}
+#workCanvas {
+  height: 500px;
+  pointer-events: none;
+  position: absolute;
+  width: 600px;
+}
+#workHtml {
+  position: absolute;
+}
+
+.work-item {
+  background-color: grey;
+  border: 1px solid red;
+  height: 50px;
+  width: 50px;
+}
+.work-item:hover {
+  border-width: 2px;
+}
+
+#item1 {
+  left: 134px;
+  position: absolute;
+  top: 403px;
+}
+
+#item2 {
+  left: 376px;
+  position: absolute;
+  top: 98px;
+}
+
