@@ -30,17 +30,27 @@
   },
   updateLineBetween = function (source, dest) {
     var
-    onTop = (source.offsetTop < dest.offsetTop) ? source : dest,
-    onLeft = (source.offsetLeft < dest.offsetLeft) ? source : dest,
+    sourceOnTop = source.offsetTop < dest.offsetTop,
+    sourceOnLeft = source.offsetLeft < dest.offsetLeft,
     diffX = Math.abs(source.offsetLeft - dest.offsetLeft),
-    diffY = Math.abs(source.offsetTop - dest.offsetTop);
+    diffY = Math.abs(source.offsetTop - dest.offsetTop),
+    diffIsHeight = diffY > diffX,
+    
+    
+    startX = source.offsetLeft + (diffIsHeight ? (source.scrollWidth / 2) : (sourceOnLeft ? source.scrollWidth : 0)),
+    startY = source.offsetTop + (!diffIsHeight ? (source.scrollHeight / 2) : (sourceOnTop ? source.scrollHeight : 0)),
+    startControlX = startX + (diffIsHeight ? 0 : (sourceOnLeft ? 50 : -50)),
+    startControlY = startY + (!diffIsHeight ? 0 : (sourceOnTop ? 50 : -50))
+    endX = dest.offsetLeft + (diffIsHeight ? (dest.scrollWidth / 2) : (!sourceOnLeft ? dest.scrollWidth : 0)),
+    endY = dest.offsetTop + (!diffIsHeight ? (dest.scrollHeight / 2) : (!sourceOnTop ? dest.scrollHeight : 0)),
+    endControlX = endX + (diffIsHeight ? 0 : (!sourceOnLeft ? 50 : -50)),
+    endControlY = endY + (!diffIsHeight ? 0 : (!sourceOnTop ? 50 : -50));
     
     clearCanvas();
     
-    ctx.moveTo(source.offsetLeft + ((diffY > diffX) ? (source.scrollWidth / 2) : ((source === onLeft) ? source.scrollWidth : 0)), 
-                source.offsetTop + ((diffY < diffX) ? (source.scrollHeight / 2) : ((source === onTop) ? source.scrollHeight : 0)));
-    ctx.lineTo(dest.offsetLeft + ((diffY > diffX) ? (dest.scrollWidth / 2) : ((dest === onLeft) ? dest.scrollWidth : 0)),
-                dest.offsetTop + ((diffY < diffX) ? (dest.scrollHeight / 2) : ((dest === onTop) ? dest.scrollHeight : 0)));
+    ctx.moveTo(startX, startY);
+    //ctx.lineTo(endX, endY);
+    ctx.bezierCurveTo(startControlX, startControlY, endControlX, endControlY, endX, endY);
                 
     ctx.lineWidth = 5;
     ctx.strokeStyle = '#3E3D40';
