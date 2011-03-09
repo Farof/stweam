@@ -41,7 +41,7 @@
       output
     ]
   });*/
-  var process = Twitter.deserialize('{"uid":"18","constructorName":"Process","name":"My first Process","items":["{\\"uid\\":\\"15\\",\\"constructorName\\":\\"TweetInput\\",\\"type\\":\\"global\\"}","{\\"uid\\":\\"16\\",\\"constructorName\\":\\"TweetFilter\\",\\"input\\":\\"15\\",\\"param\\":\\"from_user\\",\\"operator\\":\\"contains\\",\\"value\\":\\"y\\"}","{\\"uid\\":\\"17\\",\\"constructorName\\":\\"TweetOutput\\",\\"input\\":\\"15\\",\\"type\\":\\"DOM\\",\\"node\\":\\"#list\\"}"]}');
+  var process = Twitter.deserialize('{"uid":"18","constructorName":"Process","name":"My first Process","items":["{\\"uid\\":\\"15\\",\\"constructorName\\":\\"TweetInput\\",\\"type\\":\\"global\\"}","{\\"uid\\":\\"16\\",\\"constructorName\\":\\"TweetFilter\\",\\"input\\":\\"15\\",\\"param\\":\\"from_user\\",\\"operator\\":\\"contains\\",\\"value\\":\\"y\\"}","{\\"uid\\":\\"17\\",\\"constructorName\\":\\"TweetOutput\\",\\"input\\":\\"16\\",\\"type\\":\\"DOM\\",\\"node\\":\\"#list\\"}"]}');
   
   process.generate().loadInWorkspace();
   
