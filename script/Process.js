@@ -172,7 +172,7 @@
       parent.removeChild(item);
       parent.appendChild(item);
       
-      this.workspace.addEventListener('mousemove', this.doDrag, false);
+      document.addEventListener('mousemove', this.doDrag, false);
       document.addEventListener('mouseup', this.stopDrag, true);
     },
     
@@ -207,7 +207,7 @@
     
     stopDrag: function (event) {
       var process = document.getElementById('workspace').process;
-      process.workspace.removeEventListener('mousemove', process.doDrag, false);
+      document.removeEventListener('mousemove', process.doDrag, false);
       document.removeEventListener('mouseup', process.stopDrag, true);
     }
   };
