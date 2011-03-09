@@ -9,11 +9,8 @@
   exports.TweetInputType.prototype = {
     constructor: exports.TweetInputType,
     
-    serialize: function () {
-      return {
-        type: this.type,
-        label: this.label
-      };
+    serialize: function (serializable) {
+      return serializable || {};
     },
     
     toLibraryElement: function () {

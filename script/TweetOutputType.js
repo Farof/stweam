@@ -9,11 +9,8 @@
   exports.TweetOutputType.prototype = {
     constructor: exports.TweetOutputType,
     
-    serialize: function () {
-      return {
-        type: this.type,
-        label: this.label
-      };
+    serialize: function (serializable) {
+      return serializable || {};
     },
     
     toLibraryElement: function () {
@@ -47,6 +44,13 @@
   exports.TweetOutputType.add({
     type: 'DOM',
     label: 'DOM',
+    
+    serialize: function (serializable) {
+      serializable = serializable || {};
+      serializable.node = this.node;
+      return serializable;
+    },
+    
     generate: function () {
       var element = new Element('div', {
         class: 'tweet-list'
@@ -54,7 +58,7 @@
       this.tweets.forEach(function (tweet) {
         element.appendChild(tweet.toDebugElement());
       });
-      this.node.appendChild(element);
+      document.querySelector(this.node).appendChild(element);
     }
   });
   

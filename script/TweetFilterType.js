@@ -9,14 +9,8 @@
   exports.TweetFilterType.prototype = {
     constructor: exports.TweetFilterType,
     
-    serialize: function () {
-      return {
-        type: this.type,
-        label: this.label,
-        operators: this.operators,
-        metadata: this.metadata,
-        select: this.select
-      };
+    serialize: function (serializable) {
+      return serializable || {};
     },
     
     toLibraryElement: function () {

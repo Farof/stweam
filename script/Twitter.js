@@ -10,7 +10,9 @@
       return nextUID();
     },
     
-    tweets: [],
+    get tweets() {
+      return Tweet.items;
+    },
     
     get tweetsId() {
       return this.tweets.map(function (tweet) {
@@ -25,6 +27,32 @@
           this.tweets.push(tweet);
         }
       }.bind(this));
+    },
+    
+    deserialize: function (serializable) {
+      var options, constructor, item;
+      try {
+        options = JSON.parse(serializable);
+      } catch (e) {
+        console.log(e.message, e);
+        return null;
+      }
+      
+      constructor = exports[options.constructorName]
+      if (constructor) {
+        if (options.uid) {
+          item = constructor.getById(options.uid);
+        }
+        if (item) {
+          console.log('deserialize match found: ', item);
+          return item;
+        } else {
+          item = constructor.from(options);
+          console.log('creating object: ', item);
+          return item;
+        }
+      }
+      return options;
     }
   };
   

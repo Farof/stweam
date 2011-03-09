@@ -1,6 +1,6 @@
 (function (exports) {
   
-  exports.TweetFilter = function (options) {
+  exports.TweetFilter = function TweetFilter(options) {
     for (var key in options) {
       this[key] = options[key];
     }
@@ -20,13 +20,14 @@
     },
     
     serialize: function () {
-      return {
+      return this.param.serialize.call(this, {
         uid: this.uid,
+        constructorName: this.constructor.name,
         input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         param: this.param.type,
         operator: this.operator.type,
         value: this.value
-      };
+      });
     },
     
     toElement: function () {
@@ -64,9 +65,24 @@
   };
   
   exports.TweetFilter.items = [];
+  exports.TweetFilter.getById = function (uid) {
+    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+      if (this.items[i].uid === uid) {
+        return this.items[i];
+      }
+    }
+    return null;
+  };
   exports.TweetFilter.add = function (options) {
     var item = new this(options);
     this.items.push(item);
+    return item;
+  };
+  exports.TweetFilter.from = function (options) {
+    var item = (options && options.uid) ? this.getById(options.uid) : null;
+    if (!item) {
+      item = this.add.apply(this, arguments);
+    }
     return item;
   };
   
