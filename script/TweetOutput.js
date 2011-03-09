@@ -13,6 +13,8 @@
   exports.TweetOutput.prototype = {
     constructor: exports.TweetOutput,
     
+    name: 'unamed output',
+    
     get tweets() {
       return this.input.tweets;
     },
@@ -21,6 +23,7 @@
       return this.type.serialize.call(this, {
         uid: this.uid,
         constructorName: this.constructor.name,
+        name: this.name,
         input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         type: this.type.type
       });
@@ -29,6 +32,14 @@
     generate: function () {
       this.type.generate.call(this);
       return this;
+    },
+    
+    toWorkspaceElement: function () {
+      var el, title, content;
+      if (!this.workspaceElement) {
+        this.workspaceElement = el = new WorkspaceElement(this);
+      }
+      return this.workspaceElement;
     }
   };
   

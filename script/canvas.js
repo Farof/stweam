@@ -1,5 +1,7 @@
 (function (exports) {
   
+  return;
+  
   var
   workspace = document.getElementById('workspace'),
   item1 = document.getElementById('item1'), item2 = document.getElementById('item2'),
@@ -15,8 +17,8 @@
     workspace.addEventListener('mouseup', stopDrag, true);
   },
   drag = function (e) {
-    movingItem.style.top = (offsetY + (e.clientY - oriY)) + 'px';
     movingItem.style.left = (offsetX + (e.clientX - oriX)) + 'px';
+    movingItem.style.top = (offsetY + (e.clientY - oriY)) + 'px';
     updateLineBetween(item1, item2);
   },
   stopDrag = function (e) {

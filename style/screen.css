@@ -17,24 +17,51 @@ body {
   right: 0px;
 }
 
-#config {
+#collection {
+  border-radius: 1px;
+  border: 1px solid #3E3D40;
+  box-shadow: 0px 0px 3px 0px #3E3D40;
   float: left;
+  margin: 3px 10px 3px 3px;
+  padding: 0.5em 0em;
 }
 
-#input {
-  border: 1px solid red;
-  padding: 1em;
+.collection-category {
+  border-top: 3px solid #3E3D40;
+  border-bottom: 3px solid #3E3D40;
+}
+.collection-category ~ .collection-category {
+  margin-top: 2em;
 }
 
-#filter {
-  border: 1px solid red;
-  padding: 1em;
+.collection-title {
+  border-bottom: 1px solid #3E3D40;
+  font-weight: bold;
+  padding: 0.2em 0.2em;
 }
 
-#output {
-  border: 1px solid red;
-  padding: 1em;
+.collection-item {
+  -moz-transition-property: background-color;
+  -moz-transition-duration: 0.33s;
+  padding: 0.2em 0.5em;
+  margin: 0.2em 0em;
 }
+.collection-item ~ .collection-item {
+  border-top: 1px solid #3E3D40;
+}
+.collection-item:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+#processes {
+  
+}
+
+#processes > .process {
+  
+}
+
 
 #list {
   border: 1px solid blue;
@@ -114,6 +141,10 @@ body {
 }
 
 
+#workspaceZone {
+  float: left;
+}
+
 #workspace {
   border-radius: 5px;
   box-shadow: 0px 0px 4px 0px #3E3D40;
@@ -125,28 +156,44 @@ body {
   width: 600px;
 }
 #workCanvas {
-  height: 500px;
   pointer-events: none;
+  position: absolute;
+}
+#workHtml {
+  height: 500px;
   position: absolute;
   width: 600px;
 }
-#workHtml {
-  position: absolute;
-}
 
-.work-item {
-  background-color: grey;
-  border: 1px solid red;
-  min-width: 50px;
+.workspace-item {
+  background-color: white;
+  border-radius: 8px 8px 3px 3px;
+  border: 1px solid #3E3D40;
+  box-shadow: 0px 1px 2px 0px #3E3D40;
+  float: left;
+  max-height: 200px;
+  max-width: 200px;
   min-height: 50px;
-  padding: 5px;
+  min-width: 50px;
   text-align: center;
   white-space: nowrap;
 }
-.work-item:hover {
-  border-width: 2px;
+.workspace-item:hover {
+  box-shadow: 0px 1px 4px 0px orange;
 }
-
+.workspace-item-title {
+  border-bottom: 2px solid #3E3D40;
+  padding: 0.2em 0.3em;
+  white-space: nowrap;
+}
+.workspace-item-title:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.workspace-item-content {
+  padding: 0.3em;
+}
+/*
 #item1 {
   left: 134px;
   position: absolute;
@@ -158,4 +205,4 @@ body {
   position: absolute;
   top: 98px;
 }
-
+*/

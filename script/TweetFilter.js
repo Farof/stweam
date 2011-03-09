@@ -15,6 +15,8 @@
   exports.TweetFilter.prototype = {
     constructor: exports.TweetFilter,
     
+    name: 'unamed filter',
+    
     get tweets() {
       return this.input.tweets.filter(this.validate);
     },
@@ -23,6 +25,7 @@
       return this.param.serialize.call(this, {
         uid: this.uid,
         constructorName: this.constructor.name,
+        name: this.name,
         input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         param: this.param.type,
         operator: this.operator.type,
@@ -61,6 +64,14 @@
         return check(value, getParam(tweet.data));
       };
       return this;
+    },
+    
+    toWorkspaceElement: function () {
+      var el, title, content;
+      if (!this.workspaceElement) {
+        this.workspaceElement = el = new WorkspaceElement(this);
+      }
+      return this.workspaceElement;
     }
   };
   

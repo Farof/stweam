@@ -6,14 +6,9 @@
     <link rel="stylesheet" href="style/screen.css" media="screen" />
   </head>
   <body>
-    <div id="config">
-      <div id="input">
-      </div>
-
-      <div id="filter">
-      </div>
-      
-      <div id="output">
+    <div id="collection">
+      <div id="processes" class="collection-category">
+        <p class="collection-title">Processes</p>
       </div>
     </div>
     
@@ -21,18 +16,20 @@
       
     </div>
     
-    <div id="workspace">
-      <div id="workHtml">
-        <div id="item1" class="work-item">
-          drag me
-        </div>
-        <div id="item2" class="work-item">
-          drag me
-        </div>
-      </div>
-      <canvas id="workCanvas" width="600" height="500">
-        
-      </canvas>
+    <div id="workspaceZone">
+      <!-- <div id="workspace">
+              <div id="workHtml">
+                <div id="item1" class="work-item">
+                  drag me
+                </div>
+                <div id="item2" class="work-item">
+                  drag me
+                </div>
+              </div>
+              <canvas id="workCanvas" width="600" height="500">
+
+              </canvas>
+            </div> -->
     </div>
     
     <div id="library">
@@ -72,6 +69,7 @@
     </div>
     
     <script type="application/x-javascript" src="script/Element.js"></script>
+    <script type="application/x-javascript" src="script/WorkspaceElement.js"></script>
     <script type="application/x-javascript" src="script/Tweet.js"></script>
     <script type="application/x-javascript" src="script/TweetInput.js"></script>
     <script type="application/x-javascript" src="script/TweetInputType.js"></script>

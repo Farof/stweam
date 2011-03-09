@@ -44,11 +44,9 @@
           item = constructor.getById(options.uid);
         }
         if (item) {
-          console.log('deserialize match found: ', item);
           return item;
         } else {
           item = constructor.from(options);
-          console.log('creating object: ', item);
           return item;
         }
       }
