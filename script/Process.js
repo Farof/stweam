@@ -63,7 +63,7 @@
           text: this.name,
           events: {
             click: function () {
-              console.log(this.serialize());
+              console.log(this);
               this.loadInWorkspace();
             }.bind(this)
           }
