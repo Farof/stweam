@@ -69,59 +69,55 @@ body {
 }
 
 
-#list {
-  border: 1px solid blue;
-  float: left;
-  display: inline-block;
-  width: 450px;
-}
 
 #library {
+  border-radius: 1px;
+  border: 1px solid #3E3D40;
+  box-shadow: 0px 0px 3px 0px #3E3D40;
   float: right;
-  border: 1px solid red;
-  padding: 0.5em;
+  margin: 3px 3px 3px 10px;
 }
 #library-title {
-  border: 1px solid pink;
+  border-bottom: 0.3em solid #3E3D40;
   font-size: 1.1em;
   font-weight: bold;
-  padding: 0.2em;
+  margin-bottom: 0.5em;
+  padding: 0.2em 0.3em;
 }
 .library-category {
   
 }
+.library-category ~ .library-category {
+  padding: 0.2em 0em;
+}
 .library-category-name {
-  border: 1px solid blue;
+  border-top: 0.2em solid #3E3D40;
+  border-bottom: 0.1em solid #3E3D40;
   font-size: 1em;
   font-weight: bold;
-  padding: 0.2em;
+  padding: 0.2em 0.3em;
 }
 .library-category-list {
-  border: 1px solid green;
-  padding: 0.2em;
+/*  padding: 0.2em 0em;*/
 }
 .library-item {
   -moz-transition-property: background-color;
   -moz-transition-duration: 0.33s;
-  border: 1px solid orange;
-  padding: 0.1em 0.3em;
+  margin: 0.2em 0em;
+  padding: 0.2em 0.3em;
 }
 .library-item:hover {
   background-color: #B0B0B0;
   cursor: pointer;
 }
 
-#input-type-list-box {
-  
-}
-#input-type-list {
-  
-}
-#input-type-list > .input-type {
-  
-}
 
-
+#list {
+  border: 1px solid blue;
+  float: left;
+  display: inline-block;
+  width: 450px;
+}
 
 .tweet-box {
   border: 1px solid green;
@@ -249,16 +245,3 @@ body {
 .workspace-item-content {
   padding: 0.3em;
 }
-/*
-#item1 {
-  left: 134px;
-  position: absolute;
-  top: 403px;
-}
-
-#item2 {
-  left: 376px;
-  position: absolute;
-  top: 98px;
-}
-*/
