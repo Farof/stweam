@@ -7,6 +7,12 @@
     if (!this.uid) {
       this.uid = Twitter.uid;
     }
+    if (!this.position) {
+      this.position = {
+        x: 0,
+        y: 0
+      }
+    }
     this.param = TweetFilterType.items[this.param];
     this.operator = TweetOperatorType.items[this.operator];
     this.save();
@@ -29,15 +35,9 @@
         input: (typeof this.input !== 'string') ? this.input.uid : this.input,
         param: this.param.type,
         operator: this.operator.type,
-        value: this.value
+        value: this.value,
+        position: this.position
       });
-    },
-    
-    toElement: function () {
-      if (!this.element) {
-        
-      }
-      return this.element;
     },
     
     validate: function (tweet) {

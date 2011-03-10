@@ -7,6 +7,12 @@
     if (!this.uid) {
       this.uid = Twitter.uid;
     }
+    if (!this.position) {
+      this.position = {
+        x: 0,
+        y: 0
+      }
+    }
     this.type = TweetOutputType.items[this.type];
   };
   
@@ -25,7 +31,8 @@
         constructorName: this.constructor.name,
         name: this.name,
         input: (typeof this.input !== 'string') ? this.input.uid : this.input,
-        type: this.type.type
+        type: this.type.type,
+        position: this.position
       });
     },
     

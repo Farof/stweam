@@ -7,6 +7,9 @@
       class: 'workspace-item',
       source: source
     });
+    el.style.left = source.position.left + 'px';
+    el.style.top = source.position.top + 'px';
+    el.style.position = 'absolute';
     
     title = new Element('p', {
       class: 'workspace-item-title',

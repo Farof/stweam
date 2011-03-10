@@ -91,25 +91,12 @@
           workspace.process.unloadFromWorkspace();
         }
         workspace.appendChild(this.toWorkspaceElement());
+        this.drawCanvas();
         
         this.loaded = true;
       }
       
       return this;
-    },
-    
-    get canvas() {
-      if (!this._canvas) {
-        this.toWorkspaceElement();
-      }
-      return this._canvas;
-    },
-    
-    get workspace() {
-      if (!this._workspace) {
-        this.toWorkspaceElement();
-      }
-      return this._workspace;
     },
     
     toWorkspaceElement: function () {
@@ -119,7 +106,7 @@
           id: 'workspace',
           process: this
         });
-        this._workspace = htmlEl = new Element('div', {
+        this.workspace = htmlEl = new Element('div', {
           id: 'workHtml',
           process: this,
           events: {
@@ -127,13 +114,14 @@
           }
         });
         el.appendChild(htmlEl);
-        this._canvas = canvasEl = new Element('canvas', {
+        this.canvas = canvasEl = new Element('canvas', {
           id: 'workCanvas',
           height: '500',
           width: '600',
           process: this
         });
         el.appendChild(canvasEl);
+        this.ctx = canvasEl.getContext('2d');
         
         this.items.forEach(function (item) {
           this.addToWorkspace(item);
@@ -198,17 +186,95 @@
       } else if (top > maxHeight) {
         top = maxHeight;
       }
-      
+      draggedItem.source.position.left = left;
+      draggedItem.source.position.top = top;
       style.position = 'absolute';
       style.left = left + 'px';
       style.top = top + 'px';
-      //draggedItem.querySelector('.workspace-item-content').innerHTML = '( ' + style.left + ' ; ' + style.top + ' )';
+      process.drawCanvas();
     },
     
     stopDrag: function (event) {
       var process = document.getElementById('workspace').process;
       document.removeEventListener('mousemove', process.doDrag, false);
       document.removeEventListener('mouseup', process.stopDrag, true);
+    },
+    
+    clearCanvas: function () {
+      this.canvas.width = this.canvas.width;
+    },
+    
+    drawCanvas: function () {
+      this.clearCanvas();
+      this.drawPaths();
+    },
+    
+    drawPaths: function () {
+      this.items.forEach(function (item) {
+        if (item.input) {
+          this.drawPathBetween(item.input.workspaceElement, item.workspaceElement);
+        }
+      }.bind(this));
+    },
+    
+    drawPathBetween: function (source, dest) {
+      var
+      ctx = this.ctx,
+      
+      dotRadius = 3,
+      dotBorderWidth = 1,
+      lineWidth = 2,
+      arrowWidth = 5,
+      arrowHeight = 7,
+      
+      sourceOnTop = source.offsetTop < dest.offsetTop,
+      sourceOnLeft = source.offsetLeft < dest.offsetLeft,
+      diffX = Math.abs(source.offsetLeft - dest.offsetLeft),
+      diffY = Math.abs(source.offsetTop - dest.offsetTop),
+      diffIsHeight = diffY > diffX,
+
+
+      startX = source.offsetLeft + (diffIsHeight ? (source.scrollWidth / 2) : (sourceOnLeft ? source.scrollWidth : 0)),
+      startY = source.offsetTop + (!diffIsHeight ? (source.scrollHeight / 2) : (sourceOnTop ? source.scrollHeight : 0)),
+      startControlX = startX + (diffIsHeight ? 0 : (sourceOnLeft ? 50 : -50)),
+      startControlY = startY + (!diffIsHeight ? 0 : (sourceOnTop ? 50 : -50))
+      endX = dest.offsetLeft + (diffIsHeight ? (dest.scrollWidth / 2) : (!sourceOnLeft ? dest.scrollWidth : 0)),
+      endY = dest.offsetTop + (!diffIsHeight ? (dest.scrollHeight / 2) : (!sourceOnTop ? dest.scrollHeight : 0)),
+      endControlX = endX + (diffIsHeight ? 0 : (!sourceOnLeft ? 50 : -50)),
+      endControlY = endY + (!diffIsHeight ? 0 : (!sourceOnTop ? 50 : -50)),
+      arrowStartX = endX + (diffIsHeight ? -arrowWidth : (sourceOnLeft ? -arrowHeight : arrowHeight)),
+      arrowStartY = endY + (!diffIsHeight ? -arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight)),
+      arrowEndX = endX + (diffIsHeight ? arrowWidth : (sourceOnLeft ? -arrowHeight : arrowHeight)),
+      arrowEndY = endY + (!diffIsHeight ? arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight));
+
+      // start dot
+      ctx.beginPath();
+      ctx.arc(startX, startY, dotRadius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = '#3E3D40';
+      ctx.fill();
+      ctx.lineWidth = dotBorderWidth;
+      ctx.strokeStyle = '#3E3D40';
+      ctx.stroke();
+      ctx.closePath();
+
+      // line
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.bezierCurveTo(startControlX, startControlY, endControlX, endControlY, endX, endY);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = '#3E3D40';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.closePath();
+      
+      // end arrow
+      ctx.beginPath();
+      ctx.moveTo(arrowStartX, arrowStartY);
+      ctx.lineTo(endX, endY);
+      ctx.moveTo(endX, endY);
+      ctx.lineTo(arrowEndX, arrowEndY);
+      ctx.stroke();
+      ctx.closePath();
     }
   };
   
