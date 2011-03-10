@@ -18,10 +18,9 @@ body {
 }
 
 #credits {
-  bottom: 0px;
+  float: right;
   font-size: 0.8em;
-  position: fixed;
-  right: 0px;
+  padding-top: 0.2em;
 }
 
 #collection {
