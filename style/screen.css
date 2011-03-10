@@ -113,33 +113,36 @@ body {
 
 
 #list {
-  border: 1px solid blue;
   float: left;
   display: inline-block;
   width: 450px;
 }
 
 .tweet-box {
-  border: 1px solid green;
+  border-radius: 5px;
+  border: 1px solid #3E3D40;
+  box-shadow: 0px 0px 2px 0px #3E3D40;
   display: block;
   padding: 0.4em;
 }
 .tweet-box ~ .tweet-box {
   margin-top: 0.4em;
 }
-
 .tweet-data {
-  border: 1px solid orange;
+  font-size: 0.9em;
+  padding: 0.2em 0.3em;
 }
-
+.tweet-data:hover {
+  font-weight: bold;
+}
+.tweet-data ~ .tweet-data {
+  border-top: 1px solid #3E3D40;
+}
 .tweet-author {
-  border: 1px solid orange;
-  padding: 0.2em;
+  
 }
-
 .tweet {
-  border: 1px solid red;
-  padding: 0.2em;
+  
 }
 
 
