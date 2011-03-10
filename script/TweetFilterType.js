@@ -17,7 +17,7 @@
       var el;
       if (!this.libraryElement) {
         el = new Element('p', {
-          class: 'library-item filter-type',
+          'class': 'library-item filter-type',
           text: this.label,
           type: this,
           events: {
