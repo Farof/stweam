@@ -47,6 +47,8 @@
   exports.TweetOperatorType.add({
     type: 'is',
     label: 'is',
+    description: 'Exact match.',
+    
     check: function (filterValue, tweetValue) {
       return tweetValue === filterValue;
     }
@@ -54,6 +56,8 @@
   exports.TweetOperatorType.add({
     type: 'contains',
     label: 'contains',
+    description: 'Value is contained into tweet matched property.',
+    
     check: function (filterValue, tweetValue) {
       return tweetValue.indexOf(filterValue) > -1;
     }

@@ -21,6 +21,8 @@
     
     name: 'unamed output',
     
+    itemType: 'output',
+    
     get tweets() {
       return this.input.tweets;
     },

@@ -21,6 +21,8 @@
     
     name: 'unamed input',
     
+    itemType: 'input',
+    
     get tweets() {
       return this.type.retrieve.call(this);
     },
@@ -36,9 +38,11 @@
     },
     
     toWorkspaceElement: function () {
-      var el, title, content;
+      var el, title, content, child;
       if (!this.workspaceElement) {
         this.workspaceElement = el = new WorkspaceElement(this);
+        title = el.querySelector('.workspace-title');
+        content = el.querySelector('.workspace-content');
       }
       return this.workspaceElement;
     }

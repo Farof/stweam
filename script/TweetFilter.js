@@ -23,8 +23,14 @@
     
     name: 'unamed filter',
     
+    itemType: 'filter',
+    
     get tweets() {
       return this.input.tweets.filter(this.validate);
+    },
+    
+    get type() {
+      return this.param;
     },
     
     serialize: function () {

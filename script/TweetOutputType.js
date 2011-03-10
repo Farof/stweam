@@ -44,6 +44,7 @@
   exports.TweetOutputType.add({
     type: 'DOM',
     label: 'DOM',
+    description: 'Outputs as an HTML view.',
     
     serialize: function (serializable) {
       serializable = serializable || {};

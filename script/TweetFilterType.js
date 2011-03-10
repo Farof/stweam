@@ -43,17 +43,20 @@
   
   exports.TweetFilterType.add({
     type: 'created_at',
-    label: 'Date',
+    label: 'Tweet date',
+    description: 'Filter based on tweet date.',
     operators: ['is']
   });
   exports.TweetFilterType.add({
     type: 'from_user',
     label: 'Author',
+    description: 'Filter by tweet author.',
     operators: ['is']
   });
   exports.TweetFilterType.add({
     type: 'result_type',
     label: 'Result type',
+    description: 'Filter based on various metadata.',
     operators: ['is'],
     metadata: true,
     select: [
@@ -64,16 +67,19 @@
   exports.TweetFilterType.add({
     type: 'to_user',
     label: 'To user',
+    description: 'Filter based on @user.',
     operators: ['is']
   });
   exports.TweetFilterType.add({
     type: 'text',
-    label: 'Tweet',
+    label: 'Text',
+    description: 'Filter based on tweet content.',
     operators: ['contains']
   });
   exports.TweetFilterType.add({
     type: 'iso_language_code',
     label: 'Language',
+    description: 'Filter based on tweet language.',
     operators: ['is'],
     select: [
       {key: 'fr', label: 'French', init: true},
@@ -83,6 +89,7 @@
   exports.TweetFilterType.add({
     type: 'source',
     label: 'Source',
+    description: 'Filter based on source used to tweet.',
     operators: ['is']
   });
   

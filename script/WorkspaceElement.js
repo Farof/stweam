@@ -1,10 +1,10 @@
 (function (exports) {
   
   exports.WorkspaceElement = function WorkspaceElement(source) {
-    var el, title, content;
+    var el, title, icon, content, child;
     
     el = new Element('div', {
-      'class': 'workspace-item',
+      'class': 'workspace-item item-type-' + source.itemType + ' type-' + source.type.type,
       source: source
     });
     el.style.left = source.position.left + 'px';
@@ -18,10 +18,30 @@
     });
     el.appendChild(title);
     
+    icon = new Element('img', {
+      'class': 'workspace-item-icon'
+    });
+    title.insertBefore(icon, title.childNodes[0]);
+    
     content = new Element('div', {
       'class': 'workspace-item-content'
     });
     el.appendChild(content);
+    
+    child = new Element('p', {
+      'class': 'item-type',
+      title: source.type.description || ''
+    });
+    child.appendChild(new Element('span', {
+      'class': 'item-type-label',
+      text: 'Type: '
+    }));
+    child.appendChild(new Element('span', {
+      'class': 'item-type-name',
+      text: source.type.label
+    }));
+    
+    content.appendChild(child);
     
     return el;
   };
