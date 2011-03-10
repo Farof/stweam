@@ -20,7 +20,7 @@
       var el;
       if (!this.libraryElement) {
         el = new Element('p', {
-          class: 'library-item operator-type',
+          'class': 'library-item operator-type',
           text: this.label,
           type: this,
           events: {

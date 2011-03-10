@@ -59,7 +59,7 @@
       var el;
       if (!this.collectionElement) {
         el = new Element('p', {
-          class:'collection-item process',
+          'class': 'collection-item process',
           text: this.name,
           events: {
             click: function () {

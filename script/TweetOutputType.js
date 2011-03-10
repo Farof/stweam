@@ -17,7 +17,7 @@
       var el;
       if (!this.libraryElement) {
         el = new Element('p', {
-          class: 'library-item output-type',
+          'class': 'library-item output-type',
           text: this.label,
           type: this,
           events: {
@@ -53,7 +53,7 @@
     
     generate: function () {
       var element = new Element('div', {
-        class: 'tweet-list'
+        'class': 'tweet-list'
       });
       this.tweets.forEach(function (tweet) {
         element.appendChild(tweet.toDebugElement());

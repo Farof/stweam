@@ -106,7 +106,6 @@
       },
       
       save: function (item, key) {
-        console.log('save', arguments, arguments.length);
         if (arguments.length === 1) {
           this.saveItem(item);
         } else if (arguments.length === 2) {
