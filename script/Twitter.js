@@ -6,6 +6,8 @@
   };
   
   exports.Twitter = {
+    appName: 'tweb',
+    
     get uid() {
       return nextUID();
     },
@@ -51,6 +53,124 @@
         }
       }
       return options;
+    },
+    
+    init: function () {
+      var lastProcess;
+      
+      Twitter.load();
+      
+      lastProcess = this.load('config.lastProcess') || Process.items[0];
+      if (lastProcess) {
+        lastProcess.generate().loadInWorkspace();
+      } else {
+        console.log('no process to load');
+      }
+    },
+    
+    load: function () {
+      this.storage.load.apply(this.storage, arguments);
+    },
+    
+    save: function () {
+      this.storage.save.apply(this.storage, arguments);
+    },
+    
+    storage: {
+      get db() {
+        return sessionStorage;
+      } ,
+      
+      version: '1.0',
+      
+      structure: {
+        processes: {
+          keyPath: null,
+          
+          indexes: {
+            name: { unique: false }
+          }
+        }
+      },
+      
+      describe: function () {
+        if (this.db.length) {
+          console.dir(this.db);
+        } else {
+          console.log('db is empty');
+        }
+      },
+      
+      clear: function () {
+        this.db.clear();
+      },
+      
+      save: function (item, key) {
+        console.log('save', arguments, arguments.length);
+        if (arguments.length === 1) {
+          this.saveItem(item);
+        } else if (arguments.length === 2) {
+          this.saveKey(key, item);
+        } else {
+          Process.items.forEach(function (item) {
+            this.save(item);
+          }.bind(this));
+        }
+      },
+      
+      saveItem: function (item) {
+        if (item.constructor && item.constructor.name && item.serialize && item.uid) {
+          this.saveKey(item.constructor.name + ':' + item.uid, JSON.stringify(item.serialize()));
+        }
+      },
+      
+      saveKey: function (key, value) {
+        try {
+          this.db.setItem(key, value);
+        } catch (e) {
+          console.log('error saving: ', e.message, e);
+        }
+      },
+      
+      load: function (key) {        
+        var items = ['Process'], i, ln;
+        
+        if (key) {
+          return this.loadKey(key);
+        }
+        
+        for (key in this.db) {
+          for (i = 0, ln = items.length; i < ln; i += 1) {
+            if (key.indexOf(items[i] + ':') > -1) {
+              return this.loadItem(items[i], this.db.getItem(key));
+            }
+          }
+        }
+      },
+      
+      loadItem: function (constructorName, options) {
+        var constructor = window[constructorName];
+        if (constructor && constructor.from) {
+          try {
+            options = JSON.parse(options);
+            return constructor.from(options);
+          } catch (e) {
+            console.log('error loading item: ', constructorName, options, e.message, e);
+          }
+        } else {
+          console.log('could not load item, no constructor found', constructorName, options);
+        }
+        return null;
+      },
+      
+      loadKey: function (key) {
+        try {
+          return this.db.getItem(key);
+        } catch (e) {
+          console.log('error loading key: ', key);
+          return null;
+        }
+      }
     }
   };
   

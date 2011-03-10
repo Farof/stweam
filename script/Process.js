@@ -198,6 +198,7 @@
       var process = document.getElementById('workspace').process;
       document.removeEventListener('mousemove', process.doDrag, false);
       document.removeEventListener('mouseup', process.stopDrag, true);
+      Twitter.save(process);
     },
     
     clearCanvas: function () {

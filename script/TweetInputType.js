@@ -10,7 +10,7 @@
     constructor: exports.TweetInputType,
     
     serialize: function (serializable) {
-      return serializable || {};
+      return serializable || {};
     },
     
     toLibraryElement: function () {
