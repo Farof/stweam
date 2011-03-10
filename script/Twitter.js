@@ -76,6 +76,12 @@
       this.storage.save.apply(this.storage, arguments);
     },
     
+    bootstrap: function () {
+      var process = Twitter.deserialize('{"uid":"18","constructorName":"Process","name":"My first Process","items":["{\\"uid\\":\\"15\\",\\"constructorName\\":\\"TweetInput\\",\\"name\\":\\"unamed input\\",\\"type\\":\\"global\\",\\"position\\":{\\"x\\":0,\\"y\\":0,\\"left\\":93,\\"top\\":59}}","{\\"uid\\":\\"16\\",\\"constructorName\\":\\"TweetFilter\\",\\"name\\":\\"unamed filter\\",\\"input\\":\\"15\\",\\"param\\":\\"from_user\\",\\"operator\\":\\"contains\\",\\"value\\":\\"yozomist\\",\\"position\\":{\\"x\\":0,\\"y\\":0,\\"left\\":252,\\"top\\":193}}","{\\"uid\\":\\"17\\",\\"constructorName\\":\\"TweetOutput\\",\\"name\\":\\"unamed output\\",\\"input\\":\\"16\\",\\"type\\":\\"DOM\\",\\"position\\":{\\"x\\":0,\\"y\\":0,\\"left\\":434,\\"top\\":348},\\"node\\":\\"#list\\"}"]}');
+      Twitter.save();
+      window.location = window.location;
+    },
+    
     storage: {
       get db() {
         return sessionStorage;
