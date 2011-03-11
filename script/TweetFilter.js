@@ -15,6 +15,11 @@
     }
     this.param = TweetFilterType.items[this.param];
     this.operator = TweetOperatorType.items[this.operator];
+    if (typeof this.process === 'string') {
+      this.process = Process.getById(this.process);
+    } else if (!this.process) {
+      this.process = Process.getByItem(this);
+    }
     this.save();
   };
   
@@ -78,6 +83,12 @@
         this.workspaceElement = el = new WorkspaceElement(this);
       }
       return this.workspaceElement;
+    },
+    
+    updated: function (type) {
+      if (this.process) {
+        this.process.itemUpdated(type, this);
+      }
     }
   };
   

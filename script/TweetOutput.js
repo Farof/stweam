@@ -14,6 +14,11 @@
       }
     }
     this.type = TweetOutputType.items[this.type];
+    if (typeof this.process === 'string') {
+      this.process = Process.getById(this.process);
+    } else if (!this.process) {
+      this.process = Process.getByItem(this);
+    }
   };
   
   exports.TweetOutput.prototype = {
@@ -49,6 +54,12 @@
         this.workspaceElement = el = new WorkspaceElement(this);
       }
       return this.workspaceElement;
+    },
+    
+    updated: function (type) {
+      if (this.process) {
+        this.process.itemUpdated(type, this);
+      }
     }
   };
   

@@ -15,6 +15,9 @@
         // converting serialized items
         if (typeof item === 'string') {
           item = ar[index] = Twitter.deserialize(item);
+          if (!item.process) {
+            item.process = this;
+          }
         }
         
         // registering process outputs
@@ -74,10 +77,17 @@
       return this.collectionElement;
     },
     
+    contains: function (itemToFind) {
+      return this.items.filter(function (item) {
+        return item === itemToFind;
+      }).length === 1;
+    },
+    
     unloadFromWorkspace: function () {
       throw new Error('to implement');
       
       this.loaded = false;
+      this.constructor.loadedItem = null;
       
       return this;
     },
@@ -94,6 +104,7 @@
         this.drawCanvas();
         
         this.loaded = true;
+        this.constructor.loadedItem = this;
       }
       
       return this;
@@ -137,8 +148,8 @@
     },
     
     handleWorkspaceMousedown: function (event) {
-      var item = event.target, classes = item.classList;
-      if (classes.contains('workspace-item-title')) {
+      var item = event.target, strClasse = item.getAttribute('class'), classes = item.classList;
+      if (!classes.contains('workspace-item-title-input') && strClasse && strClasse.indexOf('workspace-item-title') > -1) {
         this.process.startDrag(item.workspaceItem, event);
       }
     },
@@ -162,6 +173,9 @@
       
       document.addEventListener('mousemove', this.doDrag, false);
       document.addEventListener('mouseup', this.stopDrag, true);
+      
+      item.dragging = true;
+      item.dragged = false;
     },
     
     doDrag: function (event) {
@@ -192,12 +206,24 @@
       style.left = left + 'px';
       style.top = top + 'px';
       process.drawCanvas();
+      
+      if (!draggedItem.dragged) {
+        draggedItem.dragged = true;
+      }
     },
     
     stopDrag: function (event) {
-      var process = document.getElementById('workspace').process;
+      var
+      process = document.getElementById('workspace').process;
+      
       document.removeEventListener('mousemove', process.doDrag, false);
       document.removeEventListener('mouseup', process.stopDrag, true);
+      
+      process._draggedItem.dragging = false;
+      if (process._draggedItem.dragged) {
+        process._draggedItem.querySelector('.workspace-item-title-zone').save();
+      }
+      
       Twitter.save(process);
     },
     
@@ -276,6 +302,10 @@
       ctx.lineTo(arrowEndX, arrowEndY);
       ctx.stroke();
       ctx.closePath();
+    },
+    
+    itemUpdated: function (updateType, item) {
+      Twitter.save(this);
     }
   };
   
@@ -283,6 +313,14 @@
   exports.Process.getById = function (uid) {
     for (var i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].uid === uid) {
+        return this.items[i];
+      }
+    }
+    return null;
+  };
+  exports.Process.getByItem = function (item) {
+    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+      if (this.items[i].contains(item)) {
         return this.items[i];
       }
     }
