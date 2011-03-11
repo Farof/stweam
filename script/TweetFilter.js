@@ -13,8 +13,11 @@
         y: 0
       }
     }
+    
     this.param = TweetFilterType.items[this.param];
-    this.operator = TweetOperatorType.items[this.operator];
+    this.operator = this.param.operators[this.operator || this.param.operator];
+    this.configElements = {};
+    
     if (typeof this.process === 'string') {
       this.process = Process.getById(this.process);
     } else if (!this.process) {
@@ -85,7 +88,50 @@
       return this.workspaceElement;
     },
     
-    updated: function (type) {
+    getContentChildren: function () {
+      var children, child, operators, config;
+      if (!this.contentChildren) {
+        this.contentChildren = children = [];
+        
+        child = new Element('p', {
+          'class': 'item-content-zone item-type',
+          title: this.type.description || ''
+        });
+        child.appendChild(new Element('span', {
+          'class': 'item-content-label item-type-label',
+          text: 'filter by: '
+        }));
+        child.appendChild(new Element('span', {
+          'class': 'item-content item-type-name',
+          text: this.type.label
+        }));
+        children.push(child);
+        
+        
+        operators = this.type.getOperatorsElement(this);
+        children.push(operators);
+        
+        config = this.configElement = this.toConfigElement();
+        children.push(config);
+      }
+      return this.contentChildren;
+    },
+    
+    toConfigElement: function () {
+      return this.operator.toConfigElement(this);
+    },
+    
+    updated: function (type, value) {
+      var previous, newValue;
+      if (type === 'name') {
+        this.name = value;
+      } else if (type === 'operator') {
+        this.operator = this.type.operators[value];
+        previous = this.configElement;
+        newValue = this.configElement = this.toConfigElement();
+        this.contentElement.replaceChild(newValue, previous);
+        
+      }
       if (this.process) {
         this.process.itemUpdated(type, this);
       }

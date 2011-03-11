@@ -29,6 +29,48 @@
         this.libraryElement = el;
       }
       return this.libraryElement;
+    },
+    
+    getOperatorsElement: function (filter) {
+      var el, child, select, key, operator, option, config;
+      if (!filter.operatorsElement) {
+        filter.operatorsElement = el = new Element('p', {
+          'class': 'item-content-zone operator-choice-zone'
+        });
+        
+        child = new Element('span', {
+          'class': 'item-content-label operator-choice-label',
+          text: 'operator: '
+        });
+        el.appendChild(child);
+        
+        select = new Element('select', {
+          'class': 'item-content operator-select'
+        });
+        
+        for (key in this.operators) {
+          operator = this.operators[key];
+          option = new Element('option', {
+            'class': 'operator-option',
+            text: operator.label,
+            value: operator.type,
+            title: operator.description,
+            events: {
+              click: function (e) {
+                if (this.value !== filter.operator.type) {
+                  filter.updated('operator', this.value);
+                }
+              }
+            }
+          });
+          select.appendChild(option);
+        }
+        if (filter.operator.type) {
+          select.value = filter.operator.type;
+        }
+        el.appendChild(select);
+      }
+      return el;
     }
   };
   
@@ -49,9 +91,64 @@
   });
   exports.TweetFilterType.add({
     type: 'from_user',
-    label: 'Author',
+    label: 'Author username',
     description: 'Filter by tweet author.',
-    operators: ['is']
+    
+    operator: 'is',
+    operators: {
+      is: {
+        type: 'is',
+        label: 'is',
+        description: 'exact username match (case insensitive)',
+
+        check: function (filter, tweet) {
+          return tweet.toLowerCase() === filter.toLowerCase();
+        },
+        
+        toConfigElement: function (filter) {
+          var config = filter.configElements[this.type], child;
+          if (!config) {
+            config = filter.configElements[this.type] = new Element('div', {
+              'class': 'item-config'
+            });
+          }
+          return config;
+        }
+      },
+      contains: {
+        type: 'contains',
+        label: 'contains',
+        description: 'string found in username (case insensitive)',
+        
+        check: function (filter, tweet) {
+          return tweet.toLowerCase().indexOf(filter.toLowerCase()) > -1;
+        },
+        
+        toConfigElement: function (filter) {
+          var config = filter.configElements[this.type], child, child2;
+          if (!config) {
+            config = filter.configElements[this.type] = new Element('div', {
+              'class': 'item-content-zone item-config'
+            });
+            
+            child = new Element('p', {
+              'class': 'item-config-line'
+            });
+            config.appendChild(child);
+            
+            child2 = new Element('input', {
+              type: 'text',
+              placeholder: 'filter'
+            });
+            if (filter.operator.type === this.type) {
+              child2.setAttribute('value', filter.value);
+            }
+            child.appendChild(child2);
+          }
+          return config;
+        }
+      }
+    }
   });
   exports.TweetFilterType.add({
     type: 'result_type',

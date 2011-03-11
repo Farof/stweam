@@ -263,6 +263,19 @@ body {
 .type-DOM .workspace-item-icon {
   
 }
-.workspace-item-content {
-  padding: 0.3em;
+.workspace-item-contents {
+  font-size: 0.9em;
+  padding: 0.2em 0.3em;
+}
+.item-content-zone {
+  margin: 0.3em 0em;
+}
+.item-content-label {
+  font-weight: bold;
+}
+.item-content {
+  
+}
+.item-config {
+  
 }

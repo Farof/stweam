@@ -305,6 +305,7 @@
     },
     
     itemUpdated: function (updateType, item) {
+      this.drawCanvas();
       Twitter.save(this);
     }
   };

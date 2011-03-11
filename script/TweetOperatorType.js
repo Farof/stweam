@@ -14,6 +14,16 @@
         type: this.type,
         label: this.label
       };
+    },
+    
+    getContentChildren: function (filter, param) {
+      var children;
+      if (!filter.typeContentChildren) {
+        filter.typeContentChildren = children = [];
+        
+        
+      }
+      return filter.typeContentChildren;
     }
   };
   

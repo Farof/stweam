@@ -18,7 +18,6 @@
     saveTitle = title.save = function (event) {
       var value = this.querySelector('.workspace-item-title-input').value;
       this.querySelector('.workspace-item-title').textContent = value;
-      source.name = value;
       source.updated('name', value);
       this.classList.remove('editing');
       Process.loadedItem.drawCanvas();
@@ -62,25 +61,14 @@
     });
     title.insertBefore(icon, title.childNodes[0]);
     
-    content = new Element('div', {
-      'class': 'workspace-item-content'
+    content = source.contentElement = new Element('div', {
+      'class': 'workspace-item-contents'
     });
     el.appendChild(content);
     
-    child = new Element('p', {
-      'class': 'item-type',
-      title: source.type.description || ''
+    source.getContentChildren().forEach(function (child) {
+      content.appendChild(child);
     });
-    child.appendChild(new Element('span', {
-      'class': 'item-type-label',
-      text: 'Type: '
-    }));
-    child.appendChild(new Element('span', {
-      'class': 'item-type-name',
-      text: source.type.label
-    }));
-    
-    content.appendChild(child);
     
     source.dragging = false;
     source.dragged = false;

@@ -52,7 +52,32 @@
       return this.workspaceElement;
     },
     
-    updated: function (type) {
+    getContentChildren: function () {
+      var children, child;
+      if (!this.contentChildren) {
+        this.contentChildren = children = [];
+        
+        child = new Element('p', {
+          'class': 'item-content-zone item-type',
+          title: this.type.description || ''
+        });
+        child.appendChild(new Element('span', {
+          'class': 'item-content-label item-type-label',
+          text: 'input: '
+        }));
+        child.appendChild(new Element('span', {
+          'class': 'item-content item-type-name',
+          text: this.type.label
+        }));
+        children.push(child);
+      }
+      return this.contentChildren;
+    },
+    
+    updated: function (type, value) {
+      if (type === 'name') {
+        this.name = value;
+      }
       if (this.process) {
         this.process.itemUpdated(type, this);
       }
