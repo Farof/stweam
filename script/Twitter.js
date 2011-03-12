@@ -1,15 +1,10 @@
 (function (exports) {
-  var
-  uid = 0,
-  nextUID = function () {
-    return (uid++).toString();
-  };
   
   exports.Twitter = {
     appName: 'tweb',
     
     get uid() {
-      return nextUID();
+      return uuid();
     },
     
     get tweets() {
