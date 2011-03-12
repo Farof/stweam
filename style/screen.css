@@ -115,9 +115,11 @@ body {
 #list {
   float: left;
   display: inline-block;
+}
+.tweet-list {
+  height: 1px;
   width: 450px;
 }
-
 .tweet-box {
   border-radius: 5px;
   border: 1px solid #3E3D40;
