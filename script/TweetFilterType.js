@@ -45,7 +45,12 @@
         el.appendChild(child);
         
         select = new Element('select', {
-          'class': 'item-content operator-select'
+          'class': 'item-content operator-select',
+          events: {
+            change: function () {
+              filter.updated('operator', this.value);
+            }
+          }
         });
         
         for (key in this.operators) {
@@ -54,14 +59,7 @@
             'class': 'operator-option',
             text: operator.label,
             value: operator.type,
-            title: operator.description,
-            events: {
-              click: function (e) {
-                if (this.value !== filter.operator.type) {
-                  filter.updated('operator', this.value);
-                }
-              }
-            }
+            title: operator.description
           });
           select.appendChild(option);
         }
@@ -109,9 +107,34 @@
           var config = filter.configElements[this.type], child;
           if (!config) {
             config = filter.configElements[this.type] = new Element('div', {
-              'class': 'item-config'
+              'class': 'item-content-zone item-config'
             });
+            
+            child = new Element('p', {
+              'class': 'item-config-line'
+            });
+            config.appendChild(child);
+            
+            child2 = new Element('input', {
+              type: 'text',
+              placeholder: 'filter'
+            });
+            child2.addEventListener('change', function (e) {
+              filter.updated('value', child2.value);
+            }, false);
+            if (filter.savedConfig.operator === this.type) {
+              child2.setAttribute('value', filter.value);
+            } else {
+              filter.updated('value', child2.value);
+            }
+            child.appendChild(child2);
           }
+          return config;
+        },
+        
+        saveConfig: function (filter, filterType, config) {
+          config.operator = this.type;
+          config.value = filter.value;
           return config;
         }
       },
@@ -140,14 +163,31 @@
               type: 'text',
               placeholder: 'filter'
             });
-            if (filter.operator.type === this.type) {
+            child2.addEventListener('change', function (e) {
+              filter.updated('value', child2.value);
+            }, false);
+            if (filter.savedConfig.operator === this.type) {
               child2.setAttribute('value', filter.value);
+            } else {
+              filter.updated('value', child2.value);
             }
             child.appendChild(child2);
           }
           return config;
+        },
+        
+        saveConfig: function (filter, filterType, config) {
+          config.operator = this.type;
+          config.value = filter.value;
+          return config;
         }
       }
+    },
+    
+    saveConfig: function (filter, config) {
+      config.type = this.type;
+      filter.operator.saveConfig(filter, this, config);
+      return config;
     }
   });
   exports.TweetFilterType.add({

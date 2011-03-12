@@ -59,6 +59,8 @@
       return false;
     },
     
+    savedConfig: {},
+    
     save: function () {
       var
       check = this.operator.check,
@@ -77,6 +79,9 @@
       this.validate = function (tweet) {
         return check(value, getParam(tweet.data));
       };
+      this.savedConfig = this.type.saveConfig(this, {
+        type: this.type.type
+      });
       return this;
     },
     
@@ -130,7 +135,10 @@
         previous = this.configElement;
         newValue = this.configElement = this.toConfigElement();
         this.contentElement.replaceChild(newValue, previous);
-        
+        this.save();
+      } else if (type === 'value') {
+        this.value = value;
+        this.save();
       }
       if (this.process) {
         this.process.itemUpdated(type, this);
