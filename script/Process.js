@@ -254,10 +254,14 @@
       arrowWidth = 5,
       arrowHeight = 7,
       
-      sourceOnTop = source.offsetTop < dest.offsetTop,
-      sourceOnLeft = source.offsetLeft < dest.offsetLeft,
-      diffX = Math.abs(source.offsetLeft - dest.offsetLeft),
-      diffY = Math.abs(source.offsetTop - dest.offsetTop),
+      sourceCenterX = source.offsetLeft + (source.scrollWidth / 2),
+      sourceCenterY = source.offsetTop + (source.scrollHeight / 2),
+      destCenterX = dest.offsetLeft + (dest.scrollWidth / 2),
+      destCenterY = dest.offsetTop + (dest.scrollHeight / 2),
+      sourceOnLeft = sourceCenterX < destCenterX,
+      sourceOnTop = sourceCenterY < destCenterY,
+      diffX = Math.abs(sourceCenterX - destCenterX),
+      diffY = Math.abs(sourceCenterY - destCenterY),
       diffIsHeight = diffY > diffX,
 
 
@@ -273,6 +277,8 @@
       arrowStartY = endY + (!diffIsHeight ? -arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight)),
       arrowEndX = endX + (diffIsHeight ? arrowWidth : (sourceOnLeft ? -arrowHeight : arrowHeight)),
       arrowEndY = endY + (!diffIsHeight ? arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight));
+
+      console.log('diffs: ', diffX, diffY, diffIsHeight);
 
       // start dot
       ctx.beginPath();
