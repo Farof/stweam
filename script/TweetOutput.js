@@ -14,12 +14,19 @@
       }
     }
     this.type = TweetOutputType.items[this.type];
+    if (typeof this.process === 'string') {
+      this.process = Process.getById(this.process);
+    } else if (!this.process) {
+      this.process = Process.getByItem(this);
+    }
   };
   
   exports.TweetOutput.prototype = {
     constructor: exports.TweetOutput,
     
     name: 'unamed output',
+    
+    itemType: 'output',
     
     get tweets() {
       return this.input.tweets;
@@ -47,6 +54,34 @@
         this.workspaceElement = el = new WorkspaceElement(this);
       }
       return this.workspaceElement;
+    },
+    
+    getContentChildren: function () {
+      var children, child;
+      if (!this.contentChildren) {
+        this.contentChildren = children = [];
+        
+        child = new Element('p', {
+          'class': 'item-content-zone item-type',
+          title: this.type.description || ''
+        });
+        child.appendChild(new Element('span', {
+          'class': 'item-content-label item-type-label',
+          text: 'output: '
+        }));
+        child.appendChild(new Element('span', {
+          'class': 'item-content item-type-name',
+          text: this.type.label
+        }));
+        children.push(child);
+      }
+      return this.contentChildren;
+    },
+    
+    updated: function (type) {
+      if (this.process) {
+        this.process.itemUpdated(type, this);
+      }
     }
   };
   

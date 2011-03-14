@@ -44,6 +44,7 @@
   exports.TweetOutputType.add({
     type: 'DOM',
     label: 'DOM',
+    description: 'Outputs as an HTML view.',
     
     serialize: function (serializable) {
       serializable = serializable || {};
@@ -52,13 +53,16 @@
     },
     
     generate: function () {
-      var element = new Element('div', {
+      var
+      element = new Element('div', {
         'class': 'tweet-list'
-      });
+      }),
+      root = document.querySelector(this.node);
       this.tweets.forEach(function (tweet) {
         element.appendChild(tweet.toDebugElement());
       });
-      document.querySelector(this.node).appendChild(element);
+      Element.empty(root);
+      root.appendChild(element);
     }
   });
   

@@ -16,22 +16,14 @@
       };
     },
     
-    toLibraryElement: function () {
-      var el;
-      if (!this.libraryElement) {
-        el = new Element('p', {
-          'class': 'library-item operator-type',
-          text: this.label,
-          type: this,
-          events: {
-            click: function (e) {
-              console.log(this.type);
-            }
-          }
-        });
-        this.libraryElement = el;
+    getContentChildren: function (filter, param) {
+      var children;
+      if (!filter.typeContentChildren) {
+        filter.typeContentChildren = children = [];
+        
+        
       }
-      return this.libraryElement;
+      return filter.typeContentChildren;
     }
   };
   
@@ -39,7 +31,6 @@
   exports.TweetOperatorType.add = function (options) {
     var item = new this(options);
     this.items[options.type] = item;
-    document.getElementById('operator-type-list').appendChild(item.toLibraryElement());
     return item;
   };
   
@@ -47,6 +38,8 @@
   exports.TweetOperatorType.add({
     type: 'is',
     label: 'is',
+    description: 'Exact match.',
+    
     check: function (filterValue, tweetValue) {
       return tweetValue === filterValue;
     }
@@ -54,6 +47,8 @@
   exports.TweetOperatorType.add({
     type: 'contains',
     label: 'contains',
+    description: 'Value is contained into tweet matched property.',
+    
     check: function (filterValue, tweetValue) {
       return tweetValue.indexOf(filterValue) > -1;
     }

@@ -9,6 +9,10 @@
     <div id="debugbar">
       <button onclick="Twitter.bootstrap();">bootstrap</button>
       <button onclick="Twitter.storage.clear();window.location=window.location;">clear data</button>
+      
+      <div id="credits">
+        <p>Work in progress, by Farof (<a href="https://github.com/Farof/tweb">github</a> ; <a href="http://twitter.com/farof">twitter</a>) under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">CreativeCommon BY-NC-SA</a></p>
+      </div>
     </div>
     
     <div id="collection">
@@ -22,19 +26,7 @@
     </div>
     
     <div id="workspaceZone">
-      <!-- <div id="workspace">
-              <div id="workHtml">
-                <div id="item1" class="work-item">
-                  drag me
-                </div>
-                <div id="item2" class="work-item">
-                  drag me
-                </div>
-              </div>
-              <canvas id="workCanvas" width="600" height="500">
-
-              </canvas>
-            </div> -->
+      
     </div>
     
     <div id="library">
@@ -54,13 +46,6 @@
         </div>
       </div>
       
-      <div id="operator-type-list-box" class="library-category">
-        <p class="library-category-name">OperatorTypes</p>
-        <div id="operator-type-list" class="library-category-list">
-          
-        </div>
-      </div>
-      
       <div id="output-type-list-box" class="library-category">
         <p class="library-category-name">OutputTypes</p>
         <div id="output-type-list" class="library-category-list">
@@ -69,11 +54,8 @@
       </div>
     </div>
     
-    <div id="credits">
-      <p>Work in progress, by Farof (<a href="https://github.com/Farof/tweb">github</a> ; <a href="http://twitter.com/farof">twitter</a>) under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">CreativeCommon BY-NC-SA</a></p>
-    </div>
-    
     <script type="application/x-javascript" src="script/enhancer.js"></script>
+    <script type="application/x-javascript" src="script/uuid.js"></script>
     <script type="application/x-javascript" src="script/Element.js"></script>
     <script type="application/x-javascript" src="script/WorkspaceElement.js"></script>
     <script type="application/x-javascript" src="script/Tweet.js"></script>
@@ -81,12 +63,10 @@
     <script type="application/x-javascript" src="script/TweetInputType.js"></script>
     <script type="application/x-javascript" src="script/TweetOutput.js"></script>
     <script type="application/x-javascript" src="script/TweetOutputType.js"></script>
-    <script type="application/x-javascript" src="script/TweetOperatorType.js"></script>
     <script type="application/x-javascript" src="script/TweetFilter.js"></script>
     <script type="application/x-javascript" src="script/TweetFilterType.js"></script>
     <script type="application/x-javascript" src="script/Process.js"></script>
     <script type="application/x-javascript" src="script/Twitter.js"></script>
     <script type="application/x-javascript" src="script/app.js"></script>
-    <script type="application/x-javascript" src="script/canvas.js"></script>
   </body>
 </html>
