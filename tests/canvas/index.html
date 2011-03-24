@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style type="text/css" media="screen">
+      html, body, div, p, span {
+        margin: 0px;
+        padding: 0px;
+      }
+      
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      
+      body {
+        background-color: ivory;
+        height: 100%;
+        width: 100%;
+      }
+      
+      #content {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 4px 0px slategrey;
+        height: 450px;
+        margin: 3em 20%;
+        width: 806px;
+      }
+      
+      #workspaceZone {
+        border-right: 1px solid lightgrey;
+        display: inline-block;
+        height: 450px;
+        width: 400px;
+      }
+      
+      #workspace {
+        position: absolute;
+        height: 450px;
+        width: 400px;
+      }
+      
+      .item {
+        background-color: tomato;
+        height: 30px;
+        position: absolute;
+        width: 30px;
+      }
+      .item:hover {
+        box-shadow: 0px 0px 3px 0px firebrick;
+        background-color: firebrick;
+      }
+      
+      #canvas {
+        pointer-events: none;
+        position: absolute;
+      }
+      
+      #hud {
+        pointer-events: none;
+        position: absolute;
+      }
+      
+      #saveZone {
+        display: inline-block;
+        height: 450px;
+        width: 400px;
+      }
+      
+      #saveCanvas {
+        
+      }
+      
+      .canvas {
+        
+      }
+    </style>
+  </head>
+  
+  <body>
+    <section id="content">
+      <div id="workspaceZone">
+        <div id="workspace">
+          <span class="item" style="left: 20%; top: 60%;"></span>
+          <span class="item" style="left: 60%; top: 20%;"></span>
+        </div>
+        <canvas id="canvas" class="canvas" height="450" width="400"></canvas>
+        <canvas id="hud" class="canvas" height="450" width="400"></canvas>
+      </div>
+      <div id="saveZone">
+        <canvas id="saveCanvas" class="canvas" height="450" width="400"></canvas>
+      </div>
+    </section>
+  </body>
+  
+  <script type="text/javascript" src="../../script/Element.js"></script>
+  <script type="text/javascript" src="canvas.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    (function (exports) {
+      var
+      workspace = document.getElementById('workspace'), root = workspace,
+      //canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'),
+      //hud = document.getElementById('hud'), hudCtx = hud.getContext('2d'),
+      //saveCanvas = document.getElementById('saveCanvas'), saveCtx = saveCanvas.getContext('2d');
+      
+      canvas = new Canvas(document.getElementById('canvas')),
+      hud = new Canvas(document.getElementById('hud')),
+      saveCanvas = new Canvas(document.getElementById('saveCanvas'));
+      
+      
+      var stopEvent = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      
+      var status = {
+        _down: null,
+        get down() {
+          return this._down;
+        },
+        set down(value) {
+          this._down = value;
+          if (value) {
+            this.mouseDownX = this.down.clientX + document.documentElement.scrollLeft;
+            this.mouseDownY = this.down.clientY + document.documentElement.scrollTop; 
+          }
+        },
+        _move: null,
+        get move() {
+          return this._move;
+        },
+        set move(value) {
+          this._move = value;
+          if (value) {
+            this.mouseMoveX = this.move.clientX + document.documentElement.scrollLeft;
+            this.mouseMoveY = this.move.clientY + document.documentElement.scrollTop;
+          }
+        },
+        _up: null,
+        get up() {
+          return this._up;
+        },
+        set up(value) {
+          this._up = value;
+          if (value) {
+            this.mouseUpX = this.up.clientX + document.documentElement.scrollLeft;
+            this.mouseUpY = this.up.clientY + document.documentElement.scrollTop;
+          }
+        },
+        lines: []
+      };
+      
+      var e2conf = function (e) {        
+        var pos = Element.pos(root), conf = {};
+        
+        if (status.down) {
+          conf.startX = status.mouseDownX - pos.x;
+          conf.startY = status.mouseDownY - pos.y;
+        }
+        
+        if (status.move) {
+          conf.endX = status.mouseMoveX - pos.x;
+          conf.endY = status.mouseMoveY - pos.y;
+        } else if (status.down) {
+          conf.endX = conf.startX;
+          conf.endY = conf.startY;
+        }
+        
+        return conf;
+      };
+      
+      
+      
+      var handleMousedown = function (e) {
+        if (e.target.classList && e.target.classList.contains('item')) {
+          stopEvent(e);
+          status.down = e;
+          status.move = null,
+          status.up = null;
+          root.addEventListener('mouseup', handleMouseup, false);
+
+          status.timer = setTimeout(function () {
+            draw(e2conf(e));
+          }, 200);
+        }
+      };
+      
+      var handleMousemove = function (e) {
+        if (status.down) {
+          clearTimeout(status.timer);
+
+          status.move = e;
+        }
+        draw(e2conf(e));
+      };
+      
+      var handleMouseup = function (e) {
+        if (e.target.classList && e.target.classList.contains('item')) {
+          clearTimeout(status.timer);
+          root.removeEventListener('mouseup', handleMouseup, false);
+          status.up = e;
+
+          if (status.move) {
+            status.lines.push(status.lastConf);
+            status.lastConf = null;
+            canvas.save();
+            saveCanvas.loadBuffer(canvas.buffers[0]).save();
+          }
+        }
+        canvas.load();
+        status.move = null;
+        status.down = null;
+      };
+      
+      var draw = function (conf) {
+        canvas.clear();
+        hud.clear();
+        if (!canvas.load()) {
+          drawLines(conf);
+        }
+        if (status.down) {
+          drawLine(conf);
+        }
+        if (status.move) {
+          drawMouse(conf);
+        }
+      };
+      
+      var drawLine = function (conf) {
+        canvas.line({
+          startX: conf.startX,
+          startY: conf.startY,
+          endX: conf.endX,
+          endY: conf.endY,
+          stroke: { lineWidth: 2, strokeStyle: 'black' }
+        });
+        
+        canvas.circle({
+          x: conf.startX,
+          y: conf.startY,
+          r: 4,
+          start: 0,
+          end: Math.PI * 2,
+          fill: { fillStyle: 'palegreen' },
+          stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+        });
+        
+        canvas.circle({
+          x: conf.endX,
+          y: conf.endY,
+          r: 4,
+          start: 0,
+          end: Math.PI * 2,
+          fill: { fillStyle: 'palegreen' },
+          stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+        });
+        
+        status.lastConf = conf;
+      };
+      
+      var drawLines = function (conf) {
+        var i, ln;
+        for (i = 0, ln = status.lines.length; i < ln; i += 1) {
+          canvas.line(status.lines[i]);
+        }
+      };
+      
+      var drawMouse = function (conf) {
+        hud.circle({
+          x: conf.endX,
+          y: conf.endY,
+          r: 15,
+          start: 0,
+          end: Math.PI * 2,
+          stroke: {
+            strokeStyle: 'dimgrey',
+            lineWidth: 1
+          }
+        });
+      };
+      
+      /*
+      var clearCanvas = function (conf) {
+        // canvas.width = canvas.width;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        hudCtx.clearRect(0, 0, hudCtx.canvas.width, hudCtx.canvas.height);
+      };
+      
+      var draw = function (conf) {
+        clearCanvas(conf);
+        drawBuffer(conf);
+        if (status.down) {
+          drawLine(conf);
+        }
+        if (status.move) {
+          drawMouse(conf);
+        }
+      };
+      
+      var drawMouse = function (conf) {
+        var ctx = hudCtx;
+        ctx.beginPath();
+        ctx.arc(conf.endX, conf.endY, 15, 0, Math.PI * 2, false);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'dimgrey';
+        ctx.stroke();
+        ctx.closePath();
+      };
+      
+      var drawBuffer = function (conf) {
+        var i, ln;
+        if (status.buffer) {
+          ctx.putImageData(status.buffer, 0, 0);
+        } else {
+          for (i = 0, ln = status.lines.length; i < ln; i += 1) {
+            drawLine(status.lines[i]);
+          }
+        }
+      };
+      
+      var drawLine = function (conf) {
+        // line
+        ctx.beginPath();
+        ctx.moveTo(conf.startX, conf.startY);
+        ctx.lineTo(conf.endX, conf.endY);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+        
+        // startDot
+        ctx.beginPath();
+        ctx.arc(conf.startX, conf.startY, 4, 0, Math.PI * 2, false);
+        ctx.fillStyle = 'palegreen';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.closePath();
+        
+        // endDot
+        ctx.beginPath();
+        ctx.arc(conf.endX, conf.endY, 4, 0, Math.PI * 2, false);
+        ctx.fillStyle = 'palegreen';
+        ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.closePath();
+        
+        status.lastConf = conf;
+      };
+      */
+      root.addEventListener('mousedown', handleMousedown, false);
+      root.addEventListener('mousemove', handleMousemove, false);
+      
+    }((function(){ return this || (1,eval)('this') })()))
+  </script>
+</html>

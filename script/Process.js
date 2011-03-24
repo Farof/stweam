@@ -417,17 +417,6 @@
       ctx.closePath();
     },
     
-    _drawCurve: function (startX, startY, endX, endY, options) {
-      var ctx = this.ctx, conf = options.conf;
-      
-      
-      if (!options.over && ctx.isPointInPath(status.mouseX, status.mouseY)) {
-        console.log('over');
-        options.over = true;
-        this._drawCurve.call(this, startX, startY, endX, endY, options);
-      }
-    },
-    
     itemUpdated: function (updateType, item) {
       this.drawCanvas();
       this.generate();
