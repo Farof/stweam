@@ -51,6 +51,34 @@
       return this;
     },
     
+    beforeDraw: function (options) {
+      if (!options.samePath) {
+        this.ctx.beginPath();
+      }
+    },
+    
+    afterDraw: function (options) {
+      if (!options.pathContinues) {
+        this.ctx.closePath();
+        if (this.ctx.isPointInPath(options.mouseX, options.mouseY)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
+    draw: function (queue) {
+      var i, ln, hover = -1, options, ret;
+      for (i = 0, ln = queue.length; i < ln; i += 1) {
+        options = queue[i];
+        ret = this[options.type](options);
+        if (ret) {
+          hover = i;
+        }
+      }
+      return hover;
+    },
+    
     conf: function (options) {
       var key;
       if (typeof options === 'object') {
@@ -78,9 +106,9 @@
     },
     
     line: function (options) {
-      if (!options.samePath) {
-        this.ctx.beginPath();
-      }
+      var hover;
+      
+      this.beforeDraw(options);
       
       this.ctx.moveTo(options.startX, options.startY);
       this.ctx.lineTo(options.endX, options.endY);
@@ -88,10 +116,9 @@
       this.fill(options.fill);
       this.stroke(options.stroke);
       
-      if (!options.pathContinues) {
-        this.ctx.closePath();
-      }
-      return this;
+      hover = this.afterDraw(options);
+      
+      return hover;
     },
     
     path: function (options) {
@@ -99,19 +126,17 @@
     },
     
     circle: function (options) {
-      if (!options.samePath) {
-        this.ctx.beginPath();
-      }
+      var hover;
+      
+      this.beforeDraw(options);
       
       this.ctx.arc(options.x || 0, options.y || 0, options.r || 5, options.start || 0, options.end || (Math.PI * 2), false);
       
       this.fill(options.fill);
       this.stroke(options.stroke);
       
-      if (!options.pathContinues) {
-        this.ctx.closePath();
-      }
-      return this;
+      hover = this.afterDraw(options);
+      return hover;
     }
   };
   

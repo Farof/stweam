@@ -168,10 +168,9 @@
       };
       
       var e2conf = function (e) {        
-        var pos = Element.pos(root), conf = {}, t = e.target, coord;
+        var conf = {}, t = e.target, coord;
         
-        conf.mouseX = status.mouseMoveX - pos.x;
-        conf.mouseY = status.mouseMoveY - pos.y;
+        setMousePos(conf);
         
         if (status.down) {
           coord = item2conf(status.startItem);
@@ -196,23 +195,36 @@
         return conf;
       };
       
+      var setMousePos = function (conf) {
+        var pos = Element.pos(root);
+        conf.mouseX = status.mouseMoveX - pos.x;
+        conf.mouseY = status.mouseMoveY - pos.y;
+        return conf;
+      };
+      
       var item2conf = function (item) {
         var pos = Element.pos(item);
         return {
+          item: item,
           x: parseInt(item.style.left, 10) + item.scrollWidth / 2,
           y: parseInt(item.style.top, 10) + item.scrollHeight / 2
         };
       };
       
       var items2conf = function (start, end) {
+        var conf;
         start = item2conf(start);
         end = item2conf(end);
-        return {
+        conf = {
+          startItem: start.item,
           startX: start.x,
           startY: start.y,
+          endItem: end.item,
           endX: end.x,
           endY: end.y
         };
+        setMousePos(conf);
+        return conf;
       };
       
       
@@ -277,33 +289,53 @@
       };
       
       var drawLine = function (conf) {
-        canvas.line({
-          startX: conf.startX,
-          startY: conf.startY,
-          endX: conf.endX,
-          endY: conf.endY,
-          stroke: { lineWidth: 2, strokeStyle: 'black' }
-        });
+        var hover = canvas.draw([
+          { type: 'line',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            startX: conf.startX,
+            startY: conf.startY,
+            endX: conf.endX,
+            endY: conf.endY,
+            stroke: { lineWidth: 2, strokeStyle: 'black' }
+          },
+          { type: 'circle',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            x: conf.startX,
+            y: conf.startY,
+            r: 4,
+            start: 0,
+            end: Math.PI * 2,
+            fill: { fillStyle: 'palegreen' },
+            stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+          },
+          { type: 'circle',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            x: conf.endX,
+            y: conf.endY,
+            r: 4,
+            start: 0,
+            end: Math.PI * 2,
+            fill: { fillStyle: 'palegreen' },
+            stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+          }
+        ]);
         
-        canvas.circle({
-          x: conf.startX,
-          y: conf.startY,
-          r: 4,
-          start: 0,
-          end: Math.PI * 2,
-          fill: { fillStyle: 'palegreen' },
-          stroke: { strokeStyle: 'black', lineWidth: 1.5 }
-        });
-        
-        canvas.circle({
-          x: conf.endX,
-          y: conf.endY,
-          r: 4,
-          start: 0,
-          end: Math.PI * 2,
-          fill: { fillStyle: 'palegreen' },
-          stroke: { strokeStyle: 'black', lineWidth: 1.5 }
-        });
+        if (hover > -1 && !status.down) {
+          if (hover === 0) {
+            console.log('hover: ', conf.startItem, conf.endItem);
+          }
+
+          if (hover === 1) {
+            console.log('hover start point', conf.startItem);
+          }
+
+          if (hover === 2) {
+            console.log('hover end point: ', conf.endItem);
+          }
+        }
         
         status.lastConf = conf;
       };
