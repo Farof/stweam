@@ -82,8 +82,8 @@
     <section id="content">
       <div id="workspaceZone">
         <div id="workspace">
-          <span class="item" style="left: 20%; top: 60%;"></span>
-          <span class="item" style="left: 60%; top: 20%;"></span>
+          <span class="item" style="left: 100px; top: 300px;"></span>
+          <span class="item" style="left: 300px; top: 100px;"></span>
         </div>
         <canvas id="canvas" class="canvas" height="450" width="400"></canvas>
         <canvas id="hud" class="canvas" height="450" width="400"></canvas>
@@ -152,16 +152,24 @@
       };
       
       var e2conf = function (e) {        
-        var pos = Element.pos(root), conf = {};
+        var pos = Element.pos(root), conf = {}, t = e.target;
+        
+        conf.mouseX = status.mouseMoveX - pos.x;
+        conf.mouseY = status.mouseMoveY - pos.y;
         
         if (status.down) {
-          conf.startX = status.mouseDownX - pos.x;
-          conf.startY = status.mouseDownY - pos.y;
+          conf.startX = parseInt(status.startItem.style.left, 10) + status.startItem.scrollWidth / 2;
+          conf.startY = parseInt(status.startItem.style.top, 10) + status.startItem.scrollHeight / 2;
         }
         
         if (status.move) {
-          conf.endX = status.mouseMoveX - pos.x;
-          conf.endY = status.mouseMoveY - pos.y;
+          if (t.classList && t.classList.contains('item')) {
+            conf.endX = parseInt(t.style.left, 10) + t.scrollWidth / 2;
+            conf.endY = parseInt(t.style.top, 10) + t.scrollHeight / 2;
+          } else {
+            conf.endX = conf.mouseX;
+            conf.endY = conf.mouseY;
+          }
         } else if (status.down) {
           conf.endX = conf.startX;
           conf.endY = conf.startY;
@@ -173,10 +181,12 @@
       
       
       var handleMousedown = function (e) {
-        if (e.target.classList && e.target.classList.contains('item')) {
+        var t = e.target;
+        if (t.classList && t.classList.contains('item') && e.shiftKey) {
           stopEvent(e);
           status.down = e;
-          status.move = null,
+          status.startItem = t;
+          status.move = null;
           status.up = null;
           root.addEventListener('mouseup', handleMouseup, false);
 
@@ -187,19 +197,18 @@
       };
       
       var handleMousemove = function (e) {
-        if (status.down) {
-          clearTimeout(status.timer);
-
-          status.move = e;
-        }
+        clearTimeout(status.timer);
+        status.move = e;
         draw(e2conf(e));
       };
       
       var handleMouseup = function (e) {
-        if (e.target.classList && e.target.classList.contains('item')) {
+        var t = e.target;
+        if (t.classList && t.classList.contains('item') && t !== status.startItem) {
           clearTimeout(status.timer);
           root.removeEventListener('mouseup', handleMouseup, false);
           status.up = e;
+          status.endItem = t;
 
           if (status.move) {
             status.lines.push(status.lastConf);
@@ -268,8 +277,8 @@
       
       var drawMouse = function (conf) {
         hud.circle({
-          x: conf.endX,
-          y: conf.endY,
+          x: conf.mouseX,
+          y: conf.mouseY,
           r: 15,
           start: 0,
           end: Math.PI * 2,
