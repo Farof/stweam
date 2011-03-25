@@ -95,7 +95,7 @@
   </body>
   
   <script type="text/javascript" src="../../script/Element.js"></script>
-  <script type="text/javascript" src="canvas.js"></script>
+  <script type="text/javascript" src="../../script/Canvas.js"></script>
   <script type="text/javascript" charset="utf-8">
     (function (exports) {
       var
@@ -148,24 +148,42 @@
             this.mouseUpY = this.up.clientY + document.documentElement.scrollTop;
           }
         },
-        lines: []
+        
+        lines: [],
+        
+        addLine: function (start, end) {
+          var i, ln, line;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            line = this.lines[i];
+            if ((line.start === start && line.end === end) || (line.start === end && line.end === start)) {
+              return false;
+            }
+          }
+          this.lines.push({
+            start: start,
+            end: end
+          });
+          return this;
+        }
       };
       
       var e2conf = function (e) {        
-        var pos = Element.pos(root), conf = {}, t = e.target;
+        var pos = Element.pos(root), conf = {}, t = e.target, coord;
         
         conf.mouseX = status.mouseMoveX - pos.x;
         conf.mouseY = status.mouseMoveY - pos.y;
         
         if (status.down) {
-          conf.startX = parseInt(status.startItem.style.left, 10) + status.startItem.scrollWidth / 2;
-          conf.startY = parseInt(status.startItem.style.top, 10) + status.startItem.scrollHeight / 2;
+          coord = item2conf(status.startItem);
+          conf.startX = coord.x;
+          conf.startY = coord.y;
         }
         
         if (status.move) {
           if (t.classList && t.classList.contains('item')) {
-            conf.endX = parseInt(t.style.left, 10) + t.scrollWidth / 2;
-            conf.endY = parseInt(t.style.top, 10) + t.scrollHeight / 2;
+            coord = item2conf(t);
+            conf.endX = coord.x;
+            conf.endY = coord.y;
           } else {
             conf.endX = conf.mouseX;
             conf.endY = conf.mouseY;
@@ -176,6 +194,25 @@
         }
         
         return conf;
+      };
+      
+      var item2conf = function (item) {
+        var pos = Element.pos(item);
+        return {
+          x: parseInt(item.style.left, 10) + item.scrollWidth / 2,
+          y: parseInt(item.style.top, 10) + item.scrollHeight / 2
+        };
+      };
+      
+      var items2conf = function (start, end) {
+        start = item2conf(start);
+        end = item2conf(end);
+        return {
+          startX: start.x,
+          startY: start.y,
+          endX: end.x,
+          endY: end.y
+        };
       };
       
       
@@ -211,13 +248,16 @@
           status.endItem = t;
 
           if (status.move) {
-            status.lines.push(status.lastConf);
-            status.lastConf = null;
-            canvas.save();
-            saveCanvas.loadBuffer(canvas.buffers[0]).save();
+            if (status.addLine(status.startItem, status.endItem)) {
+              draw(e2conf(e));
+              saveCanvas.buffer = canvas.buffer;
+            }
+          } else {
+            canvas.load();
           }
+        } else {
+          canvas.load();
         }
-        canvas.load();
         status.move = null;
         status.down = null;
       };
@@ -269,9 +309,10 @@
       };
       
       var drawLines = function (conf) {
-        var i, ln;
+        var i, ln, line;
         for (i = 0, ln = status.lines.length; i < ln; i += 1) {
-          canvas.line(status.lines[i]);
+          line = status.lines[i];
+          drawLine(items2conf(line.start, line.end));
         }
       };
       
