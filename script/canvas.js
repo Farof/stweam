@@ -174,26 +174,19 @@
     },
     
     arrow: function (options) {
-      var
-      dx = options.width / 2,
-      dy = Math.sqrt(Math.pow(options.radius, 2) - Math.pow(options.width / 2, 2)),
-      i = Math.atan2(dx, dy) + Math.PI,
-      dxStart = options.radius * Math.sin(options.angle + i),
-      dyStart = options.radius * Math.cos(options.angle + i),
-      dxEnd = options.radius * Math.sin(options.angle - i),
-      dyEnd = options.radius * Math.cos(options.angle - i);
+      var alpha = Math.atan2(options.width / 2, Math.sqrt(Math.pow(options.radius, 2) - Math.pow(options.width / 2, 2))) + Math.PI;
       return this.path(options, [{
         type: 'line',
-        startX: options.x - dxStart,
-        startY: options.y - dyStart,
+        startX: options.x - options.radius * Math.sin(options.angle + alpha),
+        startY: options.y - options.radius * Math.cos(options.angle + alpha),
         endX: options.x,
         endY: options.y
       }, {
         type: 'line',
         startX: options.x,
         startY: options.y,
-        endX: options.x - dxEnd,
-        endY: options.y - dyEnd
+        endX: options.x - options.radius * Math.sin(options.angle - alpha),
+        endY: options.y - options.radius * Math.cos(options.angle - alpha)
       }]);
     }
   };
