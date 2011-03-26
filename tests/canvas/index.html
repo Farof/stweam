@@ -351,13 +351,17 @@
       
       var drawLine = function (conf) {
         var hover = canvas.draw([
-          { type: 'line',
+          { type: 'bezier',
             mouseX: conf.mouseX,
             mouseY: conf.mouseY,
             startX: conf.startX,
             startY: conf.startY,
             endX: conf.endX,
             endY: conf.endY,
+            startControlX: conf.startX,
+            startControlY: conf.startY,
+            endControlX: conf.endX,
+            endControlY: conf.endY,
             stroke: { lineWidth: 2, strokeStyle: 'black' }
           },
           { type: 'circle',

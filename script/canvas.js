@@ -121,6 +121,24 @@
       return hover;
     },
     
+    bezier: function (options) {
+      var hover;
+      
+      this.beforeDraw(options);
+      
+      this.ctx.moveTo(options.startX, options.startY);
+      this.ctx.bezierCurveTo(options.startControlX, options.startControlY,
+                              options.endControlX, options.endControlY,
+                              options.endX, options.endY);
+      
+      this.fill(options.fill);
+      this.stroke(options.stroke);
+      
+      hover = this.afterDraw(options);
+      
+      return hover;
+    },
+    
     path: function (options) {
       
     },
