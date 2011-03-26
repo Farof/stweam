@@ -19,12 +19,18 @@
         width: 100%;
       }
       
+      #instruction {
+        color: #3E3D40;
+        margin-top: 1em;
+        text-align: center;
+      }
+      
       #content {
         background-color: white;
         border-radius: 10px;
         box-shadow: 0px 0px 4px 0px slategrey;
         height: 450px;
-        margin: 3em 20%;
+        margin: 2em 20%;
         width: 806px;
       }
       
@@ -79,11 +85,13 @@
   </head>
   
   <body>
+    <p id="instruction">Shift + click from a square to another. Drag line extremety to change path.</p>
     <section id="content">
       <div id="workspaceZone">
         <div id="workspace">
           <span class="item" style="left: 100px; top: 300px;"></span>
           <span class="item" style="left: 300px; top: 100px;"></span>
+          <span class="item" style="left: 300px; top: 350px;"></span>
         </div>
         <canvas id="canvas" class="canvas" height="450" width="400"></canvas>
         <canvas id="hud" class="canvas" height="450" width="400"></canvas>
@@ -100,9 +108,6 @@
     (function (exports) {
       var
       workspace = document.getElementById('workspace'), root = workspace,
-      //canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'),
-      //hud = document.getElementById('hud'), hudCtx = hud.getContext('2d'),
-      //saveCanvas = document.getElementById('saveCanvas'), saveCtx = saveCanvas.getContext('2d');
       
       canvas = new Canvas(document.getElementById('canvas')),
       hud = new Canvas(document.getElementById('hud')),
@@ -362,7 +367,7 @@
             startControlY: conf.startY,
             endControlX: conf.endX,
             endControlY: conf.endY,
-            stroke: { lineWidth: 2, strokeStyle: 'black' }
+            stroke: { lineWidth: 2, strokeStyle: 'black', lineCap: 'round' }
           },
           { type: 'circle',
             mouseX: conf.mouseX,
@@ -375,16 +380,16 @@
             fill: { fillStyle: 'palegreen' },
             stroke: { strokeStyle: 'black', lineWidth: 1.5 }
           },
-          { type: 'circle',
+          { type: 'arrow',
             mouseX: conf.mouseX,
             mouseY: conf.mouseY,
             x: conf.endX,
             y: conf.endY,
-            r: 4,
-            start: 0,
-            end: Math.PI * 2,
+            radius: 13,
+            width: 8,
+            angle: Math.atan2(conf.startX - conf.endX, conf.startY - conf.endY),
             fill: { fillStyle: 'palegreen' },
-            stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+            stroke: { strokeStyle: 'black', lineWidth: 1.5, lineCap: 'round' }
           }
         ]);
         
