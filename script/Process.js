@@ -371,17 +371,6 @@
       arrowEndX = endX + (diffIsHeight ? conf.arrow.width.normal : (sourceOnLeft ? -conf.arrow.height.normal : conf.arrow.height.normal)),
       arrowEndY = endY + (!diffIsHeight ? conf.arrow.width.normal : (sourceOnTop ? -conf.arrow.height.normal : conf.arrow.height.normal));
 
-
-      // start dot
-      ctx.beginPath();
-      ctx.arc(startX, startY, conf.dot.radius[overSource ? 'overSource' : 'normal'], 0, 2 * Math.PI, false);
-      ctx.fillStyle = conf.dot.fillColor[overSource ? 'overSource' : 'normal'];
-      ctx.fill();
-      ctx.lineWidth = conf.dot.borderWidth[overSource ? 'overSource' : 'normal'];
-      ctx.strokeStyle = conf.dot.borderColor[overSource ? 'overSource' : 'normal'];
-      ctx.stroke();
-      ctx.closePath();
-
       // line
       ctx.beginPath();
       ctx.moveTo(startX, startY);
@@ -405,6 +394,15 @@
         document.body.style.cursor = 'auto';
       }
       
+      // start dot
+      ctx.beginPath();
+      ctx.arc(startX, startY, conf.dot.radius[overSource ? 'overSource' : 'normal'], 0, 2 * Math.PI, false);
+      ctx.fillStyle = conf.dot.fillColor[overSource ? 'overSource' : 'normal'];
+      ctx.fill();
+      ctx.lineWidth = conf.dot.borderWidth[overSource ? 'overSource' : 'normal'];
+      ctx.strokeStyle = conf.dot.borderColor[overSource ? 'overSource' : 'normal'];
+      ctx.stroke();
+      ctx.closePath();
       
       // end arrow
       ctx.beginPath();
