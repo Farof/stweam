@@ -151,6 +151,26 @@
         
         lines: [],
         
+        getLineForEnd: function (item) {
+          var i, ln;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            if (this.lines[i].end === item) {
+              return this.lines[i];
+            }
+          }
+          return false;
+        },
+        
+        getLineForStart: function (item) {
+          var i, ln;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            if (this.lines[i].start === item) {
+              return this.lines[i];
+            }
+          }
+          return false;
+        },
+        
         addLine: function (start, end) {
           var i, ln, line;
           for (i = 0, ln = this.lines.length; i < ln; i += 1) {
@@ -164,6 +184,16 @@
             end: end
           });
           return this;
+        },
+        
+        removeLine: function (start, end) {
+          var i, ln, line;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            line = this.lines[i];
+            if ((line.start === start && line.end === end) || (line.start === end && line.end === start)) {
+              return this.lines.splice(i, 1);
+            }
+          }
         }
       };
       
@@ -227,11 +257,28 @@
         return conf;
       };
       
-      
+      var moveLine = function (line, dragPoint) {
+        
+      };
       
       var handleMousedown = function (e) {
         var t = e.target;
-        if (t.classList && t.classList.contains('item') && e.shiftKey) {
+        if (status.hover && status.hover.type === 'point' && status.hover.item === t) {
+          stopEvent(e);
+          status.down = e;
+          status.movingLine = status.getLineForEnd(status.hover.item) || status.getLineForStart(status.hover.item);
+          status.removeLine(status.movingLine.start, status.movingLine.end);
+          if (status.movingLine.start === t) {
+            status.startItem = status.movingLine.end;
+            status.move = status.movingLine.start;
+          } else {
+            status.startItem = status.movingLine.start;
+            status.move = status.movingLine.end;
+          }
+          status.up = null;
+          root.addEventListener('mouseup', handleMouseup, false);
+          draw(e2conf(e));
+        } else if ((t.classList && t.classList.contains('item') && e.shiftKey)) {
           stopEvent(e);
           status.down = e;
           status.startItem = t;
@@ -267,6 +314,12 @@
           } else {
             canvas.load();
           }
+        } else if (status.movingLine) {
+          status.addLine(status.movingLine.start, status.movingLine.end);
+          status.startItem = status.movingLine.start;
+          status.move = null;
+          status.movingLine = null;
+          draw(e2conf(e));
         } else {
           canvas.load();
         }
@@ -274,7 +327,15 @@
         status.down = null;
       };
       
+      var handleClick = function (e) {
+        if (status.hover && status.hover.type === 'line') {
+          status.removeLine(status.hover.startItem, status.hover.endItem);
+          draw(e2conf(e));
+        }
+      };
+      
       var draw = function (conf) {
+        status.hover = null;
         canvas.clear();
         hud.clear();
         if (!canvas.load()) {
@@ -325,15 +386,25 @@
         
         if (hover > -1 && !status.down) {
           if (hover === 0) {
-            console.log('hover: ', conf.startItem, conf.endItem);
+            status.hover = {
+              type: 'line',
+              startItem: conf.startItem,
+              endItem: conf.endItem
+            };
           }
 
           if (hover === 1) {
-            console.log('hover start point', conf.startItem);
+            status.hover = {
+              type: 'point',
+              item: conf.startItem
+            };
           }
 
           if (hover === 2) {
-            console.log('hover end point: ', conf.endItem);
+            status.hover = {
+              type: 'point',
+              item: conf.endItem
+            };
           }
         }
         
@@ -436,6 +507,7 @@
       */
       root.addEventListener('mousedown', handleMousedown, false);
       root.addEventListener('mousemove', handleMousemove, false);
+      root.addEventListener('click', handleClick, false);
       
     }((function(){ return this || (1,eval)('this') })()))
   </script>
