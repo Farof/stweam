@@ -139,8 +139,24 @@
       return hover;
     },
     
-    path: function (options) {
+    path: function (options, parts) {
+      var hover, i, ln, part;
       
+      this.beforeDraw(options);
+      
+      for (i = 0, ln = parts.length; i < ln; i += 1) {
+        part = parts[i];
+        part.samePath = true;
+        part.ontinues = true;
+        this[part.type](part);
+      }
+      
+      this.fill(options.fill);
+      this.stroke(options.stroke);
+      
+      hover = this.afterDraw(options);
+      
+      return hover;
     },
     
     circle: function (options) {
@@ -155,6 +171,30 @@
       
       hover = this.afterDraw(options);
       return hover;
+    },
+    
+    arrow: function (options) {
+      var
+      dx = options.width / 2,
+      dy = Math.sqrt(Math.pow(options.radius, 2) - Math.pow(options.width / 2, 2)),
+      i = Math.atan2(dx, dy) + Math.PI,
+      dxStart = options.radius * Math.sin(options.angle + i),
+      dyStart = options.radius * Math.cos(options.angle + i),
+      dxEnd = options.radius * Math.sin(options.angle - i),
+      dyEnd = options.radius * Math.cos(options.angle - i);
+      return this.path(options, [{
+        type: 'line',
+        startX: options.x - dxStart,
+        startY: options.y - dyStart,
+        endX: options.x,
+        endY: options.y
+      }, {
+        type: 'line',
+        startX: options.x,
+        startY: options.y,
+        endX: options.x - dxEnd,
+        endY: options.y - dyEnd
+      }]);
     }
   };
   
