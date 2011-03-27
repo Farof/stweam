@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetList = function (filterForm, contentRoot) {
     this.filterForm = filterForm;
@@ -37,8 +38,8 @@
     
     handleFormSubmit: function (e) {
       var
-      t = e.explicitOriginalTarget,
-      v = t.value;
+        t = e.explicitOriginalTarget,
+        v = t.value;
       if (v === 'add') {
         this.addFilterParam(e);
       } else if (v === 'remove') {
@@ -79,6 +80,10 @@
       return this.filters.map(function (filter) {
         return filter.validate;
       });
+    },
+    
+    set filterFuncs(value) {
+      throw new Error('read only');
     },
     
     applyFilter: function () {

@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.Tweet = function (options) {
-    for (var key in (options || {})) {
+    var key;
+    for (key in (options || {})) {
       this[key] = options[key];
     }
     if (!this.uid) {
@@ -66,7 +68,8 @@
   
   exports.Tweet.items = [];
   exports.Tweet.getById = function (uid) {
-    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+    var i, ln;
+    for (i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].uid === uid) {
         return this.items[i];
       }

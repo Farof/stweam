@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.Canvas = function (node, tracker) {
     this.canvas = node;
@@ -17,15 +18,15 @@
         var pos = Element.pos(this.canvas);
         this.mouseX = e.clientX - pos.x + document.documentElement.scrollLeft;
         this.mouseY = e.clientY - pos.y + document.documentElement.scrollTop;
-      }.bind(this), false)
+      }.bind(this), false);
     },
     
     get buffer() {
       return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     },
     
-    set buffer(buffer) {
-      this.ctx.putImageData(buffer, 0, 0);
+    set buffer(value) {
+      this.ctx.putImageData(value, 0, 0);
     },
     
     save: function (buffer) {
@@ -95,7 +96,7 @@
         for (key in options) {
           this.ctx[key] = options[key];
         }
-      } else  {
+      } else {
         return false;
       }
       return this;

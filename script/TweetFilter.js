@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetFilter = function TweetFilter(options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
     if (!this.uid) {
@@ -11,7 +13,7 @@
       this.position = {
         x: 0,
         y: 0
-      }
+      };
     }
     
     this.param = TweetFilterType.items[this.param];
@@ -37,8 +39,16 @@
       return this.input.tweets.filter(this.validate);
     },
     
+    set tweets(value) {
+      throw new Error('read only');
+    },
+    
     get type() {
       return this.param;
+    },
+    
+    set type(value) {
+      throw new Error('read only');
     },
     
     serialize: function () {
@@ -63,13 +73,13 @@
     
     save: function () {
       var
-      check = this.operator.check,
-      value = this.value,
-      param = this.param.type,
-      getParam;
+        check = this.operator.check,
+        value = this.value,
+        param = this.param.type,
+        getParam;
       if (this.param.metadata) {
         getParam = function (tweet) {
-          return tweet.metadata[param]
+          return tweet.metadata[param];
         };
       } else {
         getParam = function (tweet) {
@@ -86,7 +96,7 @@
     },
     
     toWorkspaceElement: function () {
-      var el, title, content;
+      var el;
       if (!this.workspaceElement) {
         this.workspaceElement = el = new WorkspaceElement(this);
       }
@@ -148,7 +158,8 @@
   
   exports.TweetFilter.items = [];
   exports.TweetFilter.getById = function (uid) {
-    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+    var i, ln;
+    for (i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].uid === uid) {
         return this.items[i];
       }

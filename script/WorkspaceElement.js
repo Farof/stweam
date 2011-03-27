@@ -1,7 +1,8 @@
 (function (exports) {
+  "use strict";
   
   exports.WorkspaceElement = function WorkspaceElement(source) {
-    var el, title, icon, content, child, saveTitle;
+    var el, title, icon, content, saveTitle;
     
     el = new Element('div', {
       'class': 'workspace-item item-type-' + source.itemType + ' type-' + source.type.type,

@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetFilterType = function (options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
   };
@@ -32,7 +34,7 @@
     },
     
     getOperatorsElement: function (filter) {
-      var el, child, select, key, operator, option, config;
+      var el, child, select, key, operator, option;
       if (!filter.operatorsElement) {
         filter.operatorsElement = el = new Element('p', {
           'class': 'item-content-zone operator-choice-zone'
@@ -104,7 +106,7 @@
         },
         
         toConfigElement: function (filter) {
-          var config = filter.configElements[this.type], child;
+          var config = filter.configElements[this.type], child, child2;
           if (!config) {
             config = filter.configElements[this.type] = new Element('div', {
               'class': 'item-content-zone item-config'

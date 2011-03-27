@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetOperatorType = function (options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
   };

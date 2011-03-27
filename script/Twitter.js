@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.Twitter = {
     appName: 'tweb',
@@ -7,14 +8,26 @@
       return uuid();
     },
     
+    set uid(value) {
+      throw new Error('read only');
+    },
+    
     get tweets() {
       return Tweet.items;
+    },
+    
+    set tweets(value) {
+      throw new Error('read only');
     },
     
     get tweetsId() {
       return this.tweets.map(function (tweet) {
         return tweet.id;
       });
+    },
+    
+    set tweetsId(value) {
+      throw new Error('read only');
     },
     
     includeTweets: function (tweets) {
@@ -35,7 +48,7 @@
         return null;
       }
       
-      constructor = exports[options.constructorName]
+      constructor = exports[options.constructorName];
       if (constructor) {
         if (options.uid) {
           item = constructor.getById(options.uid);
@@ -88,7 +101,11 @@
     storage: {
       get db() {
         return sessionStorage;
-      } ,
+      },
+      
+      set db(value) {
+        throw new Error('read only');
+      },
       
       version: '1.0',
       

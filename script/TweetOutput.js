@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetOutput = function TweetOutput(options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
     if (!this.uid) {
@@ -11,7 +13,7 @@
       this.position = {
         x: 0,
         y: 0
-      }
+      };
     }
     this.type = TweetOutputType.items[this.type];
     if (typeof this.process === 'string') {
@@ -32,6 +34,10 @@
       return this.input.tweets;
     },
     
+    set tweets(value) {
+      throw new Error('read only');
+    },
+    
     serialize: function () {
       return this.type.serialize.call(this, {
         uid: this.uid,
@@ -49,7 +55,7 @@
     },
     
     toWorkspaceElement: function () {
-      var el, title, content;
+      var el;
       if (!this.workspaceElement) {
         this.workspaceElement = el = new WorkspaceElement(this);
       }
@@ -87,7 +93,8 @@
   
   exports.TweetOutput.items = [];
   exports.TweetOutput.getById = function (uid) {
-    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+    var i, ln;
+    for (i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].uid === uid) {
         return this.items[i];
       }

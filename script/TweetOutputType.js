@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.TweetOutputType = function (options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
   };
@@ -54,10 +56,10 @@
     
     generate: function () {
       var
-      element = new Element('div', {
-        'class': 'tweet-list'
-      }),
-      root = document.querySelector(this.node);
+        element = new Element('div', {
+          'class': 'tweet-list'
+        }),
+        root = document.querySelector(this.node);
       this.tweets.forEach(function (tweet) {
         element.appendChild(tweet.toDebugElement());
       });

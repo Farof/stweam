@@ -1,7 +1,9 @@
 (function (exports) {
+  "use strict";
   
   exports.Process = function Process(options) {
-    for (var key in options) {
+    var key;
+    for (key in options) {
       this[key] = options[key];
     }
     if (!this.uid) {
@@ -29,9 +31,9 @@
         if (typeof item.input === 'string') {
           item.input = this.items.filter(function (inputItem) {
             return inputItem.uid === item.input;
-          })[0] || input;
+          })[0] || item.input;
         }
-      }.bind(this))
+      }.bind(this));
     }
   };
   
@@ -86,10 +88,10 @@
     unloadFromWorkspace: function () {
       throw new Error('to implement');
       
-      this.loaded = false;
-      this.constructor.loadedItem = null;
+      // this.loaded = false;
+      // this.constructor.loadedItem = null;
       
-      return this;
+      // return this;
     },
     
     loadInWorkspace: function () {
@@ -132,12 +134,12 @@
             
             mousemove: function (e) {
               var
-              target = e.target,
-              process = this.process,
-              item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                target = e.target,
+                process = this.process,
+                item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
               
               if ((!process.canvasStatus.overItem && item) ||
-                  (process.canvasStatus.overItem && item && process.canvasStatus.overItem != item)) {
+                  (process.canvasStatus.overItem && item && process.canvasStatus.overItem !== item)) {
                 process.canvasStatus.overItem = item;
               } else if (process.canvasStatus.overItem && !item) {
                 process.canvasStatus.overItem = null;
@@ -213,15 +215,15 @@
     
     doDrag: function (event) {
       var
-      workspace = document.getElementById('workspace'),
-      process = workspace.process,
-      draggedItem = process._draggedItem,
-      style = draggedItem.style,
-      left = (process._dragOffsetX + (event.clientX - process._dragOriX)),
-      top = (process._dragOffsetY + (event.clientY - process._dragOriY)),
-      canvas = process.canvasEl,
-      maxWidth = canvas.width - draggedItem.scrollWidth,
-      maxHeight = canvas.height - draggedItem.scrollHeight;
+        workspace = document.getElementById('workspace'),
+        process = workspace.process,
+        draggedItem = process._draggedItem,
+        style = draggedItem.style,
+        left = (process._dragOffsetX + (event.clientX - process._dragOriX)),
+        top = (process._dragOffsetY + (event.clientY - process._dragOriY)),
+        canvas = process.canvasEl,
+        maxWidth = canvas.width - draggedItem.scrollWidth,
+        maxHeight = canvas.height - draggedItem.scrollHeight;
       
       if (left < 0) {
         left = 0;
@@ -246,8 +248,7 @@
     },
     
     stopDrag: function (event) {
-      var
-      process = document.getElementById('workspace').process;
+      var process = document.getElementById('workspace').process;
       
       document.removeEventListener('mousemove', process.doDrag, false);
       document.removeEventListener('mouseup', process.stopDrag, true);
@@ -273,11 +274,11 @@
           radius: { normal: 3, overSource: 5 },
           borderWidth: { normal: 1, overSource: 2 },
           fillColor: { normal: '#3E3D40', overSource: '#FF0000' },
-          borderColor: { normal: '#3E3D40', get overSource() { return this.normal; } }
+          borderColor: { normal: '#3E3D40', overSource: '#3E3D40' }
         },
         line: {
           width: { normal: 2, over: 3 },
-          color: { normal: '#3E3D40', get over() { return this.normal; } },
+          color: { normal: '#3E3D40', over: '#3E3D40' },
           shadowColor: { normal: '#3E3D40', over: '#FF0000' },
           shadowBlur: { normal: 0, over: 2 }
         },
@@ -307,11 +308,12 @@
     
     drawMouse: function () {
       var
-      conf = this.canvasConf.mouse,
-      confType = 'normal';
+        conf = this.canvasConf.mouse,
+        confType = 'normal';
 
       this.canvas.circle({
-        x: this.canvas.mouseX, y: this.canvas.mouseY,
+        x: this.canvas.mouseX, 
+        y: this.canvas.mouseY,
         r: conf.circle.radius[confType],
         stroke: {
           lineWidth: conf.circle.borderWidth[confType],
@@ -330,38 +332,41 @@
     
     drawPathBetween: function (source, dest, e) {
       var
-      ctx = this.canvas.ctx,
       
       // path conf
-      status = this.canvasStatus,
-      conf = this.canvasConf.itemPath,
-      overSource = status.overItem === source,
-      overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
+        status = this.canvasStatus,
+        conf = this.canvasConf.itemPath,
+        overSource = status.overItem === source,
+        overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
       
       // coordinates
-      startX = source.getAttachXFor(dest),
-      startY = source.getAttachYFor(dest),
-      endX = dest.getAttachXFor(source),
-      endY = dest.getAttachYFor(source),
-      startControlX = source.getAttachXControlFor(dest, startX),
-      startControlY = source.getAttachYControlFor(dest, startY),
-      endControlX = dest.getAttachXControlFor(source, endX),
-      endControlY = dest.getAttachYControlFor(source, endY);
+        startX = source.getAttachXFor(dest),
+        startY = source.getAttachYFor(dest),
+        endX = dest.getAttachXFor(source),
+        endY = dest.getAttachYFor(source),
+        startControlX = source.getAttachXControlFor(dest, startX),
+        startControlY = source.getAttachYControlFor(dest, startY),
+        endControlX = dest.getAttachXControlFor(source, endX),
+        endControlY = dest.getAttachYControlFor(source, endY);
 
       // line
       if (this.canvas.bezier({
-        startX: startX, startY: startY,
-        endX: endX, endY: endY,
-        startControlX: startControlX, startControlY: startControlY,
-        endControlX: endControlX, endControlY: endControlY,
-        stroke: {
-          shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
-          shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
-          lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
-          strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
-          lineCap: 'round'
-        }
-      })) {
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY,
+          startControlX: startControlX,
+          startControlY: startControlY,
+          endControlX: endControlX,
+          endControlY: endControlY,
+          stroke: {
+            shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
+            shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
+            lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
+            strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
+            lineCap: 'round'
+          }
+        })) {
         status.overPath.source = source;
         status.overPath.dest = dest;
         document.body.style.cursor = 'pointer';
@@ -374,29 +379,32 @@
       
       // start dot
       if (this.canvas.circle({
-        x: startX, y: startY, r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
-        fill: { 
-          fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
-        },
-        stroke: {
-          lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
-          strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
-        }
-      })) {
+          x: startX,
+          y: startY,
+          r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
+          fill: { 
+            fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
+          },
+          stroke: {
+            lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
+            strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
+          }
+        })) {
         // do something if over start dot
       }
       
       // end arrow
       if (this.canvas.arrow({
-        x: endX, y: endY,
-        width: conf.arrow.width.normal,
-        radius: conf.arrow.radius.normal,
-        angle: Math.atan2(endControlX - endX, endControlY - endY),
-        stroke: {
-          strokeStyle: conf.arrow.color.normal,
-          lineWidth: conf.arrow.lineWidth.normal
-        }
-      })) {
+          x: endX,
+          y: endY,
+          width: conf.arrow.width.normal,
+          radius: conf.arrow.radius.normal,
+          angle: Math.atan2(endControlX - endX, endControlY - endY),
+          stroke: {
+            strokeStyle: conf.arrow.color.normal,
+            lineWidth: conf.arrow.lineWidth.normal
+          }
+        })) {
         // do something if over arrow
       }
     },
@@ -410,7 +418,8 @@
   
   exports.Process.items = [];
   exports.Process.getById = function (uid) {
-    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+    var i, ln;
+    for (i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].uid === uid) {
         return this.items[i];
       }
@@ -418,7 +427,8 @@
     return null;
   };
   exports.Process.getByItem = function (item) {
-    for (var i = 0, ln = this.items.length; i < ln; i += 1) {
+    var i, ln;
+    for (i = 0, ln = this.items.length; i < ln; i += 1) {
       if (this.items[i].contains(item)) {
         return this.items[i];
       }
@@ -426,7 +436,7 @@
     return null;
   };
   exports.Process.add = function (options) {
-    var item = new this(options);
+    var item = new exports.Process(options);
     this.items.push(item);
     document.getElementById('processes').appendChild(item.toCollectionElement());
     return item;
