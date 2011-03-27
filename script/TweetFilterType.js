@@ -1,86 +1,73 @@
 (function (exports) {
   "use strict";
   
-  exports.TweetFilterType = function (options) {
-    var key;
-    for (key in options) {
-      this[key] = options[key];
-    }
-  };
-  
-  exports.TweetFilterType.prototype = {
-    constructor: exports.TweetFilterType,
-    
-    serialize: function (serializable) {
-      return serializable || {};
-    },
-    
-    toLibraryElement: function () {
-      var el;
-      if (!this.libraryElement) {
-        el = new Element('p', {
-          'class': 'library-item filter-type',
-          text: this.label,
-          type: this,
-          events: {
-            click: function (e) {
-              console.log(this.type);
+  exports.ITweetFilterType = Trait.compose(
+    Trait({
+      serialize: function (out) {
+        return out || {};
+      },
+      
+      toLibraryElement: function () {
+        var el;
+        if (!this.libraryElement) {
+          el = new Element('p', {
+            'class': 'library-item filter-type',
+            text: this.label,
+            type: this,
+            events: {
+              click: function (e) {
+                console.log(this.type);
+              }
             }
-          }
-        });
-        this.libraryElement = el;
-      }
-      return this.libraryElement;
-    },
-    
-    getOperatorsElement: function (filter) {
-      var el, child, select, key, operator, option;
-      if (!filter.operatorsElement) {
-        filter.operatorsElement = el = new Element('p', {
-          'class': 'item-content-zone operator-choice-zone'
-        });
-        
-        child = new Element('span', {
-          'class': 'item-content-label operator-choice-label',
-          text: 'operator: '
-        });
-        el.appendChild(child);
-        
-        select = new Element('select', {
-          'class': 'item-content operator-select',
-          events: {
-            change: function () {
-              filter.updated('operator', this.value);
-            }
-          }
-        });
-        
-        for (key in this.operators) {
-          operator = this.operators[key];
-          option = new Element('option', {
-            'class': 'operator-option',
-            text: operator.label,
-            value: operator.type,
-            title: operator.description
           });
-          select.appendChild(option);
+          this.libraryElement = el;
         }
-        if (filter.operator.type) {
-          select.value = filter.operator.type;
+        return this.libraryElement;
+      },
+
+      getOperatorsElement: function (filter) {
+        var el, child, select, key, operator, option;
+        if (!filter.operatorsElement) {
+          filter.operatorsElement = el = new Element('p', {
+            'class': 'item-content-zone operator-choice-zone'
+          });
+
+          child = new Element('span', {
+            'class': 'item-content-label operator-choice-label',
+            text: 'operator: '
+          });
+          el.appendChild(child);
+
+          select = new Element('select', {
+            'class': 'item-content operator-select',
+            events: {
+              change: function () {
+                filter.updated('operator', this.value);
+              }
+            }
+          });
+
+          for (key in this.operators) {
+            operator = this.operators[key];
+            option = new Element('option', {
+              'class': 'operator-option',
+              text: operator.label,
+              value: operator.type,
+              title: operator.description
+            });
+            select.appendChild(option);
+          }
+          if (filter.operator.type) {
+            select.value = filter.operator.type;
+          }
+          el.appendChild(select);
         }
-        el.appendChild(select);
+        return el;
       }
-      return el;
-    }
-  };
+    })
+  );
   
-  exports.TweetFilterType.items = {};
-  exports.TweetFilterType.add = function (options) {
-    var item = new this(options);
-    this.items[options.type] = item;
-    document.getElementById('filter-type-list').appendChild(item.toLibraryElement());
-    return item;
-  };
+  exports.TweetFilterType = IMap.create(ITweetFilterType);
   
   
   exports.TweetFilterType.add({

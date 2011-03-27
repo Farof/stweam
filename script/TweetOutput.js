@@ -1,117 +1,84 @@
 (function (exports) {
   "use strict";
-  
-  exports.TweetOutput = function TweetOutput(options) {
-    var key;
-    for (key in options) {
-      this[key] = options[key];
-    }
-    if (!this.uid) {
-      this.uid = Twitter.uid;
-    }
-    if (!this.position) {
-      this.position = {
-        x: 0,
-        y: 0
-      };
-    }
-    this.type = TweetOutputType.items[this.type];
-    if (typeof this.process === 'string') {
-      this.process = Process.getById(this.process);
-    } else if (!this.process) {
-      this.process = Process.getByItem(this);
-    }
-  };
-  
-  exports.TweetOutput.prototype = {
-    constructor: exports.TweetOutput,
-    
-    name: 'unamed output',
-    
-    itemType: 'output',
-    
-    get tweets() {
-      return this.input.tweets;
-    },
-    
-    set tweets(value) {
-      throw new Error('read only');
-    },
-    
-    serialize: function () {
-      return this.type.serialize.call(this, {
-        uid: this.uid,
-        constructorName: this.constructor.name,
-        name: this.name,
-        input: (typeof this.input !== 'string') ? this.input.uid : this.input,
-        type: this.type.type,
-        position: this.position
-      });
-    },
-    
-    generate: function () {
-      this.type.generate.call(this);
-      return this;
-    },
-    
-    toWorkspaceElement: function () {
-      var el;
-      if (!this.workspaceElement) {
-        this.workspaceElement = el = new WorkspaceElement(this);
-      }
-      return this.workspaceElement;
-    },
-    
-    getContentChildren: function () {
-      var children, child;
-      if (!this.contentChildren) {
-        this.contentChildren = children = [];
+
+  exports.ITweetOutput = Trait.compose(
+    Trait.resolve({ initialize: 'workspaceItemInit', serialize: 'workspaceItemSerialize' }, IWorkspaceItem),
+    IHasOutput,
+    Trait({
+      initialize: function TweetOutput(options) {
+        this.workspaceItemInit(options);
         
-        child = new Element('p', {
-          'class': 'item-content-zone item-type',
-          title: this.type.description || ''
-        });
-        child.appendChild(new Element('span', {
-          'class': 'item-content-label item-type-label',
-          text: 'output: '
-        }));
-        child.appendChild(new Element('span', {
-          'class': 'item-content item-type-name',
-          text: this.type.label
-        }));
-        children.push(child);
+        this.type = TweetOutputType.items[this.type];
+        if (typeof this.process === 'string') {
+          this.process = Process.getById(this.process);
+        } else if (!this.process) {
+          this.process = Process.getByItem(this);
+        }
+        
+        return this;
+      },
+      
+      name: 'unamed output',
+
+      itemType: 'output',
+
+      get tweets() {
+        return this.input.tweets;
+      },
+
+      set tweets(value) {
+        throw new Error('read only');
+      },
+      
+      serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid', 'type=type.type', 'position'],
+
+      serialize: function () {
+        return this.type.serialize.call(this, this.workspaceItemSerialize());
+      },
+
+      generate: function () {
+        this.type.generate.call(this);
+        return this;
+      },
+
+      toWorkspaceElement: function () {
+        var el;
+        if (!this.workspaceElement) {
+          this.workspaceElement = el = new WorkspaceElement(this);
+        }
+        return this.workspaceElement;
+      },
+
+      getContentChildren: function () {
+        var children, child;
+        if (!this.contentChildren) {
+          this.contentChildren = children = [];
+
+          child = new Element('p', {
+            'class': 'item-content-zone item-type',
+            title: this.type.description || ''
+          });
+          child.appendChild(new Element('span', {
+            'class': 'item-content-label item-type-label',
+            text: 'output: '
+          }));
+          child.appendChild(new Element('span', {
+            'class': 'item-content item-type-name',
+            text: this.type.label
+          }));
+          children.push(child);
+        }
+        return this.contentChildren;
+      },
+
+      updated: function (type) {
+        if (this.process) {
+          this.process.itemUpdated(type, this);
+        }
       }
-      return this.contentChildren;
-    },
-    
-    updated: function (type) {
-      if (this.process) {
-        this.process.itemUpdated(type, this);
-      }
-    }
-  };
+    })
+  );
   
-  exports.TweetOutput.items = [];
-  exports.TweetOutput.getById = function (uid) {
-    var i, ln;
-    for (i = 0, ln = this.items.length; i < ln; i += 1) {
-      if (this.items[i].uid === uid) {
-        return this.items[i];
-      }
-    }
-    return null;
-  };
-  exports.TweetOutput.add = function (options) {
-    var item = new this(options);
-    this.items.push(item);
-    return item;
-  };
-  exports.TweetOutput.from = function (options) {
-    var item = (options && options.uid) ? this.getById(options.uid) : null;
-    if (!item) {
-      item = this.add.apply(this, arguments);
-    }
-    return item;
-  };
+  exports.TweetOutput = ICollection.create(ITweetOutput);
   
 }(window));

@@ -74,7 +74,6 @@
         this.node.querySelector('.workspace-item-title-zone').save();
       }
       this.node.source.process.dragEvent = null;
-      Twitter.save(this.node.source.process);
     }
   };
 }(window));

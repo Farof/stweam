@@ -144,8 +144,8 @@
       },
       
       saveItem: function (item) {
-        if (item.constructor && item.constructor.name && item.serialize && item.uid) {
-          this.saveKey(item.constructor.name + ':' + item.uid, JSON.stringify(item.serialize()));
+        if (item.constructor && item.constructorName && item.serialize && item.uid) {
+          this.saveKey(item.constructorName + ':' + item.uid, JSON.stringify(item.serialize()));
         }
       },
       
