@@ -143,7 +143,7 @@
     
     getAttachXControlFor: { enumerable: true,
       value: function (node, startX) {
-        return startX + (this.distIsHeight(node) ? 0 : (this.leftFrom(node) ? 50 : -50));
+        return startX + (this.distIsHeight(node) ? (this.getDiffX(node) * 0.1 * (this.leftFrom(node) ? 1 : -1)) : (this.leftFrom(node) ? 50 : -50));
       }
     },
     
@@ -155,7 +155,7 @@
     
     getAttachYControlFor: { enumerable: true,
       value: function (node, startY) {
-        return startY + (!this.distIsHeight(node) ? 0 : (this.above(node) ? 50 : -50));
+        return startY + (!this.distIsHeight(node) ? (this.getDiffY(node) * 0.1 * (this.above(node) ? 1 : -1)) : (this.above(node) ? 50 : -50));
       }
     }
   });
