@@ -179,7 +179,17 @@
           return null;
         }
       }
+    },
+    
+    help: function () {
+      document.getElementById('help').classList.toggle('hidden');
     }
   };
+  
+  document.addEventListener('keyup', function (e) {
+    if (String.fromCharCode(e.keyCode).toLowerCase() === 'h') {
+      exports.Twitter.help();
+    }
+  }, false);
   
 }(window));

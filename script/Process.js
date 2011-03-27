@@ -110,29 +110,62 @@
       return this;
     },
     
+    canvasStatus: {
+      overItem: null,
+      overPath: {}
+    },
+    
     toWorkspaceElement: function () {
       var el, htmlEl, canvasEl, i, ln;
       if (!this.workspaceZone) {
         this.workspaceZone = el = new Element('div', {
           id: 'workspace',
-          process: this
+          process: this,
+          events: {
+            mousedown: function (e) {
+              this.process.handleWorkspaceMousedown.call(htmlEl, e);
+            },
+            
+            mouseover: function (e) {
+              var target = e.target;
+            },
+            
+            mousemove: function (e) {
+              var
+              target = e.target,
+              process = this.process,
+              item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+              
+              if ((!process.canvasStatus.overItem && item) ||
+                  (process.canvasStatus.overItem && item && process.canvasStatus.overItem != item)) {
+                process.canvasStatus.overItem = item;
+              } else if (process.canvasStatus.overItem && !item) {
+                process.canvasStatus.overItem = null;
+              }
+              
+              process.drawCanvas(e);
+            },
+            
+            click: function (e) {
+              var pos = Element.pos(canvasEl);
+              console.log('( ' + (e.clientX - pos.x) + ' ; ' + (e.clientY - pos.y) + ' )', e);
+            }
+          }
         });
         this.workspace = htmlEl = new Element('div', {
           id: 'workHtml',
-          process: this,
-          events: {
-            mousedown: this.handleWorkspaceMousedown
-          }
+          process: this
         });
         el.appendChild(htmlEl);
-        this.canvas = canvasEl = new Element('canvas', {
+        
+        this.canvasEl = canvasEl = new Element('canvas', {
           id: 'workCanvas',
           height: '500',
           width: '600',
           process: this
         });
         el.appendChild(canvasEl);
-        this.ctx = canvasEl.getContext('2d');
+        this.canvas = new Canvas(canvasEl, el);
         
         this.items.forEach(function (item) {
           this.addToWorkspace(item);
@@ -186,7 +219,7 @@
       style = draggedItem.style,
       left = (process._dragOffsetX + (event.clientX - process._dragOriX)),
       top = (process._dragOffsetY + (event.clientY - process._dragOriY)),
-      canvas = process.canvas,
+      canvas = process.canvasEl,
       maxWidth = canvas.width - draggedItem.scrollWidth,
       maxHeight = canvas.height - draggedItem.scrollHeight;
       
@@ -227,87 +260,145 @@
       Twitter.save(process);
     },
     
-    clearCanvas: function () {
-      this.canvas.width = this.canvas.width;
+    canvasConf: {
+      mouse: {
+        circle: {
+          radius: { normal: 5 },
+          borderWidth: { normal: 1 },
+          borderColor: { normal: '#3E3D40' }
+        }
+      },
+      itemPath: {
+        dot: {
+          radius: { normal: 3, overSource: 5 },
+          borderWidth: { normal: 1, overSource: 2 },
+          fillColor: { normal: '#3E3D40', overSource: '#FF0000' },
+          borderColor: { normal: '#3E3D40', get overSource() { return this.normal; } }
+        },
+        line: {
+          width: { normal: 2, over: 3 },
+          color: { normal: '#3E3D40', get over() { return this.normal; } },
+          shadowColor: { normal: '#3E3D40', over: '#FF0000' },
+          shadowBlur: { normal: 0, over: 2 }
+        },
+        arrow: {
+          width: { normal: 10 },
+          radius: { normal: 12 },
+          lineWidth: { normal: 2 },
+          color: { normal: '#3E3D40' }
+        }
+      }
     },
     
     drawCanvas: function () {
-      this.clearCanvas();
+      this.canvas.clear();
       this.drawPaths();
+      this.drawMouse();
+      if (this.canvasStatus.redraw === true) {
+        this.canvasStatus.redraw = false;
+        this.drawCanvas();
+        this.canvasStatus.redraw = null;
+      }
     },
     
-    drawPaths: function () {
+    setRedraw: function () {
+      this.canvasStatus.redraw = (this.canvasStatus.redraw !== false) ? true : false;
+    },
+    
+    drawMouse: function () {
+      var
+      conf = this.canvasConf.mouse,
+      confType = 'normal';
+
+      this.canvas.circle({
+        x: this.canvas.mouseX, y: this.canvas.mouseY,
+        r: conf.circle.radius[confType],
+        stroke: {
+          lineWidth: conf.circle.borderWidth[confType],
+          strokeStyle: conf.circle.borderColor[confType]
+        }
+      });
+    },
+    
+    drawPaths: function (e) {
       this.items.forEach(function (item) {
         if (item.input) {
-          this.drawPathBetween(item.input.workspaceElement, item.workspaceElement);
+          this.drawPathBetween(item.input.workspaceElement, item.workspaceElement, e);
         }
       }.bind(this));
     },
     
-    drawPathBetween: function (source, dest) {
+    drawPathBetween: function (source, dest, e) {
       var
-      ctx = this.ctx,
+      ctx = this.canvas.ctx,
       
-      dotRadius = 3,
-      dotBorderWidth = 1,
-      lineWidth = 2,
-      arrowWidth = 5,
-      arrowHeight = 7,
+      // path conf
+      status = this.canvasStatus,
+      conf = this.canvasConf.itemPath,
+      overSource = status.overItem === source,
+      overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
       
-      sourceCenterX = source.offsetLeft + (source.scrollWidth / 2),
-      sourceCenterY = source.offsetTop + (source.scrollHeight / 2),
-      destCenterX = dest.offsetLeft + (dest.scrollWidth / 2),
-      destCenterY = dest.offsetTop + (dest.scrollHeight / 2),
-      sourceOnLeft = sourceCenterX < destCenterX,
-      sourceOnTop = sourceCenterY < destCenterY,
-      diffX = Math.abs(sourceCenterX - destCenterX),
-      diffY = Math.abs(sourceCenterY - destCenterY),
-      diffIsHeight = diffY > diffX,
-
-
-      startX = source.offsetLeft + (diffIsHeight ? (source.scrollWidth / 2) : (sourceOnLeft ? source.scrollWidth : 0)),
-      startY = source.offsetTop + (!diffIsHeight ? (source.scrollHeight / 2) : (sourceOnTop ? source.scrollHeight : 0)),
-      startControlX = startX + (diffIsHeight ? 0 : (sourceOnLeft ? 50 : -50)),
-      startControlY = startY + (!diffIsHeight ? 0 : (sourceOnTop ? 50 : -50))
-      endX = dest.offsetLeft + (diffIsHeight ? (dest.scrollWidth / 2) : (!sourceOnLeft ? dest.scrollWidth : 0)),
-      endY = dest.offsetTop + (!diffIsHeight ? (dest.scrollHeight / 2) : (!sourceOnTop ? dest.scrollHeight : 0)),
-      endControlX = endX + (diffIsHeight ? 0 : (!sourceOnLeft ? 50 : -50)),
-      endControlY = endY + (!diffIsHeight ? 0 : (!sourceOnTop ? 50 : -50)),
-      arrowStartX = endX + (diffIsHeight ? -arrowWidth : (sourceOnLeft ? -arrowHeight : arrowHeight)),
-      arrowStartY = endY + (!diffIsHeight ? -arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight)),
-      arrowEndX = endX + (diffIsHeight ? arrowWidth : (sourceOnLeft ? -arrowHeight : arrowHeight)),
-      arrowEndY = endY + (!diffIsHeight ? arrowWidth : (sourceOnTop ? -arrowHeight : arrowHeight));
-
-      console.log('diffs: ', diffX, diffY, diffIsHeight);
-
-      // start dot
-      ctx.beginPath();
-      ctx.arc(startX, startY, dotRadius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = '#3E3D40';
-      ctx.fill();
-      ctx.lineWidth = dotBorderWidth;
-      ctx.strokeStyle = '#3E3D40';
-      ctx.stroke();
-      ctx.closePath();
+      // coordinates
+      startX = source.getAttachXFor(dest),
+      startY = source.getAttachYFor(dest),
+      endX = dest.getAttachXFor(source),
+      endY = dest.getAttachYFor(source),
+      startControlX = source.getAttachXControlFor(dest, startX),
+      startControlY = source.getAttachYControlFor(dest, startY),
+      endControlX = dest.getAttachXControlFor(source, endX),
+      endControlY = dest.getAttachYControlFor(source, endY);
 
       // line
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.bezierCurveTo(startControlX, startControlY, endControlX, endControlY, endX, endY);
-      ctx.lineWidth = lineWidth;
-      ctx.strokeStyle = '#3E3D40';
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      ctx.closePath();
+      if (this.canvas.bezier({
+        startX: startX, startY: startY,
+        endX: endX, endY: endY,
+        startControlX: startControlX, startControlY: startControlY,
+        endControlX: endControlX, endControlY: endControlY,
+        stroke: {
+          shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
+          shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
+          lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
+          strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
+          lineCap: 'round'
+        }
+      })) {
+        status.overPath.source = source;
+        status.overPath.dest = dest;
+        document.body.style.cursor = 'pointer';
+        this.setRedraw();
+      } else if (overPath) {
+        status.overPath.source = null;
+        status.overPath.dest = null;
+        document.body.style.cursor = 'auto'; 
+      }
+      
+      // start dot
+      if (this.canvas.circle({
+        x: startX, y: startY, r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
+        fill: { 
+          fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
+        },
+        stroke: {
+          lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
+          strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
+        }
+      })) {
+        // do something if over start dot
+      }
       
       // end arrow
-      ctx.beginPath();
-      ctx.moveTo(arrowStartX, arrowStartY);
-      ctx.lineTo(endX, endY);
-      ctx.moveTo(endX, endY);
-      ctx.lineTo(arrowEndX, arrowEndY);
-      ctx.stroke();
-      ctx.closePath();
+      if (this.canvas.arrow({
+        x: endX, y: endY,
+        width: conf.arrow.width.normal,
+        radius: conf.arrow.radius.normal,
+        angle: Math.atan2(endControlX - endX, endControlY - endY),
+        stroke: {
+          strokeStyle: conf.arrow.color.normal,
+          lineWidth: conf.arrow.lineWidth.normal
+        }
+      })) {
+        // do something if over arrow
+      }
     },
     
     itemUpdated: function (updateType, item) {

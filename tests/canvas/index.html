@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style type="text/css" media="screen">
+      html, body, div, p, span {
+        margin: 0px;
+        padding: 0px;
+      }
+      
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      
+      body {
+        background-color: ivory;
+        height: 100%;
+        width: 100%;
+      }
+      
+      #instruction {
+        color: #3E3D40;
+        margin-top: 1em;
+        text-align: center;
+      }
+      
+      #content {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 4px 0px slategrey;
+        height: 450px;
+        margin: 2em 20%;
+        width: 806px;
+      }
+      
+      #workspaceZone {
+        border-right: 1px solid lightgrey;
+        display: inline-block;
+        height: 450px;
+        width: 400px;
+      }
+      
+      #workspace {
+        position: absolute;
+        height: 450px;
+        width: 400px;
+      }
+      
+      .item {
+        background-color: tomato;
+        height: 30px;
+        position: absolute;
+        width: 30px;
+      }
+      .item:hover {
+        box-shadow: 0px 0px 3px 0px firebrick;
+        background-color: firebrick;
+      }
+      
+      #canvas {
+        pointer-events: none;
+        position: absolute;
+      }
+      
+      #hud {
+        pointer-events: none;
+        position: absolute;
+      }
+      
+      #saveZone {
+        display: inline-block;
+        height: 450px;
+        width: 400px;
+      }
+      
+      #saveCanvas {
+        
+      }
+      
+      .canvas {
+        
+      }
+    </style>
+  </head>
+  
+  <body>
+    <p id="instruction">Shift + click from a square to another. Drag line extremety to change path.</p>
+    <section id="content">
+      <div id="workspaceZone">
+        <div id="workspace">
+          <span class="item" style="left: 100px; top: 300px;"></span>
+          <span class="item" style="left: 300px; top: 100px;"></span>
+          <span class="item" style="left: 300px; top: 350px;"></span>
+        </div>
+        <canvas id="canvas" class="canvas" height="450" width="400"></canvas>
+        <canvas id="hud" class="canvas" height="450" width="400"></canvas>
+      </div>
+      <div id="saveZone">
+        <canvas id="saveCanvas" class="canvas" height="450" width="400"></canvas>
+      </div>
+    </section>
+  </body>
+  
+  <script type="text/javascript" src="../../script/Element.js"></script>
+  <script type="text/javascript" src="../../script/Canvas.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    (function (exports) {
+      var
+      workspace = document.getElementById('workspace'), root = workspace,
+      
+      canvas = new Canvas(document.getElementById('canvas')),
+      hud = new Canvas(document.getElementById('hud')),
+      saveCanvas = new Canvas(document.getElementById('saveCanvas'));
+      
+      
+      var stopEvent = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      
+      var status = {
+        _down: null,
+        get down() {
+          return this._down;
+        },
+        set down(value) {
+          this._down = value;
+          if (value) {
+            this.mouseDownX = this.down.clientX + document.documentElement.scrollLeft;
+            this.mouseDownY = this.down.clientY + document.documentElement.scrollTop; 
+          }
+        },
+        _move: null,
+        get move() {
+          return this._move;
+        },
+        set move(value) {
+          this._move = value;
+          if (value) {
+            this.mouseMoveX = this.move.clientX + document.documentElement.scrollLeft;
+            this.mouseMoveY = this.move.clientY + document.documentElement.scrollTop;
+          }
+        },
+        _up: null,
+        get up() {
+          return this._up;
+        },
+        set up(value) {
+          this._up = value;
+          if (value) {
+            this.mouseUpX = this.up.clientX + document.documentElement.scrollLeft;
+            this.mouseUpY = this.up.clientY + document.documentElement.scrollTop;
+          }
+        },
+        
+        lines: [],
+        
+        getLineForEnd: function (item) {
+          var i, ln;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            if (this.lines[i].end === item) {
+              return this.lines[i];
+            }
+          }
+          return false;
+        },
+        
+        getLineForStart: function (item) {
+          var i, ln;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            if (this.lines[i].start === item) {
+              return this.lines[i];
+            }
+          }
+          return false;
+        },
+        
+        addLine: function (start, end) {
+          var i, ln, line;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            line = this.lines[i];
+            if ((line.start === start && line.end === end) || (line.start === end && line.end === start)) {
+              return false;
+            }
+          }
+          this.lines.push({
+            start: start,
+            end: end
+          });
+          return this;
+        },
+        
+        removeLine: function (start, end) {
+          var i, ln, line;
+          for (i = 0, ln = this.lines.length; i < ln; i += 1) {
+            line = this.lines[i];
+            if ((line.start === start && line.end === end) || (line.start === end && line.end === start)) {
+              return this.lines.splice(i, 1);
+            }
+          }
+        }
+      };
+      
+      var e2conf = function (e) {        
+        var conf = {}, t = e.target, coord;
+        
+        setMousePos(conf);
+        
+        if (status.down) {
+          coord = item2conf(status.startItem);
+          conf.startX = coord.x;
+          conf.startY = coord.y;
+        }
+        
+        if (status.move) {
+          if (t.classList && t.classList.contains('item')) {
+            coord = item2conf(t);
+            conf.endX = coord.x;
+            conf.endY = coord.y;
+          } else {
+            conf.endX = conf.mouseX;
+            conf.endY = conf.mouseY;
+          }
+        } else if (status.down) {
+          conf.endX = conf.startX;
+          conf.endY = conf.startY;
+        }
+        
+        return conf;
+      };
+      
+      var setMousePos = function (conf) {
+        var pos = Element.pos(root);
+        conf.mouseX = status.mouseMoveX - pos.x;
+        conf.mouseY = status.mouseMoveY - pos.y;
+        return conf;
+      };
+      
+      var item2conf = function (item) {
+        var pos = Element.pos(item);
+        return {
+          item: item,
+          x: parseInt(item.style.left, 10) + item.scrollWidth / 2,
+          y: parseInt(item.style.top, 10) + item.scrollHeight / 2
+        };
+      };
+      
+      var items2conf = function (start, end) {
+        var conf;
+        start = item2conf(start);
+        end = item2conf(end);
+        conf = {
+          startItem: start.item,
+          startX: start.x,
+          startY: start.y,
+          endItem: end.item,
+          endX: end.x,
+          endY: end.y
+        };
+        setMousePos(conf);
+        return conf;
+      };
+      
+      var moveLine = function (line, dragPoint) {
+        
+      };
+      
+      var handleMousedown = function (e) {
+        var t = e.target;
+        if (status.hover && status.hover.type === 'point' && status.hover.item === t) {
+          stopEvent(e);
+          status.down = e;
+          status.movingLine = status.getLineForEnd(status.hover.item) || status.getLineForStart(status.hover.item);
+          status.removeLine(status.movingLine.start, status.movingLine.end);
+          if (status.movingLine.start === t) {
+            status.startItem = status.movingLine.end;
+            status.move = status.movingLine.start;
+          } else {
+            status.startItem = status.movingLine.start;
+            status.move = status.movingLine.end;
+          }
+          status.up = null;
+          root.addEventListener('mouseup', handleMouseup, false);
+          draw(e2conf(e));
+        } else if ((t.classList && t.classList.contains('item') && e.shiftKey)) {
+          stopEvent(e);
+          status.down = e;
+          status.startItem = t;
+          status.move = null;
+          status.up = null;
+          root.addEventListener('mouseup', handleMouseup, false);
+
+          status.timer = setTimeout(function () {
+            draw(e2conf(e));
+          }, 200);
+        }
+      };
+      
+      var handleMousemove = function (e) {
+        clearTimeout(status.timer);
+        status.move = e;
+        draw(e2conf(e));
+      };
+      
+      var handleMouseup = function (e) {
+        var t = e.target;
+        if (t.classList && t.classList.contains('item') && t !== status.startItem) {
+          clearTimeout(status.timer);
+          root.removeEventListener('mouseup', handleMouseup, false);
+          status.up = e;
+          status.endItem = t;
+
+          if (status.move) {
+            if (status.addLine(status.startItem, status.endItem)) {
+              draw(e2conf(e));
+              saveCanvas.buffer = canvas.buffer;
+            }
+          } else {
+            canvas.load();
+          }
+        } else if (status.movingLine) {
+          status.addLine(status.movingLine.start, status.movingLine.end);
+          status.startItem = status.movingLine.start;
+          status.move = null;
+          status.movingLine = null;
+          draw(e2conf(e));
+        } else {
+          canvas.load();
+        }
+        status.move = null;
+        status.down = null;
+      };
+      
+      var handleClick = function (e) {
+        if (status.hover && status.hover.type === 'line') {
+          status.removeLine(status.hover.startItem, status.hover.endItem);
+          draw(e2conf(e));
+        }
+      };
+      
+      var draw = function (conf) {
+        status.hover = null;
+        canvas.clear();
+        hud.clear();
+        if (!canvas.load()) {
+          drawLines(conf);
+        }
+        if (status.down) {
+          drawLine(conf);
+        }
+        if (status.move) {
+          drawMouse(conf);
+        }
+      };
+      
+      var drawLine = function (conf) {
+        var hover = canvas.draw([
+          { type: 'bezier',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            startX: conf.startX,
+            startY: conf.startY,
+            endX: conf.endX,
+            endY: conf.endY,
+            startControlX: conf.startX,
+            startControlY: conf.startY,
+            endControlX: conf.endX,
+            endControlY: conf.endY,
+            stroke: { lineWidth: 2, strokeStyle: 'black', lineCap: 'round' }
+          },
+          { type: 'circle',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            x: conf.startX,
+            y: conf.startY,
+            r: 4,
+            start: 0,
+            end: Math.PI * 2,
+            fill: { fillStyle: 'palegreen' },
+            stroke: { strokeStyle: 'black', lineWidth: 1.5 }
+          },
+          { type: 'arrow',
+            mouseX: conf.mouseX,
+            mouseY: conf.mouseY,
+            x: conf.endX,
+            y: conf.endY,
+            radius: 13,
+            width: 8,
+            angle: Math.atan2(conf.startX - conf.endX, conf.startY - conf.endY),
+            fill: { fillStyle: 'palegreen' },
+            stroke: { strokeStyle: 'black', lineWidth: 1.5, lineCap: 'round' }
+          }
+        ]);
+        
+        if (hover > -1 && !status.down) {
+          if (hover === 0) {
+            status.hover = {
+              type: 'line',
+              startItem: conf.startItem,
+              endItem: conf.endItem
+            };
+          }
+
+          if (hover === 1) {
+            status.hover = {
+              type: 'point',
+              item: conf.startItem
+            };
+          }
+
+          if (hover === 2) {
+            status.hover = {
+              type: 'point',
+              item: conf.endItem
+            };
+          }
+        }
+        
+        status.lastConf = conf;
+      };
+      
+      var drawLines = function (conf) {
+        var i, ln, line;
+        for (i = 0, ln = status.lines.length; i < ln; i += 1) {
+          line = status.lines[i];
+          drawLine(items2conf(line.start, line.end));
+        }
+      };
+      
+      var drawMouse = function (conf) {
+        hud.circle({
+          x: conf.mouseX,
+          y: conf.mouseY,
+          r: 15,
+          start: 0,
+          end: Math.PI * 2,
+          stroke: {
+            strokeStyle: 'dimgrey',
+            lineWidth: 1
+          }
+        });
+      };
+      
+      root.addEventListener('mousedown', handleMousedown, false);
+      root.addEventListener('mousemove', handleMousemove, false);
+      root.addEventListener('click', handleClick, false);
+      
+    }((function(){ return this || (1,eval)('this') })()))
+  </script>
+</html>
