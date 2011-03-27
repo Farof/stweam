@@ -1,14 +1,24 @@
 (function (exports) {
   
-  exports.Canvas = function (node) {
+  exports.Canvas = function (node, tracker) {
     this.canvas = node;
     this.ctx = node.getContext('2d');
     
     this.buffers = [];
+    this.trackMousemove(tracker);
   };
   
   exports.Canvas.prototype = {
     maxSavedItems: 20,
+    
+    trackMousemove: function (node) {
+      this.mousemoveTrackNode = node || this.canvas;
+      this.mousemoveTrackNode.addEventListener('mousemove', function (e) {
+        var pos = Element.pos(this.canvas);
+        this.mouseX = e.clientX - pos.x + document.documentElement.scrollLeft;
+        this.mouseY = e.clientY - pos.y + document.documentElement.scrollTop;
+      }.bind(this), false)
+    },
     
     get buffer() {
       return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -60,7 +70,7 @@
     afterDraw: function (options) {
       if (!options.pathContinues) {
         this.ctx.closePath();
-        if (this.ctx.isPointInPath(options.mouseX, options.mouseY)) {
+        if (this.ctx.isPointInPath(this.mouseX, this.mouseY)) {
           return true;
         }
       }
@@ -175,6 +185,7 @@
     
     arrow: function (options) {
       var alpha = Math.atan2(options.width / 2, Math.sqrt(Math.pow(options.radius, 2) - Math.pow(options.width / 2, 2))) + Math.PI;
+      options.angle = options.angle || 0;
       return this.path(options, [{
         type: 'line',
         startX: options.x - options.radius * Math.sin(options.angle + alpha),
