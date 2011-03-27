@@ -112,9 +112,7 @@
     
     canvasStatus: {
       overItem: null,
-      overPath: {},
-      mouseX: null,
-      mouseY: null
+      overPath: {}
     },
     
     toWorkspaceElement: function () {
@@ -136,7 +134,6 @@
               var
               target = e.target,
               process = this.process,
-              pos = Element.pos(process.canvas),
               item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
               
               if ((!process.canvasStatus.overItem && item) ||
@@ -146,8 +143,6 @@
                 process.canvasStatus.overItem = null;
               }
               
-              process.canvasStatus.mouseX = e.clientX - pos.x + document.documentElement.scrollLeft;
-              process.canvasStatus.mouseY = e.clientY - pos.y + document.documentElement.scrollTop;
               process.drawCanvas(e);
             },
             
@@ -163,14 +158,14 @@
         });
         el.appendChild(htmlEl);
         
-        this.canvas = canvasEl = new Element('canvas', {
+        this.canvasEl = canvasEl = new Element('canvas', {
           id: 'workCanvas',
           height: '500',
           width: '600',
           process: this
         });
         el.appendChild(canvasEl);
-        this.ctx = canvasEl.getContext('2d');
+        this.canvas = new Canvas(canvasEl, el);
         
         this.items.forEach(function (item) {
           this.addToWorkspace(item);
@@ -224,7 +219,7 @@
       style = draggedItem.style,
       left = (process._dragOffsetX + (event.clientX - process._dragOriX)),
       top = (process._dragOffsetY + (event.clientY - process._dragOriY)),
-      canvas = process.canvas,
+      canvas = process.canvasEl,
       maxWidth = canvas.width - draggedItem.scrollWidth,
       maxHeight = canvas.height - draggedItem.scrollHeight;
       
@@ -265,10 +260,6 @@
       Twitter.save(process);
     },
     
-    clearCanvas: function () {
-      this.canvas.width = this.canvas.width;
-    },
-    
     canvasConf: {
       mouse: {
         circle: {
@@ -291,18 +282,18 @@
           shadowBlur: { normal: 0, over: 2 }
         },
         arrow: {
-          width: { normal: 5 },
-          height: { normal: 7 },
+          width: { normal: 10 },
+          radius: { normal: 12 },
+          lineWidth: { normal: 2 },
           color: { normal: '#3E3D40' }
         }
       }
     },
     
     drawCanvas: function () {
-      this.clearCanvas();
+      this.canvas.clear();
       this.drawPaths();
       this.drawMouse();
-      
       if (this.canvasStatus.redraw === true) {
         this.canvasStatus.redraw = false;
         this.drawCanvas();
@@ -316,16 +307,17 @@
     
     drawMouse: function () {
       var
-      ctx = this.ctx,
       conf = this.canvasConf.mouse,
-      status = this.canvasStatus;
-      
-      ctx.beginPath();
-      ctx.arc(status.mouseX, status.mouseY, conf.circle.radius.normal, 0, 2 * Math.PI, false);
-      ctx.lineWidth = conf.circle.borderWidth.normal;
-      ctx.strokeStyle = conf.circle.borderColor.normal;
-      ctx.stroke();
-      ctx.closePath();
+      confType = 'normal';
+
+      this.canvas.circle({
+        x: this.canvas.mouseX, y: this.canvas.mouseY,
+        r: conf.circle.radius[confType],
+        stroke: {
+          lineWidth: conf.circle.borderWidth[confType],
+          strokeStyle: conf.circle.borderColor[confType]
+        }
+      });
     },
     
     drawPaths: function (e) {
@@ -338,7 +330,7 @@
     
     drawPathBetween: function (source, dest, e) {
       var
-      ctx = this.ctx,
+      ctx = this.canvas.ctx,
       
       // path conf
       status = this.canvasStatus,
@@ -346,44 +338,30 @@
       overSource = status.overItem === source,
       overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
       
-      // positions infos
-      sourceCenterX = source.centerX,
-      sourceCenterY = source.centerY,
-      destCenterX = dest.centerX,
-      destCenterY = dest.centerY,
-      sourceOnLeft = source.leftFrom(dest),
-      sourceOnTop = source.above(dest),
-      diffX = source.getDiffX(dest),
-      diffY = source.getDiffY(dest),
-      diffIsHeight = source.distIsHeight(dest),
-
       // coordinates
       startX = source.getAttachXFor(dest),
       startY = source.getAttachYFor(dest),
-      startControlX = source.getAttachXControlFor(dest, startX),
-      startControlY = source.getAttachYControlFor(dest, startY),
       endX = dest.getAttachXFor(source),
       endY = dest.getAttachYFor(source),
+      startControlX = source.getAttachXControlFor(dest, startX),
+      startControlY = source.getAttachYControlFor(dest, startY),
       endControlX = dest.getAttachXControlFor(source, endX),
-      endControlY = dest.getAttachYControlFor(source, endY),
-      arrowStartX = endX + (diffIsHeight ? -conf.arrow.width.normal : (sourceOnLeft ? -conf.arrow.height.normal : conf.arrow.height.normal)),
-      arrowStartY = endY + (!diffIsHeight ? -conf.arrow.width.normal : (sourceOnTop ? -conf.arrow.height.normal : conf.arrow.height.normal)),
-      arrowEndX = endX + (diffIsHeight ? conf.arrow.width.normal : (sourceOnLeft ? -conf.arrow.height.normal : conf.arrow.height.normal)),
-      arrowEndY = endY + (!diffIsHeight ? conf.arrow.width.normal : (sourceOnTop ? -conf.arrow.height.normal : conf.arrow.height.normal));
+      endControlY = dest.getAttachYControlFor(source, endY);
 
       // line
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.bezierCurveTo(startControlX, startControlY, endControlX, endControlY, endX, endY);
-      ctx.shadowColor = conf.line.shadowColor[overPath ? 'over' : 'normal'];
-      ctx.shadowBlur = conf.line.shadowBlur[overPath ? 'over' : 'normal'];
-      ctx.lineWidth = conf.line.width[overPath ? 'over' : 'normal'];
-      ctx.strokeStyle = conf.line.color[overPath ? 'over' : 'normal'];
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      ctx.closePath();
-      // set over path flags
-      if (ctx.isPointInPath(status.mouseX, status.mouseY)) {
+      if (this.canvas.bezier({
+        startX: startX, startY: startY,
+        endX: endX, endY: endY,
+        startControlX: startControlX, startControlY: startControlY,
+        endControlX: endControlX, endControlY: endControlY,
+        stroke: {
+          shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
+          shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
+          lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
+          strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
+          lineCap: 'round'
+        }
+      })) {
         status.overPath.source = source;
         status.overPath.dest = dest;
         document.body.style.cursor = 'pointer';
@@ -391,28 +369,36 @@
       } else if (overPath) {
         status.overPath.source = null;
         status.overPath.dest = null;
-        document.body.style.cursor = 'auto';
+        document.body.style.cursor = 'auto'; 
       }
       
       // start dot
-      ctx.beginPath();
-      ctx.arc(startX, startY, conf.dot.radius[overSource ? 'overSource' : 'normal'], 0, 2 * Math.PI, false);
-      ctx.fillStyle = conf.dot.fillColor[overSource ? 'overSource' : 'normal'];
-      ctx.fill();
-      ctx.lineWidth = conf.dot.borderWidth[overSource ? 'overSource' : 'normal'];
-      ctx.strokeStyle = conf.dot.borderColor[overSource ? 'overSource' : 'normal'];
-      ctx.stroke();
-      ctx.closePath();
+      if (this.canvas.circle({
+        x: startX, y: startY, r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
+        fill: { 
+          fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
+        },
+        stroke: {
+          lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
+          strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
+        }
+      })) {
+        // do something if over start dot
+      }
       
       // end arrow
-      ctx.beginPath();
-      ctx.moveTo(arrowStartX, arrowStartY);
-      ctx.lineTo(endX, endY);
-      ctx.moveTo(endX, endY);
-      ctx.lineTo(arrowEndX, arrowEndY);
-      ctx.strokeStyle = conf.arrow.color.normal;
-      ctx.stroke();
-      ctx.closePath();
+      if (this.canvas.arrow({
+        x: endX, y: endY,
+        width: conf.arrow.width.normal,
+        radius: conf.arrow.radius.normal,
+        angle: Math.atan2(endControlX - endX, endControlY - endY),
+        stroke: {
+          strokeStyle: conf.arrow.color.normal,
+          lineWidth: conf.arrow.lineWidth.normal
+        }
+      })) {
+        // do something if over arrow
+      }
     },
     
     itemUpdated: function (updateType, item) {
