@@ -157,6 +157,12 @@ body {
 .tweet-data ~ .tweet-data {
   border-top: 1px solid #3E3D40;
 }
+.tweet-author-image {
+  float: left;
+  height: 48px;
+  margin-right: 10px;
+  width: 48px;
+}
 .tweet-author {
   
 }

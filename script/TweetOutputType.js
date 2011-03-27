@@ -61,7 +61,7 @@
         }),
         root = document.querySelector(this.node);
       this.tweets.forEach(function (tweet) {
-        element.appendChild(tweet.toDebugElement());
+        element.appendChild(tweet.toElement());
       });
       Element.empty(root);
       root.appendChild(element);

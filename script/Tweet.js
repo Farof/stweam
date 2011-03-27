@@ -22,16 +22,22 @@
     },
     
     toElement: function () {
-      var element, tweet, userName, data = this.data;
+      var element, tweet, userName, data = this.data, image;
       if (!this.element) {
         element = new Element('div', {
           'class': 'tweet-box',
           tweet: this
         });
         
+        image = new Element('img', {
+          'class': 'tweet-author-image',
+          src: data.profile_image_url
+        });
+        element.appendChild(image);
+        
         userName = new Element('p', {
           'class': 'tweet-author',
-          text: data.from_user + ':'
+          text: data.from_user
         });
         element.appendChild(userName);
         
