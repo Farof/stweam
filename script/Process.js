@@ -185,80 +185,8 @@
     handleWorkspaceMousedown: function (event) {
       var item = event.target, strClasse = item.getAttribute('class'), classes = item.classList;
       if (!classes.contains('workspace-item-title-input') && strClasse && strClasse.indexOf('workspace-item-title') > -1) {
-        this.process.startDrag(item.workspaceItem, event);
+        this.process.dragEvent = new Drag(item.workspaceItem, event, this.process.canvasEl, true);
       }
-    },
-    
-    _draggedItem: null,
-    _dragOriX: null,
-    _dragOriY: null,
-    _dragOffsetX: null,
-    _dragOffsetY: null,
-    
-    startDrag: function (item, event) {
-      var parent = item.parentNode;
-      this._draggedItem = item;
-      this._dragOriX = event.clientX;
-      this._dragOriY = event.clientY;
-      this._dragOffsetX = item.offsetLeft;
-      this._dragOffsetY = item.offsetTop;
-      
-      parent.removeChild(item);
-      parent.appendChild(item);
-      
-      document.addEventListener('mousemove', this.doDrag, false);
-      document.addEventListener('mouseup', this.stopDrag, true);
-      
-      item.dragging = true;
-      item.dragged = false;
-    },
-    
-    doDrag: function (event) {
-      var
-        workspace = document.getElementById('workspace'),
-        process = workspace.process,
-        draggedItem = process._draggedItem,
-        style = draggedItem.style,
-        left = (process._dragOffsetX + (event.clientX - process._dragOriX)),
-        top = (process._dragOffsetY + (event.clientY - process._dragOriY)),
-        canvas = process.canvasEl,
-        maxWidth = canvas.width - draggedItem.scrollWidth,
-        maxHeight = canvas.height - draggedItem.scrollHeight;
-      
-      if (left < 0) {
-        left = 0;
-      } else if (left > maxWidth) {
-        left = maxWidth;
-      }
-      if (top < 0) {
-        top = 0;
-      } else if (top > maxHeight) {
-        top = maxHeight;
-      }
-      draggedItem.source.position.left = left;
-      draggedItem.source.position.top = top;
-      style.position = 'absolute';
-      style.left = left + 'px';
-      style.top = top + 'px';
-      process.drawCanvas();
-      
-      if (!draggedItem.dragged) {
-        draggedItem.dragged = true;
-      }
-    },
-    
-    stopDrag: function (event) {
-      var process = document.getElementById('workspace').process;
-      
-      document.removeEventListener('mousemove', process.doDrag, false);
-      document.removeEventListener('mouseup', process.stopDrag, true);
-      
-      process._draggedItem.dragging = false;
-      if (process._draggedItem.dragged) {
-        process._draggedItem.querySelector('.workspace-item-title-zone').save();
-      }
-      
-      Twitter.save(process);
     },
     
     canvasConf: {
