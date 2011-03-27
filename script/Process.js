@@ -37,6 +37,8 @@
           }.bind(this));
         }
         
+        document.getElementById('processes').appendChild(this.toCollectionElement());
+        
         return this;
       },
       
