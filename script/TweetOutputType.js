@@ -2,7 +2,13 @@
   "use strict";
   
   exports.ITweetOutputType = Trait.compose(
+    IInitializable,
     Trait({
+      initialize: function TweetOutputType() {
+        document.getElementById('output-type-list').appendChild(this.toLibraryElement());
+        return this;
+      },
+      
       serialize: function (out) {
         return out || {};
       },
@@ -22,6 +28,7 @@
           });
           this.libraryElement = el;
         }
+        
         return this.libraryElement;
       }
     })

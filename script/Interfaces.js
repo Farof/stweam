@@ -131,7 +131,6 @@
           item.initialize(options);
         }
         this.items[options.type] = item;
-        document.getElementById('filter-type-list').appendChild(item.toLibraryElement());
         return item;
       }
     });
