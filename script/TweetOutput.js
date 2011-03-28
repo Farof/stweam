@@ -3,7 +3,7 @@
 
   exports.ITweetOutput = Trait.compose(
     Trait.resolve({ initialize: 'workspaceItemInit', serialize: 'workspaceItemSerialize' }, IWorkspaceItem),
-    IHasOutput,
+    IHasInput,
     Trait({
       initialize: function TweetOutput(options) {
         this.workspaceItemInit(options);
@@ -22,11 +22,11 @@
 
       itemType: 'output',
 
-      get tweets() {
-        return this.input.tweets;
+      get inputTweets() {
+        return this.input.outputTweets;
       },
 
-      set tweets(value) {
+      set inputTweets(value) {
         throw new Error('read only');
       },
       

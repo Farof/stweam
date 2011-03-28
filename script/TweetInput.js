@@ -21,11 +21,11 @@
 
       itemType: 'input',
 
-      get tweets() {
+      get outputTweets() {
         return this.type.retrieve.call(this);
       },
 
-      set tweets(value) {
+      set outputTweets(value) {
         throw new Error('read only');
       },
       

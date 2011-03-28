@@ -54,7 +54,7 @@
           'class': 'tweet-list'
         }),
         root = document.querySelector(this.node);
-      this.tweets.forEach(function (tweet) {
+      this.inputTweets.forEach(function (tweet) {
         element.appendChild(tweet.toDebugElement());
       });
       Element.empty(root);

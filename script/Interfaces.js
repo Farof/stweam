@@ -63,7 +63,11 @@
   });
   
   exports.IHasOutput = Trait({
-    tweets: Trait.required
+    outputTweets: Trait.required
+  });
+  
+  exports.IHasInput = Trait({
+    inputTweets: Trait.required
   });
   
   exports.IWorkspaceItem = Trait.compose(
@@ -73,6 +77,9 @@
     IMovable,
     ISerializable,
     Trait({
+      name: Trait.required,
+      itemType: Trait.required,
+      
       initialize: function (options) {
         this.setOptions(options);
         this.initUUID();

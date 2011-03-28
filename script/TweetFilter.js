@@ -3,6 +3,7 @@
   
   exports.ITweetFilter = Trait.compose(
     Trait.resolve({ initialize: 'workspaceItemInit', serialize: 'workspaceItemSerialize' }, IWorkspaceItem),
+    IHasInput,
     IHasOutput,
     Trait({
       initialize: function TweetFilter(options) {
@@ -25,11 +26,19 @@
 
       itemType: 'filter',
 
-      get tweets() {
-        return this.input.tweets.filter(this.validate);
+      get inputTweets() {
+        return this.input.outputTweets;
       },
 
-      set tweets(value) {
+      set inputTweets(value) {
+        throw new Error('read only');
+      },
+
+      get outputTweets() {
+        return this.inputTweets.filter(this.validate);
+      },
+
+      set outputTweets(value) {
         throw new Error('read only');
       },
 
