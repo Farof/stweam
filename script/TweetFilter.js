@@ -2,17 +2,19 @@
   "use strict";
   
   exports.ITweetFilter = Trait.compose(
-    Trait.resolve({ initialize: 'workspaceItemInit', getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
+    Trait.resolve({ initialize: 'workspaceItemInit',
+                    getContentChildren: 'getItemContentChildren',
+                    updated: 'workspaceItemUpdated' }, IWorkspaceItem),
     IHasInput,
     IHasOutput,
     Trait({
       initialize: function TweetFilter(options) {
         this.workspaceItemInit(options);
         
-        this.operator = this.type.operators[this.operator || this.type.operator];
-        //this.configElements = {};
-
-        this.save();
+        if (!this.operator) {
+          this.operator = this.type.operator;
+        }
+        
         return this;
       },
       
@@ -38,6 +40,33 @@
 
       set outputTweets(value) {
         throw new Error('read only');
+      },
+      
+      _operator: undefined,
+      
+      get operator() {
+        return this._operator;
+      },
+      
+      set operator(value) {
+        var previous = this._operator ? this.toConfigElement() : null, newValue;
+        this._operator = this.type.operators[value];
+        if (previous) {
+          newValue = this.configElement = this.toConfigElement();
+          this.contentElement.replaceChild(newValue, previous);
+        }
+        this.save();
+      },
+      
+      _value: undefined,
+      
+      get value() {
+        return this._value;
+      },
+      
+      set value(value) {
+        this._value = value;
+        this.save();
       },
       
       serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid',
@@ -75,38 +104,21 @@
       },
       
       getContentChildren: function () {
-        var children = this.getItemContentChildren(), operators, config;
+        var existed = !!this.contentChildren, children = this.getItemContentChildren(), operators, config;
         
-        operators = this.type.getOperatorsElement(this);
-        children.push(operators);
+        if (!existed) {
+          operators = this.type.getOperatorsElement(this);
+          children.push(operators);
 
-        config = this.configElement = this.toConfigElement();
-        children.push(config);
+          config = this.configElement = this.toConfigElement();
+          children.push(config);
+        }
         
         return children;
       },
-
+      
       toConfigElement: function () {
         return this.operator.toConfigElement(this);
-      },
-
-      updated: function (type, value) {
-        var previous, newValue;
-        if (type === 'name') {
-          this.name = value;
-        } else if (type === 'operator') {
-          this.operator = this.type.operators[value];
-          previous = this.configElement;
-          newValue = this.configElement = this.toConfigElement();
-          this.contentElement.replaceChild(newValue, previous);
-          this.save();
-        } else if (type === 'value') {
-          this.value = value;
-          this.save();
-        }
-        if (this.process) {
-          this.process.itemUpdated(type, this);
-        }
       }
     })
   );

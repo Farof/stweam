@@ -2,7 +2,8 @@
   "use strict";
   
   exports.ITweetInput = Trait.compose(
-    Trait.resolve({ initialize: 'workspaceItemInit', getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
+    Trait.resolve({ initialize: 'workspaceItemInit',
+                    getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
     IHasOutput,
     Trait({
       initialize: function TweetInput(options) {
@@ -26,15 +27,6 @@
       },
       
       serializedProperties: ['uid', 'constructorName', 'name', 'type=type.type', 'position'],
-
-      updated: function (type, value) {
-        if (type === 'name') {
-          this.name = value;
-        }
-        if (this.process) {
-          this.process.itemUpdated(type, this);
-        }
-      },
       
       getContentChildren: function () {
         var children = this.getItemContentChildren();

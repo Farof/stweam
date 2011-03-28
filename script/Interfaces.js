@@ -71,7 +71,17 @@
   });
   
   exports.ITyped = Trait({
-    types: Trait.required
+    types: Trait.required,
+    
+    _type: undefined,
+    
+    get type() {
+      return this._type;
+    },
+    
+    set type(value) {
+      this._type = this.types.items[value]
+    }
   });
   
   exports.IWorkspaceItem = Trait.compose(
@@ -85,16 +95,27 @@
       name: Trait.required,
       itemType: Trait.required,
       
+      _process: undefined,
+      
+      get process() {
+        return this._process;
+      },
+      
+      set process(value) {
+        if (typeof value === 'string') {
+          this._process = Process.getById(value);
+        } else if (typeof value === 'object') {
+          this._process = value;
+        }
+      },
+      
       initialize: function (options) {
         this.setOptions(options);
         this.initUUID();
         this.initPosition();
         
-        this.type = this.types.items[this.type];
-        if (typeof this.process === 'string') {
-          this.process = Process.getById(this.process);
-        } else if (!this.process) {
-          this.process = Process.getByItem(this);
+        if (!this._process) {
+          this._process = Process.getByItem(this);
         }
         
         return this;
@@ -132,6 +153,12 @@
           children.push(child);
         }
         return this.contentChildren;
+      },
+      
+      updated: function (type, value) {
+        this[type] = value;
+        this.process.itemUpdated(type, this);
+        return this;
       }
     })
   );
