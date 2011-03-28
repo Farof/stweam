@@ -36,7 +36,7 @@
             this.nextSibling.focus();
             Process.loadedItem.drawCanvas();
           } else {
-            console.log('source dragged');
+            
           }
         }
       }

@@ -252,89 +252,9 @@
       },
 
       drawPaths: function (e) {
-        this.items.forEach(function (item) {
-          if (item.input) {
-            this.drawPathBetween(item.input.workspaceElement, item.workspaceElement, e);
-          }
-        }.bind(this));
-      },
-
-      drawPathBetween: function (source, dest, e) {
-        var
-
-        // path conf
-          status = this.canvasStatus,
-          conf = this.canvasConf.itemPath,
-          overSource = status.overItem === source,
-          overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
-
-        // coordinates
-          startX = source.getAttachXFor(dest),
-          startY = source.getAttachYFor(dest),
-          endX = dest.getAttachXFor(source),
-          endY = dest.getAttachYFor(source),
-          startControlX = source.getAttachXControlFor(dest, startX),
-          startControlY = source.getAttachYControlFor(dest, startY),
-          endControlX = dest.getAttachXControlFor(source, endX),
-          endControlY = dest.getAttachYControlFor(source, endY);
-
-        // line
-        if (this.canvas.bezier({
-            startX: startX,
-            startY: startY,
-            endX: endX,
-            endY: endY,
-            startControlX: startControlX,
-            startControlY: startControlY,
-            endControlX: endControlX,
-            endControlY: endControlY,
-            stroke: {
-              shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
-              shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
-              lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
-              strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
-              lineCap: 'round'
-            }
-          })) {
-          status.overPath.source = source;
-          status.overPath.dest = dest;
-          document.body.style.cursor = 'pointer';
-          this.setRedraw();
-        } else if (overPath) {
-          status.overPath.source = null;
-          status.overPath.dest = null;
-          document.body.style.cursor = 'auto'; 
-        }
-
-        // start dot
-        if (this.canvas.circle({
-            x: startX,
-            y: startY,
-            r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
-            fill: { 
-              fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
-            },
-            stroke: {
-              lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
-              strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
-            }
-          })) {
-          // do something if over start dot
-        }
-
-        // end arrow
-        if (this.canvas.arrow({
-            x: endX,
-            y: endY,
-            width: conf.arrow.width.normal,
-            radius: conf.arrow.radius.normal,
-            angle: Math.atan2(endControlX - endX, endControlY - endY),
-            stroke: {
-              strokeStyle: conf.arrow.color.normal,
-              lineWidth: conf.arrow.lineWidth.normal
-            }
-          })) {
-          // do something if over arrow
+        var i, ln;
+        for (i = 0, ln = this.items.length; i < ln; i += 1) {
+          this.items[i].draw();
         }
       },
 

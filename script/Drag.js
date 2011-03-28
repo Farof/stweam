@@ -71,7 +71,8 @@
       
       this.node.dragging = false;
       if (this.node.dragged) {
-        this.node.querySelector('.workspace-item-title-zone').save();
+        // this.node.querySelector('.workspace-item-title-zone').save();
+        this.node.source.updated('position');
       }
       this.node.source.process.dragEvent = null;
     }

@@ -156,9 +156,116 @@
       },
       
       updated: function (type, value) {
-        this[type] = value;
+        if (value) {
+          this[type] = value;
+        }
         this.process.itemUpdated(type, this);
         return this;
+      },
+      
+      get canvas() {
+        return this.process.canvas;
+      },
+      
+      set canvas(value) {
+        // fail silently
+      },
+      
+      draw: function () {
+        this.drawLinks();
+        return this;
+      },
+      
+      drawLinks: function () {
+        if (this.input) {
+          this.drawLinkFromItem(this.input);
+        }
+        return this;
+      },
+      
+      drawLinkFromItem: function (source) {
+        source.drawLinkToPoint(this.workspaceElement);
+        return this;
+      },
+      
+      drawLinkToPoint: function (dest) {
+        var
+          source = this.workspaceElement,
+
+        // path conf
+          status = this.process.canvasStatus,
+          conf = this.process.canvasConf.itemPath,
+          overSource = status.overItem === source,
+          overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
+
+        // coordinates
+          startX = source.getAttachXFor(dest),
+          startY = source.getAttachYFor(dest),
+          endX = dest.getAttachXFor(source),
+          endY = dest.getAttachYFor(source),
+          startControlX = source.getAttachXControlFor(dest, startX),
+          startControlY = source.getAttachYControlFor(dest, startY),
+          endControlX = dest.getAttachXControlFor(source, endX),
+          endControlY = dest.getAttachYControlFor(source, endY);
+
+        // line
+        if (this.canvas.bezier({
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            startControlX: startControlX,
+            startControlY: startControlY,
+            endControlX: endControlX,
+            endControlY: endControlY,
+            stroke: {
+              shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
+              shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
+              lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
+              strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
+              lineCap: 'round'
+            }
+          })) {
+          status.overPath.source = source;
+          status.overPath.dest = dest;
+          document.body.style.cursor = 'pointer';
+          this.process.setRedraw();
+        } else if (overPath) {
+          status.overPath.source = null;
+          status.overPath.dest = null;
+          document.body.style.cursor = 'auto'; 
+        }
+
+        // start dot
+        if (this.canvas.circle({
+            x: startX,
+            y: startY,
+            r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
+            fill: { 
+              fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
+            },
+            stroke: {
+              lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
+              strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
+            }
+          })) {
+          // do something if over start dot
+        }
+
+        // end arrow
+        if (this.canvas.arrow({
+            x: endX,
+            y: endY,
+            width: conf.arrow.width.normal,
+            radius: conf.arrow.radius.normal,
+            angle: Math.atan2(endControlX - endX, endControlY - endY),
+            stroke: {
+              strokeStyle: conf.arrow.color.normal,
+              lineWidth: conf.arrow.lineWidth.normal
+            }
+          })) {
+          // do something if over arrow
+        }
       }
     })
   );

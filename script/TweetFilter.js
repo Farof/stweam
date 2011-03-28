@@ -3,8 +3,7 @@
   
   exports.ITweetFilter = Trait.compose(
     Trait.resolve({ initialize: 'workspaceItemInit',
-                    getContentChildren: 'getItemContentChildren',
-                    updated: 'workspaceItemUpdated' }, IWorkspaceItem),
+                    getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
     IHasInput,
     IHasOutput,
     Trait({
