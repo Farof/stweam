@@ -70,12 +70,17 @@
     inputTweets: Trait.required
   });
   
+  exports.ITyped = Trait({
+    types: Trait.required
+  });
+  
   exports.IWorkspaceItem = Trait.compose(
     IInitializable,
     IHasOptions,
     IHasUUID,
     IMovable,
-    ISerializable,
+    Trait.resolve({ serialize: 'workspaceItemSerialize' }, ISerializable),
+    ITyped,
     Trait({
       name: Trait.required,
       itemType: Trait.required,
@@ -84,7 +89,49 @@
         this.setOptions(options);
         this.initUUID();
         this.initPosition();
+        
+        this.type = this.types.items[this.type];
+        if (typeof this.process === 'string') {
+          this.process = Process.getById(this.process);
+        } else if (!this.process) {
+          this.process = Process.getByItem(this);
+        }
+        
         return this;
+      },
+      
+      serialize: function () {
+        return this.type.serialize.call(this, this.workspaceItemSerialize());
+      },
+      
+      toWorkspaceElement: function () {
+        var el;
+        if (!this.workspaceElement) {
+          this.workspaceElement = el = new WorkspaceElement(this);
+        }
+        return this.workspaceElement;
+      },
+      
+      getContentChildren: function () {
+        var children, child;
+        if (!this.contentChildren) {
+          this.contentChildren = children = [];
+
+          child = new Element('p', {
+            'class': 'item-content-zone item-type',
+            title: this.type.description || ''
+          });
+          child.appendChild(new Element('span', {
+            'class': 'item-content-label item-type-label',
+            text: (this.itemType + ': ')
+          }));
+          child.appendChild(new Element('span', {
+            'class': 'item-content item-type-name',
+            text: this.type.label
+          }));
+          children.push(child);
+        }
+        return this.contentChildren;
       }
     })
   );

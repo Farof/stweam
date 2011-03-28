@@ -2,22 +2,16 @@
   "use strict";
   
   exports.ITweetFilter = Trait.compose(
-    Trait.resolve({ initialize: 'workspaceItemInit', serialize: 'workspaceItemSerialize' }, IWorkspaceItem),
+    Trait.resolve({ initialize: 'workspaceItemInit', getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
     IHasInput,
     IHasOutput,
     Trait({
       initialize: function TweetFilter(options) {
         this.workspaceItemInit(options);
         
-        this.param = TweetFilterType.items[this.param];
-        this.operator = this.param.operators[this.operator || this.param.operator];
-        this.configElements = {};
+        this.operator = this.type.operators[this.operator || this.type.operator];
+        //this.configElements = {};
 
-        if (typeof this.process === 'string') {
-          this.process = Process.getById(this.process);
-        } else if (!this.process) {
-          this.process = Process.getByItem(this);
-        }
         this.save();
         return this;
       },
@@ -25,6 +19,10 @@
       name: 'unamed filter',
 
       itemType: 'filter',
+      
+      types: TweetFilterType,
+      
+      configElements: {},
 
       get inputTweets() {
         return this.input.outputTweets;
@@ -41,21 +39,9 @@
       set outputTweets(value) {
         throw new Error('read only');
       },
-
-      get type() {
-        return this.param;
-      },
-
-      set type(value) {
-        throw new Error('read only');
-      },
       
       serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid',
-                              'param=param.type', 'operator=operator.type', 'value', 'position'],
-
-      serialize: function () {
-        return this.param.serialize.call(this, this.workspaceItemSerialize());
-      },
+                              'type=type.type', 'operator=operator.type', 'value', 'position'],
 
       validate: function (tweet) {
         console.log('unsaved filter: ', this);
@@ -68,61 +54,36 @@
         var
           check = this.operator.check,
           value = this.value,
-          param = this.param.type,
-          getParam;
-        if (this.param.metadata) {
-          getParam = function (tweet) {
-            return tweet.metadata[param];
+          type = this.type.type,
+          getType;
+        if (this.type.metadata) {
+          getType = function (tweet) {
+            return tweet.metadata[type];
           };
         } else {
-          getParam = function (tweet) {
-            return tweet[param];
+          getType = function (tweet) {
+            return tweet[type];
           };
         }
         this.validate = function (tweet) {
-          return check(value, getParam(tweet.data));
+          return check(value, getType(tweet.data));
         };
         this.savedConfig = this.type.saveConfig(this, {
           type: this.type.type
         });
         return this;
       },
-
-      toWorkspaceElement: function () {
-        var el;
-        if (!this.workspaceElement) {
-          this.workspaceElement = el = new WorkspaceElement(this);
-        }
-        return this.workspaceElement;
-      },
-
+      
       getContentChildren: function () {
-        var children, child, operators, config;
-        if (!this.contentChildren) {
-          this.contentChildren = children = [];
+        var children = this.getItemContentChildren(), operators, config;
+        
+        operators = this.type.getOperatorsElement(this);
+        children.push(operators);
 
-          child = new Element('p', {
-            'class': 'item-content-zone item-type',
-            title: this.type.description || ''
-          });
-          child.appendChild(new Element('span', {
-            'class': 'item-content-label item-type-label',
-            text: 'filter by: '
-          }));
-          child.appendChild(new Element('span', {
-            'class': 'item-content item-type-name',
-            text: this.type.label
-          }));
-          children.push(child);
-
-
-          operators = this.type.getOperatorsElement(this);
-          children.push(operators);
-
-          config = this.configElement = this.toConfigElement();
-          children.push(config);
-        }
-        return this.contentChildren;
+        config = this.configElement = this.toConfigElement();
+        children.push(config);
+        
+        return children;
       },
 
       toConfigElement: function () {
