@@ -6,7 +6,12 @@
     
     el = new Element('div', {
       'class': 'workspace-item item-type-' + source.itemType + ' type-' + source.type.type,
-      source: source
+      source: source,
+      events: {
+        mousedown: function (e) {
+          this.source.handleMousedown(e);
+        }
+      }
     });
     el.style.left = source.position.left + 'px';
     el.style.top = source.position.top + 'px';

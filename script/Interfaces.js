@@ -53,7 +53,7 @@
         propName = prop[0]
         propPath = (prop[1] || propName).split('.');
         propValue = this;
-        while (propPath.length > 0) {
+        while (propValue && propPath.length > 0) {
           propValue = propValue[propPath.shift()];
         }
         out[propName] = propValue;
@@ -63,11 +63,34 @@
   });
   
   exports.IHasOutput = Trait({
+    hasOutput: true,
+    
     outputTweets: Trait.required
   });
   
   exports.IHasInput = Trait({
-    inputTweets: Trait.required
+    hasInput: true,
+    
+    inputTweets: Trait.required,
+    
+    _input: undefined,
+    
+    get input() {
+      return this._input;
+    },
+    
+    set input(value) {
+      if (this._input) {
+        this._input.output = null;
+      }
+      this._input = value;
+      if (this._input) {
+        this._input.output = this;
+      }
+      if (this.process) {
+        this.process.drawCanvas();
+      }
+    }
   });
   
   exports.ITyped = Trait({
@@ -80,7 +103,7 @@
     },
     
     set type(value) {
-      this._type = this.types.items[value]
+      this._type = this.types.items[value];
     }
   });
   
@@ -155,6 +178,12 @@
         return this.contentChildren;
       },
       
+      handleMousedown: function (e) {
+        if (this.hasOutput && !this.output && e.shiftKey) {
+          console.log('draw path');
+        }
+      },
+      
       updated: function (type, value) {
         if (value) {
           this[type] = value;
@@ -196,7 +225,7 @@
           status = this.process.canvasStatus,
           conf = this.process.canvasConf.itemPath,
           overSource = status.overItem === source,
-          overPath = status.overPath && status.overPath.source === source && status.overPath.dest === dest,
+          overPath = status.overPath && status.overPath.source === source.source && status.overPath.dest === dest.source,
 
         // coordinates
           startX = source.getAttachXFor(dest),
@@ -226,8 +255,8 @@
               lineCap: 'round'
             }
           })) {
-          status.overPath.source = source;
-          status.overPath.dest = dest;
+          status.overPath.source = source.source;
+          status.overPath.dest = dest.source;
           document.body.style.cursor = 'pointer';
           this.process.setRedraw();
         } else if (overPath) {
@@ -286,10 +315,10 @@
       
       add: function (options) {
         var item = Object.create(Object.prototype, Constructor);
+        this.items.push(item);
         if (item.initialize) {
           item.initialize(options);
         }
-        this.items.push(item);
         return item;
       },
       
@@ -315,10 +344,10 @@
           Trait(options),
           Constructor
         ));
+        this.items[options.type] = item;
         if (item.initialize) {
           item.initialize(options);
         }
-        this.items[options.type] = item;
         return item;
       }
     });

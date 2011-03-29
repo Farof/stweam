@@ -150,8 +150,17 @@
               },
 
               click: function (e) {
-                var pos = Element.pos(canvasEl);
-                console.log('( ' + (e.clientX - pos.x) + ' ; ' + (e.clientY - pos.y) + ' )', e);
+                var
+                  pos = Element.pos(canvasEl),
+                  process = this.process,
+                  status = process.canvasStatus,
+                  overSource = status.overPath.source,
+                  overDest = status.overPath.dest;
+                  
+                if (overSource && overDest) {
+                  overDest.input = null;
+                  process.save();
+                }
               }
             }
           });
@@ -221,13 +230,15 @@
       },
 
       drawCanvas: function () {
-        this.canvas.clear();
-        this.drawPaths();
-        this.drawMouse();
-        if (this.canvasStatus.redraw === true) {
-          this.canvasStatus.redraw = false;
-          this.drawCanvas();
-          this.canvasStatus.redraw = null;
+        if (this.canvas) {
+          this.canvas.clear();
+          this.drawPaths();
+          this.drawMouse();
+          if (this.canvasStatus.redraw === true) {
+            this.canvasStatus.redraw = false;
+            this.drawCanvas();
+            this.canvasStatus.redraw = null;
+          }
         }
       },
 
@@ -261,6 +272,10 @@
       itemUpdated: function (updateType, item) {
         this.drawCanvas();
         this.generate();
+        this.save();
+      },
+      
+      save: function () {
         Twitter.save(this);
       }
     })
