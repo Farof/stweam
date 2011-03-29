@@ -53,10 +53,13 @@
         element = new Element('div', {
           'class': 'tweet-list'
         }),
-        root = document.querySelector(this.node);
-      this.inputTweets.forEach(function (tweet) {
-        element.appendChild(tweet.toElement());
-      });
+        root = document.querySelector(this.node),
+        input = this.inputTweets;
+      if (input) {
+        input.forEach(function (tweet) {
+          element.appendChild(tweet.toElement());
+        });
+      }
       Element.empty(root);
       root.appendChild(element);
     }

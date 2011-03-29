@@ -19,7 +19,7 @@
       types: TweetOutputType,
 
       get inputTweets() {
-        return this.input.outputTweets;
+        return this.input ? this.input.outputTweets : false;
       },
 
       set inputTweets(value) {

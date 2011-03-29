@@ -26,7 +26,7 @@
       configElements: {},
 
       get inputTweets() {
-        return this.input.outputTweets;
+        return this.input ? this.input.outputTweets : false;
       },
 
       set inputTweets(value) {
@@ -34,7 +34,7 @@
       },
 
       get outputTweets() {
-        return this.inputTweets.filter(this.validate);
+        return this.inputTweets ? this.inputTweets.filter(this.validate) : false;
       },
 
       set outputTweets(value) {
