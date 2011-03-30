@@ -226,19 +226,24 @@
       },
       
       drawLinks: function () {
-        var el;
+        var el, dest;
         if (this.input) {
           this.drawLinkFromItem(this.input);
         }
         if (this.linking) {
-          el = new Element('div', {
-            style: 'position: absolute; width: 0px; height: 0px'
-          });
-          el.style.left = this.canvas.mouseX + 'px';
-          el.style.top = this.canvas.mouseY + 'px';
-          this.process.workspace.appendChild(el);
-          this.drawLinkToPoint(el);
-          el.parentNode.removeChild(el);
+          dest = this.process.canvasStatus.overItem;
+          if (dest && dest.source !== this) {
+            this.drawLinkToPoint(dest);
+          } else {
+            el = new Element('div', {
+              style: 'position: absolute; width: 0px; height: 0px'
+            });
+            el.style.left = this.canvas.mouseX + 'px';
+            el.style.top = this.canvas.mouseY + 'px';
+            this.process.workspace.appendChild(el);
+            this.drawLinkToPoint(el);
+            el.parentNode.removeChild(el);
+          }
         }
         return this;
       },
