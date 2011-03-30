@@ -180,6 +180,8 @@
       
       handleMousedown: function (e) {
         if (this.hasOutput && !this.output && e.shiftKey) {
+          e.preventDefault();
+          e.stopPropagation();
           this.linking = true;
         }
       },
