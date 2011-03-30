@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.Twitter = {
     appName: 'tweb',
@@ -7,14 +8,26 @@
       return uuid();
     },
     
+    set uid(value) {
+      throw new Error('read only');
+    },
+    
     get tweets() {
       return Tweet.items;
+    },
+    
+    set tweets(value) {
+      throw new Error('read only');
     },
     
     get tweetsId() {
       return this.tweets.map(function (tweet) {
         return tweet.id;
       });
+    },
+    
+    set tweetsId(value) {
+      throw new Error('read only');
     },
     
     includeTweets: function (tweets) {
@@ -35,7 +48,7 @@
         return null;
       }
       
-      constructor = exports[options.constructorName]
+      constructor = exports[options.constructorName];
       if (constructor) {
         if (options.uid) {
           item = constructor.getById(options.uid);
@@ -76,9 +89,9 @@
         uid: '18',
         name: 'My first Process',
         constructorName: 'Process',
-        items: ['{"uid":"15","constructorName":"TweetInput","name":"global input","type":"global","position":{"x":0,"y":0,"left":93,"top":59}}',
-                '{"uid":"16","constructorName":"TweetFilter","name":"author filter","input":"15","param":"from_user","operator":"contains","value":"yozomist","position":{"x":0,"y":0,"left":252,"top":193}}',
-                '{"uid":"17","constructorName":"TweetOutput","name":"DOM output","input":"16","type":"DOM","position":{"x":0,"y":0,"left":434,"top":348},"node":"#list"}']
+        items: ['{"uid":"15","constructorName":"TweetInput","name":"global input","process":"18","type":"global","position":{"x":0,"y":0,"left":93,"top":59}}',
+                '{"uid":"16","constructorName":"TweetFilter","name":"author filter","process":"18","input":"15","type":"from_user","operator":"contains","value":"yozomist","position":{"x":0,"y":0,"left":252,"top":193}}',
+                '{"uid":"17","constructorName":"TweetOutput","name":"DOM output","process":"18","input":"16","type":"DOM","position":{"x":0,"y":0,"left":434,"top":348},"node":"#list"}']
       });
       
       Twitter.save();
@@ -88,7 +101,11 @@
     storage: {
       get db() {
         return sessionStorage;
-      } ,
+      },
+      
+      set db(value) {
+        throw new Error('read only');
+      },
       
       version: '1.0',
       
@@ -127,8 +144,8 @@
       },
       
       saveItem: function (item) {
-        if (item.constructor && item.constructor.name && item.serialize && item.uid) {
-          this.saveKey(item.constructor.name + ':' + item.uid, JSON.stringify(item.serialize()));
+        if (item.constructor && item.constructorName && item.serialize && item.uid) {
+          this.saveKey(item.constructorName + ':' + item.uid, JSON.stringify(item.serialize()));
         }
       },
       

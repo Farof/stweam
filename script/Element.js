@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.Element = function (tag, options) {
     var element = document.createElement(tag), key;
@@ -18,10 +19,14 @@
   
   exports.Element.Mutators = {
     events: function (events) {
-      for (var event in events) {
-        (Array.isArray(events[event]) ? events[event] : [events[event]]).forEach(function (func) {
+      var 
+        event,
+        func = function (func) {
           this.addEventListener(event, func, false);
-        }.bind(this));
+        }.bind(this);
+        
+      for (event in events) {
+        (Array.isArray(events[event]) ? events[event] : [events[event]]).forEach(func);
       }
     },
     

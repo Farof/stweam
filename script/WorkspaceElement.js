@@ -1,11 +1,19 @@
 (function (exports) {
+  "use strict";
   
   exports.WorkspaceElement = function WorkspaceElement(source) {
-    var el, title, icon, content, child, saveTitle;
+    var el, title, icon, content, saveTitle;
     
     el = new Element('div', {
       'class': 'workspace-item item-type-' + source.itemType + ' type-' + source.type.type,
-      source: source
+      source: source,
+      events: {
+        mousedown: function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.source.handleMousedown(e);
+        }
+      }
     });
     el.style.left = source.position.left + 'px';
     el.style.top = source.position.top + 'px';
@@ -35,7 +43,7 @@
             this.nextSibling.focus();
             Process.loadedItem.drawCanvas();
           } else {
-            console.log('source dragged');
+            
           }
         }
       }

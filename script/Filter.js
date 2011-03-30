@@ -1,4 +1,5 @@
 (function (exports) {
+  "use strict";
   
   exports.Filter = function (options) {
     this.options = options;
@@ -9,12 +10,12 @@
     
     saveState: function () {
       var
-      param = this.params.value,
-      operator = this.operators.value,
-      value = this.value.value,
-      check = (this.constructor.operators.filter(function (op) {
-        return op.key === operator;
-      }))[0].check(value);
+        param = this.params.value,
+        operator = this.operators.value,
+        value = this.value.value,
+        check = (this.constructor.operators.filter(function (op) {
+          return op.key === operator;
+        }))[0].check(value);
       
       this.validate = function (tweet) {
         return check(tweet.data[param]);
@@ -32,9 +33,9 @@
     
     updateOperatorList: function () {
       var
-      param = this.params.options.item(this.params.selectedIndex).param,
-      type = param.type,
-      types, i, ln;
+        param = this.params.options.item(this.params.selectedIndex).param,
+        type = param.type,
+        i, ln;
       for (i = 0, ln = this.operators.options.length; i < ln; i += 1) {
         if (this.operators.options.item(i).operator.types.indexOf(type) > -1) {
           this.operators.options.item(i).classList.remove('disabled');

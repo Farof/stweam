@@ -1,44 +1,40 @@
 (function (exports) {
+  "use strict";
   
-  exports.TweetOutputType = function (options) {
-    for (var key in options) {
-      this[key] = options[key];
-    }
-  };
-  
-  exports.TweetOutputType.prototype = {
-    constructor: exports.TweetOutputType,
-    
-    serialize: function (serializable) {
-      return serializable || {};
-    },
-    
-    toLibraryElement: function () {
-      var el;
-      if (!this.libraryElement) {
-        el = new Element('p', {
-          'class': 'library-item output-type',
-          text: this.label,
-          type: this,
-          events: {
-            click: function (e) {
-              console.log(this.type);
+  exports.ITweetOutputType = Trait.compose(
+    IInitializable,
+    Trait({
+      initialize: function TweetOutputType() {
+        document.getElementById('output-type-list').appendChild(this.toLibraryElement());
+        return this;
+      },
+      
+      serialize: function (out) {
+        return out || {};
+      },
+      
+      toLibraryElement: function () {
+        var el;
+        if (!this.libraryElement) {
+          el = new Element('p', {
+            'class': 'library-item output-type',
+            text: this.label,
+            type: this,
+            events: {
+              click: function (e) {
+                console.log(this.type);
+              }
             }
-          }
-        });
-        this.libraryElement = el;
+          });
+          this.libraryElement = el;
+        }
+        
+        return this.libraryElement;
       }
-      return this.libraryElement;
-    }
-  };
+    })
+  );
   
-  exports.TweetOutputType.items = {};
-  exports.TweetOutputType.add = function (options) {
-    var item = new this(options);
-    this.items[options.type] = item;
-    document.getElementById('output-type-list').appendChild(item.toLibraryElement());
-    return item;
-  };
+  exports.TweetOutputType = IMap.create(ITweetOutputType);
   
   
   exports.TweetOutputType.add({
@@ -54,13 +50,16 @@
     
     generate: function () {
       var
-      element = new Element('div', {
-        'class': 'tweet-list'
-      }),
-      root = document.querySelector(this.node);
-      this.tweets.forEach(function (tweet) {
-        element.appendChild(tweet.toDebugElement());
-      });
+        element = new Element('div', {
+          'class': 'tweet-list'
+        }),
+        root = document.querySelector(this.node),
+        input = this.inputTweets;
+      if (input) {
+        input.forEach(function (tweet) {
+          element.appendChild(tweet.toElement());
+        });
+      }
       Element.empty(root);
       root.appendChild(element);
     }

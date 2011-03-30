@@ -73,7 +73,7 @@ body {
   border-top: 1px solid #3E3D40;
 }
 .collection-item:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
   cursor: pointer;
 }
 
@@ -124,7 +124,7 @@ body {
   padding: 0.2em 0.3em;
 }
 .library-item:hover {
-  background-color: #B0B0B0;
+  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
   cursor: pointer;
 }
 
@@ -156,6 +156,12 @@ body {
 }
 .tweet-data ~ .tweet-data {
   border-top: 1px solid #3E3D40;
+}
+.tweet-author-image {
+  float: left;
+  height: 48px;
+  margin-right: 10px;
+  width: 48px;
 }
 .tweet-author {
   

@@ -1,38 +1,30 @@
 (function (exports) {
+  "use strict";
   
-  exports.TweetOperatorType = function (options) {
-    for (var key in options) {
-      this[key] = options[key];
-    }
-  };
-  
-  exports.TweetOperatorType.prototype = {
-    constructor: exports.TweetOperatorType,
-    
-    serialize: function () {
-      return {
-        type: this.type,
-        label: this.label
-      };
-    },
-    
-    getContentChildren: function (filter, param) {
-      var children;
-      if (!filter.typeContentChildren) {
-        filter.typeContentChildren = children = [];
-        
-        
+  exports.ITweetOperatorType = Trait.compose(
+    ISerializable,
+    Trait({
+      serializedProperties: ['type', 'label'],
+      
+      serialize: function () {
+        return {
+          type: this.type,
+          label: this.label
+        };
+      },
+
+      getContentChildren: function (filter, param) {
+        var children;
+        if (!filter.typeContentChildren) {
+          filter.typeContentChildren = children = [];
+        }
+        return filter.typeContentChildren;
       }
-      return filter.typeContentChildren;
-    }
-  };
+    })
+  );
   
-  exports.TweetOperatorType.items = {};
-  exports.TweetOperatorType.add = function (options) {
-    var item = new this(options);
-    this.items[options.type] = item;
-    return item;
-  };
+  
+  exports.TweetOperatorType = IMap.create(ITweetOperatorType);
   
   
   exports.TweetOperatorType.add({
