@@ -232,7 +232,7 @@
         }
         if (this.linking) {
           el = new Element('div', {
-            style: 'display: none; position: absolute;'
+            style: 'position: absolute; width: 0px; height: 0px'
           });
           el.style.left = this.canvas.mouseX + 'px';
           el.style.top = this.canvas.mouseY + 'px';
