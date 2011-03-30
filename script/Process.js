@@ -148,6 +148,27 @@
 
                 process.drawCanvas(e);
               },
+              
+              mouseup: function (e) {
+                var
+                  process = this.process,
+                  status = process.canvasStatus,
+                  target = e.target,
+                  item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                
+                if (status.linkingFrom) {
+                  if (status.overItem && status.linkingFrom.acceptsLinkTo(status.overItem.source)) {
+                    status.overItem.source.input = status.linkingFrom;
+                    status.linkingFrom.linking = false;
+                    process.drawCanvas(e);
+                    process.generate();
+                    process.save();
+                  } else {
+                    status.linkingFrom.linking = false;
+                    process.drawCanvas();
+                  }
+                }
+              },
 
               click: function (e) {
                 var
@@ -159,6 +180,7 @@
                   
                 if (overSource && overDest) {
                   overDest.input = null;
+                  process.generate();
                   process.save();
                 }
               }
@@ -215,10 +237,10 @@
             borderColor: { normal: '#3E3D40', overSource: '#3E3D40' }
           },
           line: {
-            width: { normal: 2, over: 3 },
+            width: { normal: 3, over: 3 },
             color: { normal: '#3E3D40', over: '#3E3D40' },
             shadowColor: { normal: '#3E3D40', over: '#FF0000' },
-            shadowBlur: { normal: 0, over: 2 }
+            shadowBlur: { normal: 0, over: 1 }
           },
           arrow: {
             width: { normal: 10 },

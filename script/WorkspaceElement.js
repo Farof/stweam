@@ -9,6 +9,8 @@
       source: source,
       events: {
         mousedown: function (e) {
+          e.preventDefault();
+          e.stopPropagation();
           this.source.handleMousedown(e);
         }
       }

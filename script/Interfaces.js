@@ -180,7 +180,7 @@
       
       handleMousedown: function (e) {
         if (this.hasOutput && !this.output && e.shiftKey) {
-          console.log('draw path');
+          this.linking = true;
         }
       },
       
@@ -200,14 +200,43 @@
         // fail silently
       },
       
+      get linking() {
+        return this.process ? (this.process.canvasStatus.linkingFrom === this) : false;
+      },
+      
+      set linking(value) {
+        if (this.process) {
+          this.process.canvasStatus.linkingFrom = value ? this : null;
+        }
+      },
+      
+      acceptsLinkFrom: function (item) {
+        return item !== this;
+      },
+      
+      acceptsLinkTo: function (item) {
+        return item !== this && item.acceptsLinkFrom(this);
+      },
+      
       draw: function () {
         this.drawLinks();
         return this;
       },
       
       drawLinks: function () {
+        var el;
         if (this.input) {
           this.drawLinkFromItem(this.input);
+        }
+        if (this.linking) {
+          el = new Element('div', {
+            style: 'display: none; position: absolute;'
+          });
+          el.style.left = this.canvas.mouseX + 'px';
+          el.style.top = this.canvas.mouseY + 'px';
+          this.process.workspace.appendChild(el);
+          this.drawLinkToPoint(el);
+          el.parentNode.removeChild(el);
         }
         return this;
       },
