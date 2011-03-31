@@ -137,26 +137,16 @@
       dragEnd: function (dragEvent) {
         var
           clone = dragEvent.node,
-          source = clone.source;
-        console.log('drag end', this, dragEvent, clone, source);
-        clone.parentNode.removeChild(clone);
-      },
-      /*
-      handleDocMouseup: function (e) {
-        var
-          t = e.target,
-          type = this.source,
-          clone = source.clonedNode;
-        console.log('doc mouseup: ', e, t, this);
-        if (clone) {
-          if (clone.parentNode) {
-            clone.parentNode.removeChild(clone);
-            clone.source = null;
-            source.clonedNode = null;
-          }
+          source = clone.source,
+          workspace = document.getElementById('workspace');
+          
+        if (clone.hover(workspace)) {
+          console.log('drop');
         }
-        document.removeEventListener('mouseup', this.type.handleDocMouseup, false);
-      },*/
+        clone.parentNode.removeChild(clone);
+        source.clonedNode = null;
+        clone.source = null;
+      },
 
       handleElementClick: function (e) {
         console.log('click: ', this.type);

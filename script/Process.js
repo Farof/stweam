@@ -130,7 +130,11 @@
               },
 
               mouseover: function (e) {
-                var target = e.target;
+                
+              },
+              
+              mouseout: function (e) {
+                
               },
 
               mousemove: function (e) {

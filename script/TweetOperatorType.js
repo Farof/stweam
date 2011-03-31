@@ -5,6 +5,8 @@
     Trait.resolve({ serializedProperties: undefined }, IType),
     
     Trait({
+      check: Trait.required,
+      
       serializedProperties: ['type', 'label'],
 
       getContentChildren: function (filter, param) {

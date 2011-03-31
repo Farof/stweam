@@ -45,6 +45,8 @@
         maxWidth = this.container.width - item.scrollWidth,
         maxHeight = this.container.height - item.scrollHeight;
       
+      this.moveEvent = event;
+      
       if (left < 0) {
         left = 0;
       } else if (left > maxWidth) {
