@@ -184,4 +184,14 @@
     }
   });
   
+  Object.defineProperties(Event.prototype, {
+    stop: {
+      enumerable: true,
+      value: function () {
+        this.stopPropagation();
+        this.preventDefault();
+      }
+    }
+  });
+  
 }(window));

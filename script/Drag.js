@@ -10,6 +10,8 @@
     this.move = this.move.bind(this);
     this.stop = this.stop.bind(this);
     
+    this.node.source.dragEvent = this;
+    
     this.start();
   };
   
@@ -53,12 +55,11 @@
       } else if (top > maxHeight) {
         top = maxHeight;
       }
-      item.source.position.left = left;
-      item.source.position.top = top;
+      
       style.position = 'absolute';
       style.left = left + 'px';
       style.top = top + 'px';
-      item.source.process.drawCanvas();
+      item.source.dragPositionUpdated(left, top);
       
       if (!item.dragged) {
         item.dragged = true;
@@ -70,11 +71,13 @@
       this.moveContainer.removeEventListener('mouseup', this.stop, true);
       
       this.node.dragging = false;
-      if (this.node.dragged) {
-        // this.node.querySelector('.workspace-item-title-zone').save();
-        this.node.source.updated('position');
-      }
-      this.node.source.process.dragEvent = null;
+      this.node.source.dragEvent = null;
+      
+      this.node.source.dragEnd(this);
     }
+  };
+  
+  Drag.start = function (node, event, container, docWide) {
+    return new Drag(node, event, container, docWide);
   };
 }(window));

@@ -2,36 +2,11 @@
   "use strict";
   
   exports.ITweetFilterType = Trait.compose(
-    IInitializable,
+    IType,
+    
     Trait({
-      initialize: function TweetFilterType() {
-        document.getElementById('filter-type-list').appendChild(this.toLibraryElement());
-        return this;
-      },
+      typeGroup: 'filter',
       
-      serialize: function (out) {
-        return out || {};
-      },
-      
-      toLibraryElement: function () {
-        var el;
-        if (!this.libraryElement) {
-          el = new Element('p', {
-            'class': 'library-item filter-type',
-            text: this.label,
-            type: this,
-            events: {
-              click: function (e) {
-                console.log(this.type);
-              }
-            }
-          });
-          this.libraryElement = el;
-        }
-        
-        return this.libraryElement;
-      },
-
       getOperatorsElement: function (filter) {
         var el, child, select, key, operator, option;
         if (!filter.operatorsElement) {
