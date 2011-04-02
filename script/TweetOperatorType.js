@@ -5,6 +5,9 @@
     Trait.resolve({ serializedProperties: undefined }, IType),
     
     Trait({
+      typeGroup: 'operator',
+      typeGroupConstructor: 'TweetOperator',
+      
       check: Trait.required,
       
       serializedProperties: ['type', 'label'],

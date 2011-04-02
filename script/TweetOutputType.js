@@ -6,6 +6,7 @@
     
     Trait({
       typeGroup: 'output',
+      typeGroupConstructor: 'TweetOutput',
 
       serializedProperties: ['outputInfo'],
       

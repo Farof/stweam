@@ -6,6 +6,7 @@
     
     Trait({
       typeGroup: 'filter',
+      typeGroupConstructor: 'TweetFilter',
       
       getOperatorsElement: function (filter) {
         var el, child, select, key, operator, option;
@@ -52,12 +53,6 @@
   exports.TweetFilterType = IMap.create(ITweetFilterType);
   
   
-  exports.TweetFilterType.add({
-    type: 'created_at',
-    label: 'Tweet date',
-    description: 'Filter based on tweet date.',
-    operators: ['is']
-  });
   exports.TweetFilterType.add({
     type: 'from_user',
     label: 'Author username',
@@ -161,6 +156,13 @@
       return config;
     }
   });
+  /*
+  exports.TweetFilterType.add({
+    type: 'created_at',
+    label: 'Tweet date',
+    description: 'Filter based on tweet date.',
+    operators: ['is']
+  });
   exports.TweetFilterType.add({
     type: 'result_type',
     label: 'Result type',
@@ -200,5 +202,6 @@
     description: 'Filter based on source used to tweet.',
     operators: ['is']
   });
+  */
   
 }(window));

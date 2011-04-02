@@ -83,6 +83,7 @@
       isLibraryItem: true,
       
       typeGroup: Trait.required,
+      typeGroupConstructor: Trait.required,
       type: Trait.required,
       label: Trait.required,
       description: Trait.required,
@@ -138,10 +139,21 @@
         var
           clone = dragEvent.node,
           source = clone.source,
-          workspace = document.getElementById('workspace');
+          workspace = document.getElementById('workspace'),
+          item, pos;
           
         if (clone.hover(workspace)) {
-          console.log('drop');
+          pos = workspace.pos();
+          item = exports[source.typeGroupConstructor].add({
+            process: workspace.process,
+            type: source.type,
+            position: {
+              left: (source.position.left - pos.left),
+              top: (source.position.top - pos.top)
+            }
+          });
+          workspace.process.addToWorkspace(item);
+          workspace.process.save();
         }
         clone.parentNode.removeChild(clone);
         source.clonedNode = null;

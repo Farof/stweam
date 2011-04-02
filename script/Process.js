@@ -25,7 +25,7 @@
 
             // registering process outputs
             if (item.initialize.name === 'TweetOutput') {
-              this.outputs.push(item);
+              this.outputs.include(item);
             }
 
             // mapping inputs uids to objects
@@ -215,7 +215,12 @@
       addToWorkspace: function (item) {
         var el = item.toWorkspaceElement();
         this.workspace.appendChild(el);
+        this.items.include(item);
         return this;
+      },
+      
+      removeFromWorkspace: function (item) {
+        this.items.remove(item);
       },
 
       handleWorkspaceMousedown: function (event) {

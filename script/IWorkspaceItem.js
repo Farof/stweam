@@ -88,6 +88,17 @@
         return this.type.serialize.call(this, this.workspaceItemSerialize(), this.type.serializedProperties);
       },
       
+      dispose: function () {
+        if (this.workspaceElement) {
+          this.workspaceElement.source = null;
+          this.workspaceElement.dispose();
+        }
+        if (this.process) {
+          this.process.removeFromWorkspace(this);
+          this.process.save();
+        }
+      },
+      
       toWorkspaceElement: function () {
         var el;
         if (!this.workspaceElement) {
@@ -120,10 +131,13 @@
       
       handleMousedown: function (e) {
         if (this.hasOutput && !this.output && e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
+          e.stop();
           this.linking = true;
+        } else if (e.altKey) {
+          e.stop();
+          this.dispose();
         }
+        console.log(this);
       },
       
       updated: function (type, value) {
@@ -181,9 +195,13 @@
       drawLinks: function () {
         var el, dest;
         if (this.input) {
+          if (typeof this.input === 'string') {
+            //this.input = this.input;
+          }
           this.drawLinkFromItem(this.input);
         }
         if (this.linking) {
+          console.log('link');
           dest = this.process.canvasStatus.overItem;
           if (dest && dest.source !== this) {
             this.drawLinkToPoint(dest);

@@ -44,7 +44,7 @@
     },
     
     deserialize: function (serializable) {
-      console.log('deserialize: ', serializable);
+      //console.log('deserialize: ', serializable);
       var options, constructor, item;
       try {
         options = JSON.parse(serializable);
@@ -94,9 +94,9 @@
         uid: '18',
         name: 'My first Process',
         constructorName: 'Process',
-        items: ['{"uid":"15","constructorName":"TweetInput","name":"global input","process":"18","type":"global","position":{"x":0,"y":0,"left":93,"top":59}}',
-                '{"uid":"16","constructorName":"TweetFilter","name":"author filter","process":"18","input":"15","type":"from_user","operator":"contains","value":"yozomist","position":{"x":0,"y":0,"left":252,"top":193}}',
-                '{"uid":"17","constructorName":"TweetOutput","name":"DOM output","process":"18","input":"16","type":"DOM","position":{"x":0,"y":0,"left":434,"top":348},"outputInfo":{"node":"#list"}}']
+        items: ['{"uid":"15","constructorName":"TweetInput","name":"global input","process":"18","type":"global","position":{"left":93,"top":59}}',
+                '{"uid":"16","constructorName":"TweetFilter","name":"author filter","process":"18","input":"15","type":"from_user","operator":"contains","value":"yozomist","position":{"left":252,"top":193}}',
+                '{"uid":"17","constructorName":"TweetOutput","name":"DOM output","process":"18","input":"16","type":"DOM","position":{"left":434,"top":348},"outputInfo":{"node":"#list"}}']
       });
       
       Twitter.save();

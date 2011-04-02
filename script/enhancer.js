@@ -222,6 +222,13 @@
         nodePos = node.pos();
         return pos.centerX.between(nodePos.left, nodePos.right) && pos.centerY.between(nodePos.top, nodePos.bottom);
       }
+    },
+    
+    dispose: {
+      enumerable: true,
+      value: function () {
+        return this.parentNode.removeChild(this);
+      }
     }
   });
   
@@ -243,6 +250,43 @@
           [a, b] = [b, a];
         }
         return this >= a && this <= b;
+      }
+    }
+  });
+  
+  Object.defineProperties(Array.prototype, {
+    last: {
+      enumerable: true,
+      get: function () {
+        return this[this.lenght - 1];
+      }
+    },
+    
+    contains: {
+      enumerable: true,
+      value: function (item) {
+        return this.indexOf(item) > -1;
+      }
+    },
+    
+    include: {
+      enumerable: true,
+      value: function (item) {
+        if (!this.contains(item)) {
+          this.push(item);
+        }
+        return this;
+      }
+    },
+    
+    remove: {
+      enumerable: true,
+      value: function (item) {
+        var i = this.indexOf(item);
+        if (i > -1) {
+          return this.splice(i, 1);
+        }
+        return null;
       }
     }
   });

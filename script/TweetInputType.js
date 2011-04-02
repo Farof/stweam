@@ -6,6 +6,7 @@
     
     Trait({
       typeGroup: 'input',
+      typeGroupConstructor: 'TweetInput',
       
       retrieve: Trait.required
     })
