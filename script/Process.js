@@ -315,15 +315,20 @@
     })
   );
   
-  exports.Process = ICollection.create(IProcess);
-  exports.Process.getByItem = function (item) {
-    var i, ln;
-    for (i = 0, ln = this.items.length; i < ln; i += 1) {
-      if (this.items[i].contains(item)) {
-        return this.items[i];
+  var processOverload = Trait({
+    loadedItem: null,
+    
+    getByItem: function (item) {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        if (this.items[i].contains(item)) {
+          return this.items[i];
+        }
       }
+      return null;
     }
-    return null;
-  };
+  });
+  
+  exports.Process = ICollection.create(IProcess, processOverload);
   
 }(window));

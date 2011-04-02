@@ -6,6 +6,7 @@
                     getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
     IHasInput,
     IHasOutput,
+    
     Trait({
       initialize: function TweetFilter(options) {
         this.workspaceItemInit(options);
@@ -39,6 +40,11 @@
 
       set outputTweets(value) {
         throw new Error('read only');
+      },
+      
+      
+      onConfigChange: function () {
+        throw new Error('not yet implemented');
       },
       
       _operator: undefined,
@@ -103,21 +109,8 @@
       },
       
       getContentChildren: function () {
-        var existed = !!this.contentChildren, children = this.getItemContentChildren(), operators, config;
-        
-        if (!existed) {
-          operators = this.type.getOperatorsElement(this);
-          children.push(operators);
-
-          config = this.configElement = this.toConfigElement();
-          children.push(config);
-        }
-        
+        var children = this.getItemContentChildren();
         return children;
-      },
-      
-      toConfigElement: function () {
-        return this.operator.toConfigElement(this);
       }
     })
   );

@@ -19,6 +19,9 @@
     type: 'global',
     label: 'All sources',
     description: 'All tweets from all sources.',
+    configType: 'void',
+    operators: null,
+    
     retrieve: function () {
       return Twitter.tweets;
     }

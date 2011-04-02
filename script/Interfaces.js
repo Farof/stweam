@@ -73,11 +73,42 @@
     }
   });
   
+  exports.ITyped = Trait({
+    types: Trait.required,
+    
+    _type: undefined,
+    
+    get type() {
+      return this._type;
+    },
+    
+    set type(value) {
+      this._type = this.types.items[value];
+    }
+  });
+  
+  exports.IHasConfig = Trait({
+    toConfigElement: function () {
+      return this.configElement || this.type.toConfigElement(this);
+    }
+  });
+  
+  exports.IDeliverConfig = Trait({
+    configType: Trait.required,
+    
+    operators: Trait.required,
+    
+    toConfigElement: function (item) {
+      return item.configElement = ItemConfigType.items[this.configType].toConfigElement(item, this);
+    }
+  })
+  
   exports.IType = Trait.compose(
     IInitializable,
     IHasOptions,
     ISerializable,
     IMovable,
+    IDeliverConfig,
     
     Trait({
       isLibraryItem: true,
@@ -87,7 +118,6 @@
       type: Trait.required,
       label: Trait.required,
       description: Trait.required,
-
 
       serializedProperties: [],
 
@@ -181,7 +211,9 @@
       },
       
       add: function (options) {
-        var item = Object.create(Object.prototype, Constructor);
+        var item;
+        Trait.create(Object.prototype, Constructor);
+        item = Object.create(Object.prototype, Constructor);
         this.items.push(item);
         if (item.initialize) {
           item.initialize(options);
@@ -198,8 +230,8 @@
       }
     });
   };
-  exports.ICollection.create = function (Constructor) {
-    return Object.create(Object.prototype, ICollection(Constructor));
+  exports.ICollection.create = function (Constructor, trait) {
+    return Object.create(Object.prototype, Trait.compose(ICollection(Constructor), (trait || Trait({}))));
   };
   
   exports.IMap = function (Constructor) {
@@ -207,10 +239,12 @@
       items: {},
       
       add: function (options) {
-        var item = Object.create(Object.prototype, Trait.override(
+        var item, trait = Trait.override(
           Trait(options),
           Constructor
-        ));
+        );
+        Trait.create(Object.prototype, trait);
+        item = Object.create(Object.prototype, trait);
         this.items[options.type] = item;
         if (item.initialize) {
           item.initialize(options);
@@ -219,7 +253,6 @@
       }
     });
   };
-  
   exports.IMap.create = function (Constructor) {
     return Object.create(Object.prototype, IMap(Constructor));
   };

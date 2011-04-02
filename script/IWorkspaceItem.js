@@ -31,20 +31,6 @@
     }
   });
   
-  exports.ITyped = Trait({
-    types: Trait.required,
-    
-    _type: undefined,
-    
-    get type() {
-      return this._type;
-    },
-    
-    set type(value) {
-      this._type = this.types.items[value];
-    }
-  });
-  
   exports.IWorkspaceItem = Trait.compose(
     IInitializable,
     IHasOptions,
@@ -52,6 +38,8 @@
     Trait.resolve({ dragPositionUpdated: 'workspaceItemPositionUpdated' }, IMovable),
     Trait.resolve({ serialize: 'workspaceItemSerialize' }, ISerializable),
     ITyped,
+    IHasConfig,
+    
     Trait({
       isWorkspaceItem: true,
       
@@ -125,6 +113,8 @@
             text: this.type.label
           }));
           children.push(child);
+          
+          children.push(this.toConfigElement());
         }
         return this.contentChildren;
       },
@@ -201,7 +191,6 @@
           this.drawLinkFromItem(this.input);
         }
         if (this.linking) {
-          console.log('link');
           dest = this.process.canvasStatus.overItem;
           if (dest && dest.source !== this) {
             this.drawLinkToPoint(dest);

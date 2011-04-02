@@ -22,6 +22,22 @@
     label: 'DOM',
     description: 'Outputs as an HTML view.',
     
+    configType: 'input',
+    
+    operators: null,
+    
+    placeholder: 'dom selector',
+    
+    getInputValue: function () {
+      return this.outputInfo.node;
+    },
+    
+    sendNewConfig: function (type, selector) {
+      this.updated('outputInfo', {
+        node: selector
+      });
+    },
+    
     generate: function () {
       var
         element = new Element('div', {

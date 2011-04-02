@@ -28,6 +28,10 @@
       
       serializedProperties: ['uid', 'constructorName', 'name', 'type=type.type', 'position'],
       
+      onConfigChange: function () {
+        throw new Error('not yet implemented');
+      },
+      
       getContentChildren: function () {
         var children = this.getItemContentChildren();
         return children;

@@ -53,10 +53,17 @@
   exports.TweetFilterType = IMap.create(ITweetFilterType);
   
   
+  
   exports.TweetFilterType.add({
     type: 'from_user',
     label: 'Author username',
     description: 'Filter by tweet author.',
+    
+    configType: 'void',
+    
+    sendNewConfig: function (type, value) {
+      console.log('config: ', this, type, value);
+    },
     
     operator: 'is',
     operators: {
