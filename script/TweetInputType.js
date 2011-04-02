@@ -19,8 +19,10 @@
     type: 'global',
     label: 'All sources',
     description: 'All tweets from all sources.',
-    configType: 'void',
-    operators: null,
+    
+    toConfigElement: function () {
+      return new Element('div');
+    },
     
     retrieve: function () {
       return Twitter.tweets;

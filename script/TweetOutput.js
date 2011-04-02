@@ -16,8 +16,6 @@
 
       itemType: 'output',
       
-      outputInfo: {},
-      
       types: TweetOutputType,
 
       get inputTweets() {
@@ -28,7 +26,7 @@
         throw new Error('read only');
       },
       
-      serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid', 'type=type.type', 'position'],
+      serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid', 'type=type.type', 'position', 'config'],
 
       getContentChildren: function () {
         var children = this.getItemContentChildren();

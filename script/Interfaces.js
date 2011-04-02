@@ -89,26 +89,22 @@
   
   exports.IHasConfig = Trait({
     toConfigElement: function () {
-      return this.configElement || this.type.toConfigElement(this);
+      if (!this.configElement) {
+        this.configElement = this.type.toConfigElement(this);
+      }
+      return this.configElement;
+    },
+    
+    saveConfig: function () {
+      console.log('save');
     }
   });
-  
-  exports.IDeliverConfig = Trait({
-    configType: Trait.required,
-    
-    operators: Trait.required,
-    
-    toConfigElement: function (item) {
-      return item.configElement = ItemConfigType.items[this.configType].toConfigElement(item, this);
-    }
-  })
   
   exports.IType = Trait.compose(
     IInitializable,
     IHasOptions,
     ISerializable,
     IMovable,
-    IDeliverConfig,
     
     Trait({
       isLibraryItem: true,
@@ -118,8 +114,12 @@
       type: Trait.required,
       label: Trait.required,
       description: Trait.required,
+      
+      toConfigElement: Trait.required,
 
       serializedProperties: [],
+      
+      config: {},
 
       initialize: function TweetOutputType(options) {
         this.setOptions(options);

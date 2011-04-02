@@ -22,20 +22,8 @@
     label: 'DOM',
     description: 'Outputs as an HTML view.',
     
-    configType: 'input',
-    
-    operators: null,
-    
-    placeholder: 'dom selector',
-    
-    getInputValue: function () {
-      return this.outputInfo.node;
-    },
-    
-    sendNewConfig: function (type, selector) {
-      this.updated('outputInfo', {
-        node: selector
-      });
+    toConfigElement: function () {
+      return new Element('div');
     },
     
     generate: function () {
@@ -43,7 +31,7 @@
         element = new Element('div', {
           'class': 'tweet-list'
         }),
-        root = document.querySelector(this.outputInfo.node),
+        root = document.querySelector(this.config.node),
         input = this.inputTweets;
         
       if (root) {

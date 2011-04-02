@@ -59,11 +59,51 @@
     label: 'Author username',
     description: 'Filter by tweet author.',
     
-    configType: 'void',
-    
-    sendNewConfig: function (type, value) {
-      console.log('config: ', this, type, value);
+    toConfigElement: function () {
+      return new Element('div');
     },
+    
+    validator: function (config) {
+      var
+        type = this.type,
+        check = this.operators[config.operator].check;
+      return function (tweet) {
+        return check(config.value, tweet.data[type]);
+      };
+    },
+    
+    operator: 'is',
+    
+    operators: {
+      is: {
+        type: 'is',
+        label: 'is',
+        description: 'exact username match (case insensitive)',
+
+        check: function (filter, tweet) {
+          return tweet.toLowerCase() === filter.toLowerCase();
+        }
+      },
+      contains: {
+        type: 'contains',
+        label: 'contains',
+        description: 'string found in username (case insensitive)',
+        
+        check: function (filter, tweet) {
+          return tweet.toLowerCase().indexOf(filter.toLowerCase()) > -1;
+        }
+      }
+    }
+  });
+  
+  
+  
+  /*
+  exports.TweetFilterType.add({
+    type: 'from_user',
+    label: 'Author username',
+    description: 'Filter by tweet author.',
+    
     
     operator: 'is',
     operators: {

@@ -64,7 +64,7 @@
         this.setOptions(options);
         this.initUUID();
         this.initPosition();
-
+        
         if (!this._process) {
           this._process = Process.getByItem(this);
         }
