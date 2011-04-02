@@ -216,6 +216,9 @@
         var el = item.toWorkspaceElement();
         this.workspace.appendChild(el);
         this.items.include(item);
+        if (item.initialize.name === 'TweetOutput') {
+          this.outputs.include(item);
+        }
         return this;
       },
       

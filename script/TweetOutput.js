@@ -16,6 +16,8 @@
 
       itemType: 'output',
       
+      outputInfo: {},
+      
       types: TweetOutputType,
 
       get inputTweets() {
