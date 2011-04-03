@@ -22,6 +22,11 @@
                 item.process = this;
               }
             }
+            
+            if (!item.type) {
+              this.removeFromWorkspace(item);
+              this.save();
+            }
 
             // registering process outputs
             if (item.initialize.name === 'TweetOutput') {
