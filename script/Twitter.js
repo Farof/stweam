@@ -73,14 +73,6 @@
       
       Twitter.load();
       
-      /*
-      lastProcess = this.load('config.lastProcess') || Process.items[0];
-      if (lastProcess) {
-        lastProcess.generate().loadInWorkspace();
-      } else {
-        console.log('no process to load');
-      }
-      /* */
       lastView = this.load('config.lastView') || View.items[0];
       if (lastView) {
         lastView.load();
