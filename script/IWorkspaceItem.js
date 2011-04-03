@@ -153,7 +153,9 @@
         if (value) {
           this[type] = value;
         }
-        this.process.itemUpdated(type, this);
+        if (this.workspaceElement) {
+          this.process.itemUpdated(type, this);
+        }
         return this;
       },
       
