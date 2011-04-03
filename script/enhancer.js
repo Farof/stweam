@@ -229,6 +229,30 @@
       value: function () {
         return this.parentNode.removeChild(this);
       }
+    },
+    
+    empty: {
+      enumerable: true,
+      value: function () {
+        while (this.children[0]) {
+          this.removeChild(this.children[0]);
+        }
+        return this;
+      }
+    },
+    
+    getParentByClassName: {
+      enumerable: true,
+      value: function (name) {
+        var node = this.parentNode;
+        while (node) {
+          if (node.classList && node.classList.contains(name)) {
+            return node;
+          }
+          node = node.parentNode;
+        }
+        return null;
+      }
     }
   });
   

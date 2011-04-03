@@ -40,8 +40,7 @@
             element.appendChild(tweet.toElement());
           });
         }
-        Element.empty(root);
-        root.appendChild(element);
+        root.empty().appendChild(element);
       } else {
         console.log('DOM output has no node: ', this.node, this);
       }

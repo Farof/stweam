@@ -143,7 +143,7 @@
                 var
                   target = e.target,
                   process = this.process,
-                  item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
 
                 if ((!process.canvasStatus.overItem && item) ||
                     (process.canvasStatus.overItem && item && process.canvasStatus.overItem !== item)) {
@@ -160,7 +160,7 @@
                   process = this.process,
                   status = process.canvasStatus,
                   target = e.target,
-                  item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
                 
                 if (status.linkingFrom) {
                   if (status.overItem && status.linkingFrom.acceptsLinkTo(status.overItem.source)) {
@@ -178,7 +178,7 @@
 
               click: function (e) {
                 var
-                  pos = Element.pos(canvasEl),
+                  pos = canvasEl.pos(),
                   process = this.process,
                   status = process.canvasStatus,
                   overSource = status.overPath.source,

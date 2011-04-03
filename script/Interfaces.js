@@ -139,14 +139,14 @@
         var
           t = e.target,
           source = t.source,
-          pos = Element.pos(t),
+          pos = t.pos(),
           clone = source.clonedNode = t.cloneNode(true);
         
         e.stop();
         
         clone.style.position = 'absolute';
-        clone.style.left = pos.x + 'px';
-        clone.style.top = pos.y + 'px';
+        clone.style.left = pos.left + 'px';
+        clone.style.top = pos.top + 'px';
         clone.source = source;
         document.body.appendChild(clone);
         Drag.start(clone, e, document.body, true);
