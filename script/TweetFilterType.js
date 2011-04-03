@@ -6,47 +6,7 @@
     
     Trait({
       typeGroup: 'filter',
-      typeGroupConstructor: 'TweetFilter',
-      
-      getOperatorsElement: function (filter) {
-        var el, child, select, key, operator, option;
-        if (!filter.operatorsElement) {
-          filter.operatorsElement = el = new Element('p', {
-            'class': 'item-content-zone operator-choice-zone'
-          });
-
-          child = new Element('span', {
-            'class': 'item-content-label operator-choice-label',
-            text: 'operator: '
-          });
-          el.appendChild(child);
-
-          select = new Element('select', {
-            'class': 'item-content operator-select',
-            events: {
-              change: function () {
-                filter.updated('operator', this.value);
-              }
-            }
-          });
-
-          for (key in this.operators) {
-            operator = this.operators[key];
-            option = new Element('option', {
-              'class': 'operator-option',
-              text: operator.label,
-              value: operator.type,
-              title: operator.description
-            });
-            select.appendChild(option);
-          }
-          if (filter.operator.type) {
-            select.value = filter.operator.type;
-          }
-          el.appendChild(select);
-        }
-        return el;
-      }
+      typeGroupConstructor: 'TweetFilter'
     })
   );
   

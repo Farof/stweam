@@ -21,7 +21,7 @@
     description: 'All tweets from all sources.',
     
     toConfigElement: function () {
-      return new Element('div');
+      return new ConfigElement();
     },
     
     retrieve: function () {

@@ -23,7 +23,7 @@
     description: 'Outputs as an HTML view.',
     
     toConfigElement: function () {
-      return new Element('div');
+      return new ConfigElement();
     },
     
     generate: function () {
