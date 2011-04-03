@@ -253,6 +253,19 @@
         }
         return null;
       }
+    },
+    
+    hasChild: {
+      enumerable: true,
+      value: function (child) {
+        var i, ln;
+        for (i = 0, ln = this.children.length; i < ln; i += 1) {
+          if (this.children[i] === child) {
+            return true;
+          }
+        }
+        return false;
+      }
     }
   });
   
@@ -295,9 +308,23 @@
     
     include: {
       enumerable: true,
-      value: function (item) {
+      value: function (item, pass) {
+        if (!pass && Array.isArray(item)) {
+          return this.merge(item);
+        }
         if (!this.contains(item)) {
           this.push(item);
+        }
+        return this;
+      }
+    },
+    
+    merge: {
+      enumerable: true,
+      value: function (items) {
+        var i, ln;
+        for (i = 0, ln = items.length; i < ln; i += 1) {
+          this.include(items[i], true);
         }
         return this;
       }

@@ -167,7 +167,6 @@
                     status.overItem.source.input = status.linkingFrom;
                     status.linkingFrom.linking = false;
                     process.drawCanvas(e);
-                    process.generate();
                     process.save();
                   } else {
                     status.linkingFrom.linking = false;
@@ -186,7 +185,6 @@
                   
                 if (overSource && overDest) {
                   overDest.input = null;
-                  process.generate();
                   process.save();
                 }
               }
@@ -307,7 +305,6 @@
 
       itemUpdated: function (updateType, item) {
         this.drawCanvas();
-        this.generate();
         this.save();
       },
       

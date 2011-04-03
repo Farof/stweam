@@ -34,8 +34,7 @@
       },
 
       generate: function () {
-        this.type.generate.call(this);
-        return this;
+        return this.type.generate(this);
       }
     })
   );

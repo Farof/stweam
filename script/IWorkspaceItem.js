@@ -26,7 +26,17 @@
         this._input.output = this;
       }
       if (this.process) {
+        this.inputUpdated();
         this.process.drawCanvas();
+      }
+    },
+    
+    inputUpdated: function (type, input) {
+      if (this.output) {
+        this.output.inputUpdated(type, input);
+      }
+      if (this.itemType === 'output') {
+        this.type.refreshOutput(this)
       }
     }
   });
@@ -152,6 +162,9 @@
       updated: function (type, value) {
         if (value) {
           this[type] = value;
+        }
+        if (this.output) {
+          this.output.inputUpdated(type, this);
         }
         if (this.workspaceElement) {
           this.process.itemUpdated(type, this);
