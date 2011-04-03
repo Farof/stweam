@@ -31,6 +31,21 @@
     }
   });
   
+  exports.IHasConfig = Trait({
+    config: {},
+    
+    toConfigElement: function () {
+      if (!this.configElement) {
+        this.configElement = this.type.toConfigElement(this);
+      }
+      return this.configElement;
+    },
+    
+    saveConfig: function () {
+      console.log('save');
+    }
+  });
+  
   exports.IWorkspaceItem = Trait.compose(
     IInitializable,
     IHasOptions,
@@ -77,6 +92,10 @@
       },
       
       dispose: function () {
+        this.input = null;
+        if (this.output) {
+          this.output.input = null;
+        }
         if (this.workspaceElement) {
           this.workspaceElement.source = null;
           this.workspaceElement.dispose();
@@ -84,6 +103,7 @@
         if (this.process) {
           this.process.removeFromWorkspace(this);
           this.process.save();
+          this.process.generate();
         }
       },
       
@@ -127,7 +147,6 @@
           e.stop();
           this.dispose();
         }
-        console.log(this);
       },
       
       updated: function (type, value) {

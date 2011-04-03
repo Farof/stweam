@@ -104,8 +104,8 @@
           TweetFilter.from({
             uid: '16', name: 'author filter',
             process: '18', input: '15', type: 'from_user', 
-            config: { operator: 'contains', value: 'yozomist' },
-            position: { left: 252, top: 193 }
+            config: { operator: 'contains', value: 'yo' },
+            position: { left: 200, top: 240 }
           }),
           TweetOutput.from({
             uid: '17', name: 'DOM output',

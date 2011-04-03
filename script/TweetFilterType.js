@@ -59,20 +59,93 @@
     label: 'Author username',
     description: 'Filter by tweet author.',
     
-    toConfigElement: function () {
-      return new Element('div');
+    initConfig: function (item) {
+      var config = item.config;
+      if (!config.value) {
+        config.value = '';
+        item.updated('value');
+      }
+    },
+    
+    toConfigElement: function (item) {
+      var config, child, child2, select, option, operator, key;
+      
+      this.initConfig(item);
+      
+      config = new Element('div', {
+        'class': 'item-content-zone item-config'
+      });
+      
+      child = new Element('p', {
+        'class': 'item-config-line'
+      });
+      config.appendChild(child);
+      
+      child2 = new Element('span', {
+        'class': 'item-content-label',
+        text: 'operator: '
+      });
+      child.appendChild(child2);
+      
+      select = new Element('select', {
+        'class': 'item-content operator-select',
+        events: {
+          change: function (e) {
+            item.config.operator = this.value;
+            item.updated('operator');
+          }
+        }
+      });
+      child.appendChild(select);
+
+      for (key in this.operators) {
+        operator = this.operators[key];
+        option = new Element('option', {
+          'class': 'operator-option',
+          text: operator.label,
+          value: operator.type,
+          title: operator.description
+        });
+        select.appendChild(option);
+      }
+      if (item.config.operator) {
+        select.value = item.config.operator;
+      } else {
+        select.value = this.operator;
+        item.config.operator = this.operator;
+        item.updated('operator');
+      }
+      
+      child = new Element('p', {
+        'class': 'item-config-line'
+      });
+      config.appendChild(child);
+      
+      child2 = new Element('input', {
+        type: 'text',
+        placeholder: 'filter',
+        events: {
+          change: function (e) {
+            item.config.value = this.value;
+            item.updated('value');
+          }
+        }
+      });
+      if (item.config.value) {
+        child2.setAttribute('value', item.config.value);
+      }
+      child.appendChild(child2);
+      
+      return config;
     },
     
     validator: function (config) {
-      var
-        type = this.type,
-        check = this.operators[config.operator].check;
       return function (tweet) {
-        return check(config.value, tweet.data[type]);
-      };
+        return this.operators[config.operator].check(config.value, tweet.data[this.type]);
+      }.bind(this);
     },
     
-    operator: 'is',
+    operator: 'contains',
     
     operators: {
       is: {

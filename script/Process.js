@@ -27,7 +27,9 @@
             if (item.initialize.name === 'TweetOutput') {
               this.outputs.include(item);
             }
-
+          }.bind(this));
+          
+          this.items.forEach(function (item, index, ar) {
             // mapping inputs uids to objects
             if (typeof item.input === 'string') {
               item.input = this.items.filter(function (inputItem) {

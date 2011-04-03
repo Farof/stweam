@@ -87,19 +87,6 @@
     }
   });
   
-  exports.IHasConfig = Trait({
-    toConfigElement: function () {
-      if (!this.configElement) {
-        this.configElement = this.type.toConfigElement(this);
-      }
-      return this.configElement;
-    },
-    
-    saveConfig: function () {
-      console.log('save');
-    }
-  });
-  
   exports.IType = Trait.compose(
     IInitializable,
     IHasOptions,

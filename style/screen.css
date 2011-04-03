@@ -304,6 +304,6 @@ body {
 .item-config {
   
 }
-.item-config-void {
-  display: none;
+.item-config-line {
+  margin: 0.1em 0em;
 }
