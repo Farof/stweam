@@ -9,6 +9,7 @@
     <div id="debugbar">
       <button onclick="Twitter.bootstrap();">bootstrap</button>
       <button onclick="Twitter.storage.clear();window.location=window.location;">clear data</button>
+      <button onclick="Twitter.help();">help</button>
       
       <div id="credits">
         <p>Work in progress, by Farof (<a href="https://github.com/Farof/tweb">github</a> ; <a href="http://twitter.com/farof">twitter</a>) under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">CreativeCommon BY-NC-SA</a></p>
@@ -55,7 +56,25 @@
     </div>
     
     <div id="help" class="hidden">
-      
+      <h1>Tweb help</h1>
+      <div>
+        <h3>What is Tweb?</h3>
+        <p>Tweb will be (if I finish this goddamn project...) a power user twitter client.</p>
+        <p>I've been frustrated using several twitter apps not being able to control as I wished my tweets stream(s), how to populate them, filter / agregate them, display them, and act on various events. This app goal is to do just that.</p>
+        <p>For my personal use, I currently target only Firefox nightly builds, as a fully local application. If things go well, I'll support other modern browsers, and add a server for synchronisation purpose. That being said, it should work fine on Chrome.</p>
+        <p>The name "Tweb" is only a temporary project name, subject to change.</p>
+      </div>
+      <div>
+        <h3>How to use it</h3>
+        <p>Drag and drop items from the library on the right to the workspace. Remove an item by alt-clicking it.</p>
+        <p>Link items between them to create a tweet stream by shift-clicking from one item to another. Remove a link by clicking on it</p>
+        <p>Arrange items as you wish by clicking on their titlebar to drag them.</p>
+        <p>Play with filters and see the output change live!</p>
+      </div>
+      <div>
+        <h3>Shortcuts</h3>
+        <p><span class="shortcut">h</span>: display/hide this help.</p>
+      </div>
     </div>
   </body>
   <script type="application/x-javascript" src="script/enhancer.js"></script>
