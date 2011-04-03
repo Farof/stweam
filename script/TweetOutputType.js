@@ -24,8 +24,30 @@
     label: 'View',
     description: 'Outputs as an HTML view.',
     
-    toConfigElement: function () {
-      return new ConfigElement();
+    toConfigElement: function (item) {
+      return new ConfigElement(
+        new SelectLine('view: ', View.items.map(function (view) {
+          return {
+            type: view.uid,
+            label: view.name,
+            description: ''
+          }
+        }), function (e) {
+          var view;
+          if (item.config.view) {
+            view = View.getById(item.config.view);
+            if (view) {
+              view.sources.remove(item);
+            }
+          }
+          item.config.view = this.value;
+          view = View.getById(item.config.view);
+          if (view) {
+            view.sources.include(item);
+          }
+          item.updated('view');
+        }, item.config.view, (View.items[0] ? View.items[0].uid : 0))
+      );
     },
     
     generate: function (item) {

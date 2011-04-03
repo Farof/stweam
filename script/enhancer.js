@@ -342,4 +342,16 @@
     }
   });
   
+  Object.defineProperties(Object.prototype, {
+    map: {
+      value: function (func) {
+        var ar = [], key;
+        for (key in this) {
+          ar.push(func(this[key]));
+        }
+        return ar;
+      }
+    }
+  });
+  
 }(window));

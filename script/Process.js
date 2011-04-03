@@ -56,13 +56,6 @@
 
       name: 'unamed process',
 
-      generate: function () {
-        this.outputs.forEach(function (output) {
-          output.generate();
-        });
-        return this;
-      },
-
       toCollectionElement: function () {
         var el;
         if (!this.collectionElement) {

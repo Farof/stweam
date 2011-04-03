@@ -21,7 +21,13 @@
     
     toConfigElement: function (item) {
       return new ConfigElement(
-        new SelectLine('operator: ', this.operators, function (e) {
+        new SelectLine('operator: ', this.operators.map(function (op) {
+          return {
+            type: op.type,
+            label: op.label,
+            descript: op.description
+          };
+        }), function (e) {
           item.config.operator = this.value;
           item.updated('operator');
         }, item.config.operator, this.operator),
@@ -70,7 +76,13 @@
     
     toConfigElement: function (item) {
       return new ConfigElement(
-        new SelectLine('operator: ', this.operators, function (e) {
+        new SelectLine('operator: ', this.operators.map(function (op) {
+          return {
+            type: op.type,
+            label: op.label,
+            descript: op.description
+          };
+        }), function (e) {
           item.config.operator = this.value;
           item.updated('operator');
         }, item.config.operator, this.operator),

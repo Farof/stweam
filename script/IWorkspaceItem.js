@@ -113,7 +113,6 @@
         if (this.process) {
           this.process.removeFromWorkspace(this);
           this.process.save();
-          this.process.generate();
         }
       },
       
