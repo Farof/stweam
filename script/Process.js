@@ -25,9 +25,11 @@
 
             // registering process outputs
             if (item.initialize.name === 'TweetOutput') {
-              this.outputs.push(item);
+              this.outputs.include(item);
             }
-
+          }.bind(this));
+          
+          this.items.forEach(function (item, index, ar) {
             // mapping inputs uids to objects
             if (typeof item.input === 'string') {
               item.input = this.items.filter(function (inputItem) {
@@ -130,7 +132,11 @@
               },
 
               mouseover: function (e) {
-                var target = e.target;
+                
+              },
+              
+              mouseout: function (e) {
+                
               },
 
               mousemove: function (e) {
@@ -211,7 +217,15 @@
       addToWorkspace: function (item) {
         var el = item.toWorkspaceElement();
         this.workspace.appendChild(el);
+        this.items.include(item);
+        if (item.initialize.name === 'TweetOutput') {
+          this.outputs.include(item);
+        }
         return this;
+      },
+      
+      removeFromWorkspace: function (item) {
+        this.items.remove(item);
       },
 
       handleWorkspaceMousedown: function (event) {
@@ -303,15 +317,20 @@
     })
   );
   
-  exports.Process = ICollection.create(IProcess);
-  exports.Process.getByItem = function (item) {
-    var i, ln;
-    for (i = 0, ln = this.items.length; i < ln; i += 1) {
-      if (this.items[i].contains(item)) {
-        return this.items[i];
+  var processOverload = Trait({
+    loadedItem: null,
+    
+    getByItem: function (item) {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        if (this.items[i].contains(item)) {
+          return this.items[i];
+        }
       }
+      return null;
     }
-    return null;
-  };
+  });
+  
+  exports.Process = ICollection.create(IProcess, processOverload);
   
 }(window));

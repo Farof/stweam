@@ -2,35 +2,13 @@
   "use strict";
   
   exports.ITweetInputType = Trait.compose(
-    IInitializable,
+    IType,
+    
     Trait({
-      initialize: function TweetInputType() {
-        document.getElementById('input-type-list').appendChild(this.toLibraryElement());
-        return this;
-      },
+      typeGroup: 'input',
+      typeGroupConstructor: 'TweetInput',
       
-      serialize: function (out) {
-        return out || {};
-      },
-      
-      toLibraryElement: function () {
-        var el;
-        if (!this.libraryElement) {
-          el = new Element('p', {
-            'class': 'library-item input-type',
-            text: this.label,
-            type: this,
-            events: {
-              click: function (e) {
-                console.log(this.type);
-              }
-            }
-          });
-          this.libraryElement = el;
-        }
-        
-        return this.libraryElement;
-      }
+      retrieve: Trait.required
     })
   );
   
@@ -41,6 +19,11 @@
     type: 'global',
     label: 'All sources',
     description: 'All tweets from all sources.',
+    
+    toConfigElement: function () {
+      return new Element('div');
+    },
+    
     retrieve: function () {
       return Twitter.tweets;
     }

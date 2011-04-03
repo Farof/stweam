@@ -72,15 +72,14 @@
     inside: {
       enumerable: true,
       value: function (node) {
-        return node.contains(this);
+        throw new Error('unimplemented');
       }
     },
     
     contains: {
       enumerable: true,
       value: function (node) {
-        return node.centerX > this.offsetLeft && node.centerX < this.offsetRight && 
-          node.centerY > this.offsetTop && node.centerY < this.offsetBottom;
+        throw new Error('unimplemented');
       }
     },
     
@@ -180,6 +179,114 @@
       enumerable: true,
       value: function (node, startY) {
         return startY + (!this.distIsHeight(node) ? (this.getDiffY(node) * 0.1 * (this.above(node) ? 1 : -1)) : (this.above(node) ? 50 : -50));
+      }
+    },
+    
+    pos: {
+      enumerable: true,
+      value: function (topParent) {
+        var
+          parent,
+          node = this,
+          coord = {
+            left: node.offsetLeft,
+            top: node.offsetTop
+          };
+        
+        topParent = topParent || document;
+        parent = node.offsetParent;
+
+        while (parent && parent !== topParent) {
+          coord.left += parent.offsetLeft;
+          coord.top += parent.offsetTop;
+          parent = parent.offsetParent;
+        }
+        
+        coord.right = coord.left + node.scrollWidth;
+        coord.centerX = coord.left + node.scrollWidth / 2;
+        coord.bottom = coord.top + node.scrollHeight;
+        coord.centerY = coord.top + node.scrollHeight / 2;
+
+        return coord;
+      }
+    },
+    
+    hover: {
+      enumerable: true,
+      value: function (node) {
+        var pos, nodePos;
+        if (!node) {
+          return false
+        }
+        pos = this.pos();
+        nodePos = node.pos();
+        return pos.centerX.between(nodePos.left, nodePos.right) && pos.centerY.between(nodePos.top, nodePos.bottom);
+      }
+    },
+    
+    dispose: {
+      enumerable: true,
+      value: function () {
+        return this.parentNode.removeChild(this);
+      }
+    }
+  });
+  
+  Object.defineProperties(Event.prototype, {
+    stop: {
+      enumerable: true,
+      value: function () {
+        this.stopPropagation();
+        this.preventDefault();
+      }
+    }
+  });
+  
+  Object.defineProperties(Number.prototype, {
+    between: {
+      enumerable: true,
+      value: function (a, b) {
+        if (a > b) {
+          [a, b] = [b, a];
+        }
+        return this >= a && this <= b;
+      }
+    }
+  });
+  
+  Object.defineProperties(Array.prototype, {
+    last: {
+      enumerable: true,
+      get: function () {
+        return this[this.lenght - 1];
+      }
+    },
+    
+    contains: {
+      enumerable: true,
+      value: function (item) {
+        return this.indexOf(item) > -1;
+      }
+    },
+    
+    include: {
+      enumerable: true,
+      value: function (item) {
+        if (!this.contains(item)) {
+          this.push(item);
+        }
+        return this;
+      }
+    },
+    
+    remove: {
+      enumerable: true,
+      value: function (item) {
+        var i = this.indexOf(item);
+        if (i > -1) {
+          return this.splice(i, 1);
+        }
+        return null;
       }
     }
   });

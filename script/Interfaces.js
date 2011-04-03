@@ -21,6 +21,8 @@
   });
   
   exports.IMovable = Trait({
+    isMovable: true,
+    
     initPosition: function () {
       if (!this.position) {
         this.position = {
@@ -28,7 +30,14 @@
           y: 0
         };
       }
-    }
+    },
+    
+    dragPositionUpdated: function (x, y) {
+      this.position.left = x;
+      this.position.top = y;
+    },
+    
+    dragEnd: Trait.required
   });
   
   exports.IInitializable = Trait({
@@ -46,8 +55,10 @@
       // do nothing
     },
     
-    serialize: function () {
-      var out = {}, props = this.serializedProperties, prop, propName, propPath, propValue, i, ln;
+    serialize: function (out, props) {
+      // refaire le name=path
+      var props = (props || this.serializedProperties), prop, propName, propPath, propValue, i, ln;
+      out = out || {};
       for (i = 0, ln = props.length; i < ln; i += 1) {
         prop = props[i].split('=');
         propName = prop[0]
@@ -59,37 +70,6 @@
         out[propName] = propValue;
       }
       return out;
-    }
-  });
-  
-  exports.IHasOutput = Trait({
-    hasOutput: true,
-    
-    outputTweets: Trait.required
-  });
-  
-  exports.IHasInput = Trait({
-    hasInput: true,
-    
-    inputTweets: Trait.required,
-    
-    _input: undefined,
-    
-    get input() {
-      return this._input;
-    },
-    
-    set input(value) {
-      if (this._input) {
-        this._input.output = null;
-      }
-      this._input = value;
-      if (this._input) {
-        this._input.output = this;
-      }
-      if (this.process) {
-        this.process.drawCanvas();
-      }
     }
   });
   
@@ -107,230 +87,98 @@
     }
   });
   
-  exports.IWorkspaceItem = Trait.compose(
+  exports.IType = Trait.compose(
     IInitializable,
     IHasOptions,
-    IHasUUID,
+    ISerializable,
     IMovable,
-    Trait.resolve({ serialize: 'workspaceItemSerialize' }, ISerializable),
-    ITyped,
+    
     Trait({
-      name: Trait.required,
-      itemType: Trait.required,
+      isLibraryItem: true,
       
-      _process: undefined,
+      typeGroup: Trait.required,
+      typeGroupConstructor: Trait.required,
+      type: Trait.required,
+      label: Trait.required,
+      description: Trait.required,
       
-      get process() {
-        return this._process;
-      },
+      toConfigElement: Trait.required,
+
+      serializedProperties: [],
       
-      set process(value) {
-        if (typeof value === 'string') {
-          this._process = Process.getById(value);
-        } else if (typeof value === 'object') {
-          this._process = value;
-        }
-      },
-      
-      initialize: function (options) {
+      config: {},
+
+      initialize: function TweetOutputType(options) {
         this.setOptions(options);
-        this.initUUID();
         this.initPosition();
         
-        if (!this._process) {
-          this._process = Process.getByItem(this);
-        }
-        
+        document.getElementById(this.typeGroup + '-type-list').appendChild(this.toLibraryElement());
         return this;
       },
       
-      serialize: function () {
-        return this.type.serialize.call(this, this.workspaceItemSerialize());
-      },
-      
-      toWorkspaceElement: function () {
+      toLibraryElement: function () {
         var el;
-        if (!this.workspaceElement) {
-          this.workspaceElement = el = new WorkspaceElement(this);
-        }
-        return this.workspaceElement;
-      },
-      
-      getContentChildren: function () {
-        var children, child;
-        if (!this.contentChildren) {
-          this.contentChildren = children = [];
-
-          child = new Element('p', {
-            'class': 'item-content-zone item-type',
-            title: this.type.description || ''
+        if (!this.libraryElement) {
+          el = new Element('p', {
+            'class': ('library-item ' + this.typeGroup + '-type'),
+            text: this.label,
+            source: this,
+            events: {
+              mousedown: this.handleElementMousedown,
+              click: this.handleElementClick
+            }
           });
-          child.appendChild(new Element('span', {
-            'class': 'item-content-label item-type-label',
-            text: (this.itemType + ': ')
-          }));
-          child.appendChild(new Element('span', {
-            'class': 'item-content item-type-name',
-            text: this.type.label
-          }));
-          children.push(child);
+          this.libraryElement = el;
         }
-        return this.contentChildren;
+
+        return this.libraryElement;
       },
-      
-      handleMousedown: function (e) {
-        if (this.hasOutput && !this.output && e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.linking = true;
-        }
-      },
-      
-      updated: function (type, value) {
-        if (value) {
-          this[type] = value;
-        }
-        this.process.itemUpdated(type, this);
-        return this;
-      },
-      
-      get canvas() {
-        return this.process.canvas;
-      },
-      
-      set canvas(value) {
-        // fail silently
-      },
-      
-      get linking() {
-        return this.process ? (this.process.canvasStatus.linkingFrom === this) : false;
-      },
-      
-      set linking(value) {
-        if (this.process) {
-          this.process.canvasStatus.linkingFrom = value ? this : null;
-        }
-      },
-      
-      acceptsLinkFrom: function (item) {
-        return item !== this;
-      },
-      
-      acceptsLinkTo: function (item) {
-        return item !== this && item.acceptsLinkFrom(this);
-      },
-      
-      draw: function () {
-        this.drawLinks();
-        return this;
-      },
-      
-      drawLinks: function () {
-        var el, dest;
-        if (this.input) {
-          this.drawLinkFromItem(this.input);
-        }
-        if (this.linking) {
-          dest = this.process.canvasStatus.overItem;
-          if (dest && dest.source !== this) {
-            this.drawLinkToPoint(dest);
-          } else {
-            el = new Element('div', {
-              style: 'position: absolute; width: 0px; height: 0px'
-            });
-            el.style.left = this.canvas.mouseX + 'px';
-            el.style.top = this.canvas.mouseY + 'px';
-            this.process.workspace.appendChild(el);
-            this.drawLinkToPoint(el);
-            el.parentNode.removeChild(el);
-          }
-        }
-        return this;
-      },
-      
-      drawLinkFromItem: function (source) {
-        source.drawLinkToPoint(this.workspaceElement);
-        return this;
-      },
-      
-      drawLinkToPoint: function (dest) {
+
+      handleElementMousedown: function (e) {
+        
         var
-          source = this.workspaceElement,
-
-        // path conf
-          status = this.process.canvasStatus,
-          conf = this.process.canvasConf.itemPath,
-          overSource = status.overItem === source,
-          overPath = status.overPath && status.overPath.source === source.source && status.overPath.dest === dest.source,
-
-        // coordinates
-          startX = source.getAttachXFor(dest),
-          startY = source.getAttachYFor(dest),
-          endX = dest.getAttachXFor(source),
-          endY = dest.getAttachYFor(source),
-          startControlX = source.getAttachXControlFor(dest, startX),
-          startControlY = source.getAttachYControlFor(dest, startY),
-          endControlX = dest.getAttachXControlFor(source, endX),
-          endControlY = dest.getAttachYControlFor(source, endY);
-
-        // line
-        if (this.canvas.bezier({
-            startX: startX,
-            startY: startY,
-            endX: endX,
-            endY: endY,
-            startControlX: startControlX,
-            startControlY: startControlY,
-            endControlX: endControlX,
-            endControlY: endControlY,
-            stroke: {
-              shadowColor: conf.line.shadowColor[overPath ? 'over' : 'normal'],
-              shadowBlur: conf.line.shadowBlur[overPath ? 'over' : 'normal'],
-              lineWidth: conf.line.width[overPath ? 'over' : 'normal'],
-              strokeStyle: conf.line.color[overPath ? 'over' : 'normal'],
-              lineCap: 'round'
+          t = e.target,
+          source = t.source,
+          pos = Element.pos(t),
+          clone = source.clonedNode = t.cloneNode(true);
+        
+        e.stop();
+        
+        clone.style.position = 'absolute';
+        clone.style.left = pos.x + 'px';
+        clone.style.top = pos.y + 'px';
+        clone.source = source;
+        document.body.appendChild(clone);
+        Drag.start(clone, e, document.body, true);
+      },
+      
+      dragEnd: function (dragEvent) {
+        var
+          clone = dragEvent.node,
+          source = clone.source,
+          workspace = document.getElementById('workspace'),
+          item, pos;
+          
+        if (clone.hover(workspace)) {
+          pos = workspace.pos();
+          item = exports[source.typeGroupConstructor].add({
+            process: workspace.process,
+            type: source.type,
+            position: {
+              left: (source.position.left - pos.left),
+              top: (source.position.top - pos.top)
             }
-          })) {
-          status.overPath.source = source.source;
-          status.overPath.dest = dest.source;
-          document.body.style.cursor = 'pointer';
-          this.process.setRedraw();
-        } else if (overPath) {
-          status.overPath.source = null;
-          status.overPath.dest = null;
-          document.body.style.cursor = 'auto'; 
+          });
+          workspace.process.addToWorkspace(item);
+          workspace.process.save();
         }
+        clone.parentNode.removeChild(clone);
+        source.clonedNode = null;
+        clone.source = null;
+      },
 
-        // start dot
-        if (this.canvas.circle({
-            x: startX,
-            y: startY,
-            r: conf.dot.radius[overSource ? 'overSource' : 'normal'],
-            fill: { 
-              fillStyle: conf.dot.fillColor[overSource ? 'overSource' : 'normal']
-            },
-            stroke: {
-              lineWidth: conf.dot.borderWidth[overSource ? 'overSource' : 'normal'],
-              strokeStyle: conf.dot.borderColor[overSource ? 'overSource' : 'normal']
-            }
-          })) {
-          // do something if over start dot
-        }
-
-        // end arrow
-        if (this.canvas.arrow({
-            x: endX,
-            y: endY,
-            width: conf.arrow.width.normal,
-            radius: conf.arrow.radius.normal,
-            angle: Math.atan2(endControlX - endX, endControlY - endY),
-            stroke: {
-              strokeStyle: conf.arrow.color.normal,
-              lineWidth: conf.arrow.lineWidth.normal
-            }
-          })) {
-          // do something if over arrow
-        }
+      handleElementClick: function (e) {
+        console.log('click: ', this.type);
       }
     })
   );
@@ -350,7 +198,9 @@
       },
       
       add: function (options) {
-        var item = Object.create(Object.prototype, Constructor);
+        var item;
+        Trait.create(Object.prototype, Constructor);
+        item = Object.create(Object.prototype, Constructor);
         this.items.push(item);
         if (item.initialize) {
           item.initialize(options);
@@ -365,10 +215,10 @@
         }
         return item;
       }
-    })
+    });
   };
-  exports.ICollection.create = function (Constructor) {
-    return Object.create(Object.prototype, ICollection(Constructor));
+  exports.ICollection.create = function (Constructor, trait) {
+    return Object.create(Object.prototype, Trait.compose(ICollection(Constructor), (trait || Trait({}))));
   };
   
   exports.IMap = function (Constructor) {
@@ -376,10 +226,12 @@
       items: {},
       
       add: function (options) {
-        var item = Object.create(Object.prototype, Trait.override(
+        var item, trait = Trait.override(
           Trait(options),
           Constructor
-        ));
+        );
+        Trait.create(Object.prototype, trait);
+        item = Object.create(Object.prototype, trait);
         this.items[options.type] = item;
         if (item.initialize) {
           item.initialize(options);
@@ -388,7 +240,6 @@
       }
     });
   };
-  
   exports.IMap.create = function (Constructor) {
     return Object.create(Object.prototype, IMap(Constructor));
   };

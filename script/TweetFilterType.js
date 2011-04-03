@@ -2,36 +2,12 @@
   "use strict";
   
   exports.ITweetFilterType = Trait.compose(
-    IInitializable,
+    IType,
+    
     Trait({
-      initialize: function TweetFilterType() {
-        document.getElementById('filter-type-list').appendChild(this.toLibraryElement());
-        return this;
-      },
+      typeGroup: 'filter',
+      typeGroupConstructor: 'TweetFilter',
       
-      serialize: function (out) {
-        return out || {};
-      },
-      
-      toLibraryElement: function () {
-        var el;
-        if (!this.libraryElement) {
-          el = new Element('p', {
-            'class': 'library-item filter-type',
-            text: this.label,
-            type: this,
-            events: {
-              click: function (e) {
-                console.log(this.type);
-              }
-            }
-          });
-          this.libraryElement = el;
-        }
-        
-        return this.libraryElement;
-      },
-
       getOperatorsElement: function (filter) {
         var el, child, select, key, operator, option;
         if (!filter.operatorsElement) {
@@ -77,16 +53,130 @@
   exports.TweetFilterType = IMap.create(ITweetFilterType);
   
   
-  exports.TweetFilterType.add({
-    type: 'created_at',
-    label: 'Tweet date',
-    description: 'Filter based on tweet date.',
-    operators: ['is']
-  });
+  
   exports.TweetFilterType.add({
     type: 'from_user',
     label: 'Author username',
     description: 'Filter by tweet author.',
+    
+    initConfig: function (item) {
+      var config = item.config;
+      if (!config.value) {
+        config.value = '';
+        item.updated('value');
+      }
+    },
+    
+    toConfigElement: function (item) {
+      var config, child, child2, select, option, operator, key;
+      
+      this.initConfig(item);
+      
+      config = new Element('div', {
+        'class': 'item-content-zone item-config'
+      });
+      
+      child = new Element('p', {
+        'class': 'item-config-line'
+      });
+      config.appendChild(child);
+      
+      child2 = new Element('span', {
+        'class': 'item-content-label',
+        text: 'operator: '
+      });
+      child.appendChild(child2);
+      
+      select = new Element('select', {
+        'class': 'item-content operator-select',
+        events: {
+          change: function (e) {
+            item.config.operator = this.value;
+            item.updated('operator');
+          }
+        }
+      });
+      child.appendChild(select);
+
+      for (key in this.operators) {
+        operator = this.operators[key];
+        option = new Element('option', {
+          'class': 'operator-option',
+          text: operator.label,
+          value: operator.type,
+          title: operator.description
+        });
+        select.appendChild(option);
+      }
+      if (item.config.operator) {
+        select.value = item.config.operator;
+      } else {
+        select.value = this.operator;
+        item.config.operator = this.operator;
+        item.updated('operator');
+      }
+      
+      child = new Element('p', {
+        'class': 'item-config-line'
+      });
+      config.appendChild(child);
+      
+      child2 = new Element('input', {
+        type: 'text',
+        placeholder: 'filter',
+        events: {
+          change: function (e) {
+            item.config.value = this.value;
+            item.updated('value');
+          }
+        }
+      });
+      if (item.config.value) {
+        child2.setAttribute('value', item.config.value);
+      }
+      child.appendChild(child2);
+      
+      return config;
+    },
+    
+    validator: function (config) {
+      return function (tweet) {
+        return this.operators[config.operator].check(config.value, tweet.data[this.type]);
+      }.bind(this);
+    },
+    
+    operator: 'contains',
+    
+    operators: {
+      is: {
+        type: 'is',
+        label: 'is',
+        description: 'exact username match (case insensitive)',
+
+        check: function (filter, tweet) {
+          return tweet.toLowerCase() === filter.toLowerCase();
+        }
+      },
+      contains: {
+        type: 'contains',
+        label: 'contains',
+        description: 'string found in username (case insensitive)',
+        
+        check: function (filter, tweet) {
+          return tweet.toLowerCase().indexOf(filter.toLowerCase()) > -1;
+        }
+      }
+    }
+  });
+  
+  
+  
+  /*
+  exports.TweetFilterType.add({
+    type: 'from_user',
+    label: 'Author username',
+    description: 'Filter by tweet author.',
+    
     
     operator: 'is',
     operators: {
@@ -186,6 +276,13 @@
       return config;
     }
   });
+  /*
+  exports.TweetFilterType.add({
+    type: 'created_at',
+    label: 'Tweet date',
+    description: 'Filter based on tweet date.',
+    operators: ['is']
+  });
   exports.TweetFilterType.add({
     type: 'result_type',
     label: 'Result type',
@@ -225,5 +322,6 @@
     description: 'Filter based on source used to tweet.',
     operators: ['is']
   });
+  */
   
 }(window));

@@ -2,16 +2,15 @@
   "use strict";
   
   exports.ITweetOperatorType = Trait.compose(
-    ISerializable,
+    Trait.resolve({ serializedProperties: undefined }, IType),
+    
     Trait({
-      serializedProperties: ['type', 'label'],
+      typeGroup: 'operator',
+      typeGroupConstructor: 'TweetOperator',
       
-      serialize: function () {
-        return {
-          type: this.type,
-          label: this.label
-        };
-      },
+      check: Trait.required,
+      
+      serializedProperties: ['type', 'label'],
 
       getContentChildren: function (filter, param) {
         var children;
