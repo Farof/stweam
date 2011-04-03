@@ -62,11 +62,12 @@
           el = new Element('p', {
             'class': 'collection-item process',
             text: this.name,
+            source: this,
             events: {
               click: function () {
                 console.log(this);
-                this.loadInWorkspace();
-              }.bind(this)
+                this.source.loadInWorkspace();
+              }
             }
           });
 
