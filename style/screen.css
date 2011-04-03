@@ -30,6 +30,7 @@ body {
   box-shadow: 0px 0px 10px 0px #3E3D40, 0px 0px 2px 0px #3E3D40 inset;
   left: 20px;
   opacity: 1;
+  padding: 2em;
   pointer-events: auto;
   position: fixed;
   right: 20px;
@@ -38,6 +39,16 @@ body {
 #help.hidden {
   opacity: 0;
   pointer-events: none;
+}
+#help > h1 {
+  margin: 1em 0em;
+  text-align: center;
+}
+#help p {
+  font-size: 0.9em;
+}
+#help .shortcut {
+  font-weight: bold;
 }
 
 #collection {
