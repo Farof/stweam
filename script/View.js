@@ -89,6 +89,7 @@
       
       editCollectionElement: function () {
         this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
+        this.collectionEditElement.querySelector('input').focus();
       },
       
       uneditCollectionElement: function (input) {
