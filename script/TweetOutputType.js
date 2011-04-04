@@ -28,6 +28,8 @@
       return new ConfigElement(
         new SelectLine('view: ', View.items.map(function (view) {
           return {
+            bind: view,
+            bindProp: 'name',
             type: view.uid,
             label: view.name,
             description: ''
@@ -46,7 +48,9 @@
             view.sources.include(item);
           }
           item.updated('view');
-        }, item.config.view, (View.items[0] ? View.items[0].uid : 0))
+        },
+        item.config.view,
+        (View.items[0] ? View.items[0].uid : 0))
       );
     },
     

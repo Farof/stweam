@@ -6,8 +6,11 @@
     IHasOptions,
     IHasUUID,
     ISerializable,
+    IPropertyDispatcher,
     
     Trait({
+      defaultName: 'unamed view',
+      
       name: 'unamed view',
       
       sources: [],
@@ -89,10 +92,12 @@
       },
       
       uneditCollectionElement: function (input) {
-        this.name = input.value;
-        this.collectionElement.textContent = input.value;
+        var value = input.value || this.defaultName;
+        this.name = value;
+        this.collectionElement.textContent = value;
         this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
         this.save();
+        this.dispatchProperty('name');
       },
       
       load: function () {

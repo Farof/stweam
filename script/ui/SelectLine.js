@@ -28,6 +28,12 @@
         value: choice.type,
         title: choice.description
       });
+      if (choice.bind && choice.bind.addPropertyListener) {
+        // memory leak ? make this removable if workspace item is deleted
+        choice.bind.addPropertyListener(choice.bindProp, function (value) {
+          option.textContent = value;
+        });
+      }
       select.appendChild(option);
     }
     
