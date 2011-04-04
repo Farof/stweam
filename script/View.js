@@ -39,9 +39,18 @@
             text: this.name,
             source: this,
             events: {
-              click: function () {
-                console.log(this, this.source);
-                this.source.load();
+              click: function (e) {
+                if (!this.clickTimer) {
+                  this.clickTimer = setTimeout(function () {
+                    this.clickTimer = null;
+                    console.log(this, this.source);
+                    this.source.load();
+                  }.bind(this), 200);
+                }
+              },
+              dblclick: function (e) {
+                clearTimeout(this.clickTimer);
+                this.source.editCollectionElement();
               }
             }
           });
@@ -49,6 +58,41 @@
           this.collectionElement = el;
         }
         return this.collectionElement;
+      },
+      
+      toCollectionEditElement: function () {
+        if (!this.collectionEditElement) {
+          this.collectionEditElement = new Element('p', {
+            'class': 'collection-item view'
+          });
+          this.collectionEditElement.appendChild(new Element('input', {
+            type: this.text,
+            value: this.name,
+            source: this,
+            events: {
+              blur: function () {
+                this.source.uneditCollectionElement(this);
+              },
+              keydown: function (e) {
+                if (e.keyCode === 13) {
+                  this.source.uneditCollectionElement(this);
+                }
+              }
+            }
+          }))
+        }
+        return this.collectionEditElement;
+      },
+      
+      editCollectionElement: function () {
+        this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
+      },
+      
+      uneditCollectionElement: function (input) {
+        this.name = input.value;
+        this.collectionElement.textContent = input.value;
+        this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
+        this.save();
       },
       
       load: function () {
@@ -115,6 +159,10 @@
     })
   );
   
-  exports.View = ICollection.create(IView);
+  exports.View = ICollection.create(IView, Trait({
+    createNew: function () {
+      var item = this.add();
+    }
+  }));
   
 }(window));

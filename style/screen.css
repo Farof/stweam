@@ -73,6 +73,9 @@ body {
   font-weight: bold;
   padding: 0.2em 0.2em;
 }
+.collection-category .add {
+  float: right;
+}
 
 .collection-item {
   -moz-transition-property: background-color;

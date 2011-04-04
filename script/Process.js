@@ -313,7 +313,7 @@
     })
   );
   
-  var processOverload = Trait({
+  exports.Process = ICollection.create(IProcess, Trait({
     loadedItem: null,
     
     getByItem: function (item) {
@@ -325,8 +325,6 @@
       }
       return null;
     }
-  });
-  
-  exports.Process = ICollection.create(IProcess, processOverload);
+  }));
   
 }(window));
