@@ -22,7 +22,7 @@
     });
     line.appendChild(select);
 
-    this.populate(source, select, value, def);
+    this.populate(source, select, onchange, value, def);
     
     if (options.datasource) {
       options.datasource.addPropertyListener('length', function () {
@@ -33,7 +33,7 @@
     return line;
   };
   
-  SelectLine.prototype.populate = function (source, select, value, def) {
+  SelectLine.prototype.populate = function (source, select, onchange, value, def) {
     var i, ln, choice, option;
     
     select.empty();
