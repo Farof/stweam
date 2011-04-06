@@ -281,7 +281,6 @@
   
   Object.defineProperties(Number.prototype, {
     between: {
-      enumerable: true,
       value: function (a, b) {
         if (a > b) {
           [a, b] = [b, a];
@@ -293,21 +292,18 @@
   
   Object.defineProperties(Array.prototype, {
     last: {
-      enumerable: true,
       get: function () {
         return this[this.lenght - 1];
       }
     },
     
     contains: {
-      enumerable: true,
       value: function (item) {
         return this.indexOf(item) > -1;
       }
     },
     
     include: {
-      enumerable: true,
       value: function (item, pass) {
         if (!pass && Array.isArray(item)) {
           return this.merge(item);
@@ -320,7 +316,6 @@
     },
     
     merge: {
-      enumerable: true,
       value: function (items) {
         var i, ln;
         for (i = 0, ln = items.length; i < ln; i += 1) {
@@ -331,7 +326,6 @@
     },
     
     remove: {
-      enumerable: true,
       value: function (item) {
         var i = this.indexOf(item);
         if (i > -1) {
