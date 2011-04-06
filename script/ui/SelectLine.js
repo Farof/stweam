@@ -1,7 +1,9 @@
 (function (exports) {
   
-  exports.SelectLine = function (label, source, onchange, value, def) {
+  exports.SelectLine = function (label, source, onchange, value, def, options) {
     var line, child, select, option, i, ln, choice;
+    options = options || {};
+    
     line = new Element('p', {
       'class': 'item-config-line'
     });
@@ -20,6 +22,23 @@
     });
     line.appendChild(select);
 
+    this.populate(source, select, value, def);
+    
+    if (options.datasource) {
+      Object.defineProperties(options.datasource, IPropertyDispatcher);
+      options.datasource.addPropertyListener('length', function () {
+        this.populate(options.onDatasourceChange(options.datasource), select, value, def);
+      }.bind(this));
+    }
+    
+    return line;
+  };
+  
+  SelectLine.prototype.populate = function (source, select, value, def) {
+    var i, ln, choice, option;
+    
+    select.empty();
+    
     for (i = 0, ln = source.length; i < ln; i += 1) {
       choice = source[i];
       option = new Element('option', {
@@ -43,8 +62,6 @@
       select.value = def;
       onchange.call({ value: def });
     }
-    
-    return line;
   };
   
 }(window))

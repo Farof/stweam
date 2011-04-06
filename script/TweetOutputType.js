@@ -25,16 +25,20 @@
     description: 'Outputs as an HTML view.',
     
     toConfigElement: function (item) {
-      return new ConfigElement(
-        new SelectLine('view: ', View.items.map(function (view) {
+      var mapDatasource = function (items) {
+        return items.map(function (view) {
           return {
             bind: view,
             bindProp: 'name',
             type: view.uid,
             label: view.name,
             description: ''
-          }
-        }), function (e) {
+          };
+        });
+      };
+      
+      return new ConfigElement(
+        new SelectLine('view: ', mapDatasource(View.items), function (e) {
           var view;
           if (item.config.view) {
             view = View.getById(item.config.view);
@@ -50,7 +54,10 @@
           item.updated('view');
         },
         item.config.view,
-        (View.items[0] ? View.items[0].uid : 0))
+        (View.items[0] ? View.items[0].uid : 0), {
+          datasource: View.items,
+          onDatasourceChange: mapDatasource
+        })
       );
     },
     

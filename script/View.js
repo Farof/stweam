@@ -168,6 +168,8 @@
   exports.View = ICollection.create(IView, Trait({
     createNew: function () {
       var item = this.add();
+      this.items.dispatchProperty('length');
+      Process.loadedItem.drawCanvas();
     }
   }));
   
