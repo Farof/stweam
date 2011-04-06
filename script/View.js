@@ -5,8 +5,9 @@
     IInitializable,
     IHasOptions,
     IHasUUID,
-    ISerializable,
+    Trait.resolve({ serialize: 'autoSerialize' }, ISerializable),
     IPropertyDispatcher,
+    IDisposable,
     
     Trait({
       defaultName: 'unamed view',
@@ -26,6 +27,12 @@
       },
       
       serializedProperties: ['uid', 'constructorName', 'name'],
+      
+      serialize: function () {
+        var out = this.autoSerialize();
+        out.collectionIndex = View.items.indexOf(this);
+        return out;
+      },
       
       refreshSources: function () {
         this.sources = TweetOutput.items.filter(function (item) {
@@ -57,6 +64,17 @@
               }
             }
           });
+          
+          el.appendChild(new Element('span', {
+            'class': 'remove',
+            text: '-',
+            source: this,
+            events: {
+              click: function () {
+                View.removeItem(this.source);
+              }
+            }
+          }));
 
           this.collectionElement = el;
         }
@@ -108,6 +126,7 @@
           this.listElement.classList.remove('hidden');
           this.populate();
           this.loadProcesses();
+          Twitter.save('config.lastView', this.uid);
         }
         return this;
       },
@@ -161,6 +180,12 @@
       
       save: function () {
         Twitter.save(this);
+      },
+      
+      dispose: function () {
+        this.dispatchableProperties = null;
+        this.collectionElement.dispose();
+        return this;
       }
     })
   );
@@ -170,7 +195,18 @@
       var item = this.add();
       this.items.dispatchProperty('length');
       Process.loadedItem.drawCanvas();
+      Twitter.save();
+      //Twitter.storage.describe();
+    },
+    
+    removeItem: function (item) {
+      item.dispose();
+      this.items.remove(item);
+      this.items.dispatchProperty('length');
+      Process.loadedItem.drawCanvas();
+      Twitter.storage.removeItem(item);
     }
   }));
+  Object.defineProperties(View.items, IPropertyDispatcher);
   
 }(window));

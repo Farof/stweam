@@ -40,6 +40,10 @@
     dragEnd: Trait.required
   });
   
+  exports.IDisposable = Trait({
+    dispose: Trait.required
+  });
+  
   exports.IPropertyDispatcher = Trait({
     dispatchableProperties: {},
     

@@ -73,7 +73,7 @@
       
       Twitter.load();
       
-      lastView = this.load('config.lastView') || View.items[0];
+      lastView = View.getById(this.load('config.lastView')) || View.items[0];
       if (lastView) {
         lastView.load();
       } else {
@@ -82,11 +82,11 @@
     },
     
     load: function () {
-      this.storage.load.apply(this.storage, arguments);
+      return this.storage.load.apply(this.storage, arguments);
     },
     
     save: function () {
-      this.storage.save.apply(this.storage, arguments);
+      return this.storage.save.apply(this.storage, arguments);
     },
     
     bootstrap: function () {
@@ -161,7 +161,7 @@
         if (arguments.length === 1) {
           this.saveItem(item);
         } else if (arguments.length === 2) {
-          this.saveKey(key, item);
+          this.saveKey(item, key);
         } else {
           Process.items.forEach(function (item) {
             this.save(item);
@@ -187,16 +187,35 @@
       },
       
       load: function (key) {        
-        var items = ['Process', 'View'], i, ln;
+        var Classes = ['Process', 'View'], Class, i, ln, items = {}, options;
         if (key) {
           return this.loadKey(key);
         }
         
         for (key in this.db) {
-          for (i = 0, ln = items.length; i < ln; i += 1) {
-            if (key.indexOf(items[i] + ':') > -1) {
-              this.loadItem(items[i], this.db.getItem(key));
+          for (i = 0, ln = Classes.length; i < ln; i += 1) {
+            Class = Classes[i];
+            if (key.indexOf(Class + ':') > -1) {
+              if (!items[Class]) {
+                items[Class] = [];
+              }
+              try {
+                options = this.db.getItem(key);
+                options = JSON.parse(options);
+                items[Class].push(options);
+              } catch (e) {
+                console.log('error converting to options: ', options, e.message, e);
+              }
             }
+          }
+        }
+        
+        for (Class in items) {
+          items[Class] = items[Class].sort(function (a, b) {
+            return a.collectionIndex > b.collectionIndex;
+          });
+          for (i = 0, ln = items[Class].length; i < ln; i += 1) {
+            this.loadItem(Class, items[Class][i]);
           }
         }
       },
@@ -205,7 +224,6 @@
         var constructor = window[constructorName];
         if (constructor && constructor.from) {
           try {
-            options = JSON.parse(options);
             return constructor.from(options);
           } catch (e) {
             console.log('error loading item: ', constructorName, options, e.message, e);
@@ -222,6 +240,14 @@
         } catch (e) {
           console.log('error loading key: ', key);
           return null;
+        }
+      },
+      
+      removeItem: function (item) {
+        try {
+          this.db.removeItem(item.constructorName + ':' + item.uid);
+        } catch (e) {
+          console.log('unable to remove item: ', item, item.constructorName, item.uid);
         }
       }
     },

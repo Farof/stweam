@@ -6,6 +6,8 @@
     IHasOptions,
     IHasUUID,
     Trait.resolve({ serialize: 'autoSerialize' }, ISerializable),
+    IDisposable,
+    
     Trait({
       initialize: function Process(options) {
         this.setOptions(options);
@@ -56,6 +58,7 @@
         out.items = this.items.map(function (item) {
           return JSON.stringify(item.serialize());
         });
+        out.collectionIndex = Process.items.indexOf(this);
         return out;
       },
 
@@ -309,6 +312,10 @@
       
       save: function () {
         Twitter.save(this);
+      },
+      
+      dispose: function () {
+        console.log('should dispose of process properly');
       }
     })
   );

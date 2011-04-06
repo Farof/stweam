@@ -25,7 +25,6 @@
     this.populate(source, select, value, def);
     
     if (options.datasource) {
-      Object.defineProperties(options.datasource, IPropertyDispatcher);
       options.datasource.addPropertyListener('length', function () {
         this.populate(options.onDatasourceChange(options.datasource), select, value, def);
       }.bind(this));

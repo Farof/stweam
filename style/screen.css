@@ -73,8 +73,23 @@ body {
   font-weight: bold;
   padding: 0.2em 0.2em;
 }
-.collection-category .add {
+.collection-category .add,
+.collection-category .remove {
+  font-weight: bold;
   float: right;
+}
+.collection-category .add:hover,
+.collection-category .remove:hover {
+  -moz-transform: scale(1.2);
+}
+.collection-category .add {
+  
+}
+.collection-category .remove {
+  visibility: hidden;
+}
+.collection-item:hover .remove {
+  visibility: visible;
 }
 
 .collection-item {

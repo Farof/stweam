@@ -64,6 +64,7 @@
     Trait.resolve({ serialize: 'workspaceItemSerialize' }, ISerializable),
     ITyped,
     IHasConfig,
+    IDisposable,
     
     Trait({
       isWorkspaceItem: true,
