@@ -227,7 +227,10 @@
     dispose: {
       enumerable: true,
       value: function () {
-        return this.parentNode.removeChild(this);
+        if (this.parentNode) {
+          return this.parentNode.removeChild(this);
+        }
+        return false;
       }
     },
     

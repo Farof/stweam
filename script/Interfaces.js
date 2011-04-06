@@ -199,7 +199,7 @@
           workspace.process.addToWorkspace(item);
           workspace.process.save();
         }
-        clone.parentNode.removeChild(clone);
+        clone.dispose();
         source.clonedNode = null;
         clone.source = null;
       },

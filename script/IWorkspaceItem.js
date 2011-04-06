@@ -236,7 +236,7 @@
             el.style.top = this.canvas.mouseY + 'px';
             this.process.workspace.appendChild(el);
             this.drawLinkToPoint(el);
-            el.parentNode.removeChild(el);
+            el.dispose();
           }
         }
         return this;
