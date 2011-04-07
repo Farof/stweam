@@ -97,6 +97,14 @@
               keydown: function (e) {
                 if (e.keyCode === 13) {
                   this.source.uneditCollectionElement(this);
+                } else if (e.keyCode === 27) {
+                  if (this.source.firstInit) {
+                    this.blur();
+                    View.removeItem(this.source);
+                  } else {
+                    this.value = this.source.name;
+                    this.source.uneditCollectionElement(this);
+                  }
                 }
               }
             }
@@ -106,6 +114,7 @@
       },
       
       editCollectionElement: function () {
+        this.firstInit = false;
         this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
         this.collectionEditElement.querySelector('input').focus();
       },
@@ -196,7 +205,8 @@
       this.items.dispatchProperty('length');
       Process.loadedItem.drawCanvas();
       Twitter.save();
-      //Twitter.storage.describe();
+      item.firstInit = true;
+      item.editCollectionElement();
     },
     
     removeItem: function (item) {
