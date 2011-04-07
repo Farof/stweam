@@ -131,7 +131,7 @@
       load: function () {
         var root = document.getElementById('views-item');
         if (!this.listElement || !root.hasChild(this.listElement)) {
-          root.appendChild(this.toListElement());
+          root.empty().appendChild(this.toListElement());
           this.listElement.classList.remove('hidden');
           this.populate();
           this.loadProcesses();
