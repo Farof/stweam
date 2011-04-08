@@ -114,13 +114,13 @@
       },
       
       editCollectionElement: function () {
-        this.firstInit = false;
         this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
         this.collectionEditElement.querySelector('input').focus();
       },
       
       uneditCollectionElement: function (input) {
         var value = input.value || this.defaultName;
+        this.firstInit = false;
         this.name = value;
         this.collectionElement.textContent = value;
         this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
