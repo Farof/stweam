@@ -35,8 +35,8 @@
       }
     });
   };
-  exports.ICollection.create = function (Constructor, trait) {
-    return Object.create(Object.prototype, Trait.compose(ICollection(Constructor), (trait || Trait({}))));
+  exports.Collection = function (Constructor, trait) {
+    return Object.create(Object.prototype, Trait.compose(ICollection(Constructor), (trait || Trait({}))))
   };
 
 }(window));

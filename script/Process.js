@@ -368,7 +368,7 @@
     })
   );
   
-  exports.Process = ICollection.create(IProcess, Trait({
+  exports.Process = new Collection(IProcess, Trait({
     loadedItems: [],
     
     getByItem: function (item) {

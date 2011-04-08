@@ -23,7 +23,7 @@
   );
   
   
-  exports.TweetOperatorType = IMap.create(ITweetOperatorType);
+  exports.TweetOperatorType = new Map(ITweetOperatorType);
   
   
   exports.TweetOperatorType.add({

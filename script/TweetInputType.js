@@ -12,7 +12,7 @@
     })
   );
   
-  exports.TweetInputType = IMap.create(ITweetInputType);
+  exports.TweetInputType = new Map(ITweetInputType);
   
   
   exports.TweetInputType.add({

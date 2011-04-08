@@ -16,7 +16,7 @@
     })
   );
   
-  exports.TweetOutputType = IMap.create(ITweetOutputType);
+  exports.TweetOutputType = new Map(ITweetOutputType);
   
   
   exports.TweetOutputType.add({

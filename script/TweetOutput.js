@@ -39,6 +39,6 @@
     })
   );
   
-  exports.TweetOutput = ICollection.create(ITweetOutput);
+  exports.TweetOutput = new Collection(ITweetOutput);
   
 }(window));

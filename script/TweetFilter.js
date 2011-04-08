@@ -58,6 +58,6 @@
     })
   );
   
-  exports.TweetFilter = ICollection.create(ITweetFilter);
+  exports.TweetFilter = new Collection(ITweetFilter);
   
 }(window));

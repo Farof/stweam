@@ -10,7 +10,7 @@
     })
   );
   
-  exports.TweetFilterType = IMap.create(ITweetFilterType);
+  exports.TweetFilterType = new Map(ITweetFilterType);
   
   
   

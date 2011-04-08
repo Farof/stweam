@@ -114,7 +114,7 @@
     })
   );
   
-  exports.View = ICollection.create(IView, Trait({
+  exports.View = new Collection(IView, Trait({
     createNew: function () {
       var item = this.add();
       this.items.dispatchProperty('length');

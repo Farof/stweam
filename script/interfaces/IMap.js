@@ -20,7 +20,7 @@
       }
     });
   };
-  exports.IMap.create = function (Constructor) {
+  exports.Map = function (Constructor) {
     return Object.create(Object.prototype, IMap(Constructor));
   };
 
