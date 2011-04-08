@@ -6,6 +6,9 @@
     get dispatchableProperties() {
       return this._dispatchableProperties || (this._dispatchableProperties = {});
     },
+    set dispatchableProperties(value) {
+      this._dispatchableProperties = value;
+    },
     
     dispatchProperty: function (prop) {
       var callbacks = this.dispatchableProperties[prop], i, ln;
