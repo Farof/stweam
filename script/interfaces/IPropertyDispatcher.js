@@ -2,7 +2,10 @@
   "use strict";
 
   exports.IPropertyDispatcher = Trait({
-    dispatchableProperties: {},
+    _dispatchableProperties: null,
+    get dispatchableProperties() {
+      return this._dispatchableProperties || (this._dispatchableProperties = {});
+    },
     
     dispatchProperty: function (prop) {
       var callbacks = this.dispatchableProperties[prop], i, ln;
