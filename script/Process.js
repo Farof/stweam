@@ -121,12 +121,25 @@
         overItem: null,
         overPath: {}
       },
+      
+      get workspaceZoneID() {
+        return 'workspace:' + this.uid;
+      },
+      
+      get workspaceID() {
+        return 'workHTML:' + this.uid;
+      },
+      
+      get canvasID() {
+        return 'workCanvas:' + this.uid;
+      },
 
       toWorkspaceElement: function () {
         var el, htmlEl, canvasEl, i, ln;
         if (!this.workspaceZone) {
           this.workspaceZone = el = new Element('div', {
-            id: 'workspace',
+            id: this.workspaceZoneID,
+            'class': 'workspace',
             process: this,
             events: {
               mousedown: function (e) {
@@ -192,19 +205,55 @@
               }
             }
           });
+          
+          this.titlebarElement = new Element('div', {
+            'class': 'titlebar',
+            events: {
+              
+            }
+          });
+          
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'title',
+            text: this.name
+          }));
+          
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'minimize',
+            text: this.workspaceZone.classList.contains('minimized') ? '+' : '-',
+            source: this,
+            events: {
+              click: function (e) {
+                this.source.workspaceZone.classList.toggle('minimized');
+                this.textContent = this.source.workspaceZone.classList.contains('minimized') ? '+' : '-';
+                this.source.drawCanvas();
+              }
+            }
+          }));
+          
+          this.workspaceZone.appendChild(this.titlebarElement);
+          
           this.workspace = htmlEl = new Element('div', {
-            id: 'workHtml',
+            id: this.workspaceID,
+            'class': 'workHtml',
             process: this
           });
           el.appendChild(htmlEl);
+          
+          this.itemsContainer = new Element('div', {
+            'class': 'item-container',
+            source: this
+          });
+          this.workspace.appendChild(this.itemsContainer);
 
           this.canvasEl = canvasEl = new Element('canvas', {
-            id: 'workCanvas',
-            height: '500',
-            width: '600',
+            id: this.canvasID,
+            'class': 'workCanvas',
+            height: '498',
+            width: '598',
             process: this
           });
-          el.appendChild(canvasEl);
+          this.workspace.appendChild(this.canvasEl);
           this.canvas = new Canvas(canvasEl, el);
 
           this.items.forEach(function (item) {
@@ -216,7 +265,7 @@
 
       addToWorkspace: function (item) {
         var el = item.toWorkspaceElement();
-        this.workspace.appendChild(el);
+        this.itemsContainer.appendChild(el);
         this.items.include(item);
         if (item.initialize.name === 'TweetOutput') {
           this.outputs.include(item);
