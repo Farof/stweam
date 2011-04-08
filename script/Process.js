@@ -359,6 +359,10 @@
       },
       
       dispose: function () {
+        while (this.items[0]) {
+          this.items[0].dispose();
+        }
+        
         this.dispatchableProperties = null;
         this.unload();
         this.collectionElement.dispose();
