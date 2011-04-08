@@ -66,7 +66,7 @@
           return JSON.stringify(item.serialize());
         });
         out.collectionIndex = Process.items.indexOf(this);
-        out.minimized = this.workspaceZone.classList.contains('minimized')
+        out.minimized = this.workspaceZone ? this.workspaceZone.classList.contains('minimized') : false;
         return out;
       },
 
