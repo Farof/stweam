@@ -17,6 +17,10 @@
       sources: [],
       tweets: [],
       
+      get loaded() {
+        return this.listElement && this.listElement.parentNode;
+      },
+      
       initialize: function View(options) {
         this.setOptions(options);
         this.initUUID();

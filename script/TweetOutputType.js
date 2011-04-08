@@ -73,7 +73,7 @@
     
     refreshOutput: function (item) {
       var view = View.getById(item.config.view);
-      if (view) {
+      if (view && view.loaded) {
         view.sourceUpdated(item);
       }
     }
