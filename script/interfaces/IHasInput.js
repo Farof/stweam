@@ -31,7 +31,7 @@
         this.output.inputUpdated(type, input);
       }
       if (this.itemType === 'output') {
-        this.type.refreshOutput(this)
+        this.type.refreshOutput(this);
       }
     }
   });
