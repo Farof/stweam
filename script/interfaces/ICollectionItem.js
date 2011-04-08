@@ -82,7 +82,7 @@
     },
     
     editCollectionElement: function () {
-      this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
+      this.toCollectionEditElement().replaces(this.collectionElement);
       this.collectionEditElement.querySelector('input').focus();
     },
     
@@ -91,7 +91,7 @@
       this.firstInit = false;
       this.name = value;
       this.collectionTitleElement.textContent = value;
-      this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
+      this.collectionElement.replaces(this.collectionEditElement);
       this.save();
       this.dispatchProperty('name');
     },

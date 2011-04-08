@@ -271,6 +271,15 @@
       }
     },
     
+    replaces: {
+      enumerable: true,
+      value: function (replaced) {
+        if (replaced.parentNode) {
+          replaced.parentNode.replaceChild(this, replaced);
+        }
+      }
+    },
+    
     scrollTo: {
       enumerable: true,
       value: function (child) {
