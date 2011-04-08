@@ -66,6 +66,7 @@
           return JSON.stringify(item.serialize());
         });
         out.collectionIndex = Process.items.indexOf(this);
+        out.minimized = this.workspaceZone.classList.contains('minimized')
         return out;
       },
 
@@ -122,7 +123,7 @@
         if (!this.workspaceZone) {
           this.workspaceZone = el = new Element('div', {
             id: this.workspaceZoneID,
-            'class': 'workspace',
+            'class': ('workspace ' + (this.minimized ? 'minimized' : '')),
             process: this,
             events: {
               mousedown: function (e) {
@@ -217,6 +218,7 @@
                 this.source.workspaceZone.classList.toggle('minimized');
                 this.textContent = this.source.workspaceZone.classList.contains('minimized') ? '+' : '-';
                 this.source.drawCanvas();
+                this.source.save();
               }
             }
           }));
