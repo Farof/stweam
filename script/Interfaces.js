@@ -279,10 +279,18 @@
         var
           clone = dragEvent.node,
           source = clone.source,
-          workspace = document.getElementById('workspace'),
-          item, pos;
-          
-        if (clone.hover(workspace)) {
+          workspaces = document.querySelectorAll('.workspace'),
+          workspace,
+          item, pos, i, ln;
+        
+        for (i = 0, ln = workspaces.length; i < ln; i += 1) {
+          if (clone.hover(workspaces[i])) {
+            workspace = workspaces[i];
+            break;
+          }
+        };
+        
+        if (workspace) {
           pos = workspace.pos();
           item = exports[source.typeGroupConstructor].add({
             process: workspace.process,

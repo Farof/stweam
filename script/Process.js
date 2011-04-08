@@ -275,7 +275,7 @@
       handleWorkspaceMousedown: function (event) {
         var item = event.target, strClasse = item.getAttribute('class'), classes = item.classList;
         if (!classes.contains('workspace-item-title-input') && strClasse && strClasse.indexOf('workspace-item-title') > -1) {
-          this.process.dragEvent = new Drag(item.workspaceItem, event, this.process.canvasEl, true);
+          this.process.dragEvent = new Drag(item.source.workspaceElement, event, this.process.canvasEl, true);
         }
       },
 
