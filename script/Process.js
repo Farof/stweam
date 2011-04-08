@@ -198,6 +198,9 @@
             'class': 'title',
             text: this.name || this.defaultName
           }));
+          this.addPropertyListener('name', function (value) {
+            this.titlebarElement.querySelector('.title').textContent = value;
+          }.bind(this));
           
           this.titlebarElement.appendChild(new Element('span', {
             'class': 'close control',
