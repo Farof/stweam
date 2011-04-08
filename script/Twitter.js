@@ -258,7 +258,8 @@
   };
   
   document.addEventListener('keyup', function (e) {
-    if (String.fromCharCode(e.keyCode).toLowerCase() === 'h') {
+    var tag = e.target.tagName.toLowerCase();
+    if (tag !== 'input' && String.fromCharCode(e.keyCode).toLowerCase() === 'h') {
       exports.Twitter.help();
     }
   }, false);
