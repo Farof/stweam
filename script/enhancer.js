@@ -269,6 +269,13 @@
         }
         return false;
       }
+    },
+    
+    scrollTo: {
+      enumerable: true,
+      value: function (child) {
+        console.log('scroll');
+      }
     }
   });
   

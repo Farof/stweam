@@ -8,11 +8,11 @@
     Trait.resolve({ serialize: 'autoSerialize' }, ISerializable),
     IPropertyDispatcher,
     IDisposable,
+    ICollectionItem,
     
     Trait({
       defaultName: 'unamed view',
-      
-      name: 'unamed view',
+      itemType: 'view',
       
       sources: [],
       tweets: [],
@@ -39,98 +39,6 @@
           return (item.type === 'DOM' || (item.type && item.type.type === 'DOM')) && 
             (item.config.view === this || item.config.view === this.uid);
         }.bind(this));
-      },
-      
-      toCollectionElement: function () {
-        var el;
-        if (!this.collectionElement) {
-          el = new Element('p', {
-            'class': 'collection-item view',
-            source: this,
-            events: {
-              click: function (e) {
-                if (!this.clickTimer) {
-                  this.clickTimer = setTimeout(function () {
-                    this.clickTimer = null;
-                    console.log(this, this.source);
-                    this.source.load();
-                  }.bind(this), 200);
-                }
-              },
-              dblclick: function (e) {
-                clearTimeout(this.clickTimer);
-                this.source.editCollectionElement();
-              }
-            }
-          });
-          
-          this.collectionTitleElement = new Element('span', {
-            'class': 'title',
-            text: this.name
-          });
-          el.appendChild(this.collectionTitleElement);
-          
-          el.appendChild(new Element('span', {
-            'class': 'remove',
-            text: '-',
-            source: this,
-            events: {
-              click: function () {
-                View.removeItem(this.source);
-              }
-            }
-          }));
-
-          this.collectionElement = el;
-        }
-        return this.collectionElement;
-      },
-      
-      toCollectionEditElement: function () {
-        if (!this.collectionEditElement) {
-          this.collectionEditElement = new Element('p', {
-            'class': 'collection-item view'
-          });
-          this.collectionEditElement.appendChild(new Element('input', {
-            type: this.text,
-            value: this.name,
-            source: this,
-            events: {
-              blur: function () {
-                this.source.uneditCollectionElement(this);
-              },
-              keydown: function (e) {
-                if (e.keyCode === 13) {
-                  this.source.uneditCollectionElement(this);
-                } else if (e.keyCode === 27) {
-                  if (this.source.firstInit) {
-                    this.blur();
-                    View.removeItem(this.source);
-                  } else {
-                    this.value = this.source.name;
-                    this.source.uneditCollectionElement(this);
-                  }
-                }
-              }
-            }
-          }))
-        }
-        return this.collectionEditElement;
-      },
-      
-      editCollectionElement: function () {
-        this.collectionElement.parentNode.replaceChild(this.toCollectionEditElement(), this.collectionElement);
-        this.collectionEditElement.querySelector('input').focus();
-      },
-      
-      uneditCollectionElement: function (input) {
-        var value = input.value || this.defaultName;
-        this.firstInit = false;
-        this.name = value;
-        this.collectionTitleElement.textContent = value;
-        this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
-        this.save();
-        this.dispatchProperty('name');
       },
       
       load: function () {
@@ -200,6 +108,7 @@
       dispose: function () {
         this.dispatchableProperties = null;
         this.collectionElement.dispose();
+        View.removeItem(this);
         return this;
       }
     })
@@ -216,7 +125,6 @@
     },
     
     removeItem: function (item) {
-      item.dispose();
       this.items.remove(item);
       this.items.dispatchProperty('length');
       Process.drawLoaded();

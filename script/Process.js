@@ -6,9 +6,16 @@
     IHasOptions,
     IHasUUID,
     Trait.resolve({ serialize: 'autoSerialize' }, ISerializable),
+    IPropertyDispatcher,
     IDisposable,
+    ICollectionItem,
     
     Trait({
+      defaultName: 'unamed process',
+      itemType: 'process',
+      
+      items: [],
+      
       initialize: function Process(options) {
         this.setOptions(options);
         this.initUUID();
@@ -62,28 +69,6 @@
         return out;
       },
 
-      name: 'unamed process',
-
-      toCollectionElement: function () {
-        var el;
-        if (!this.collectionElement) {
-          el = new Element('p', {
-            'class': 'collection-item process',
-            text: this.name,
-            source: this,
-            events: {
-              click: function () {
-                console.log(this);
-                this.source.load();
-              }
-            }
-          });
-
-          this.collectionElement = el;
-        }
-        return this.collectionElement;
-      },
-
       contains: function (itemToFind) {
         return this.items.filter(function (item) {
           return item === itemToFind;
@@ -104,7 +89,7 @@
 
       load: function () {
         var workspace;
-
+        
         if (!this.loaded) {
           workspace = document.getElementById('workspaceZone');
           workspace.appendChild(this.toWorkspaceElement());
@@ -205,19 +190,26 @@
           });
           
           this.titlebarElement = new Element('div', {
-            'class': 'titlebar',
-            events: {
-              
-            }
+            'class': 'titlebar'
           });
           
           this.titlebarElement.appendChild(new Element('span', {
             'class': 'title',
-            text: this.name
+            text: this.name || this.defaultName
           }));
           
           this.titlebarElement.appendChild(new Element('span', {
-            'class': 'minimize',
+            'class': 'close control',
+            text: 'x',
+            source: this,
+            events: {
+              click: function (e) {
+                this.source.unload();
+              }
+            }
+          }));
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'minimize control',
             text: this.workspaceZone.classList.contains('minimized') ? '+' : '-',
             source: this,
             events: {
@@ -362,7 +354,11 @@
       },
       
       dispose: function () {
-        console.log('should dispose of process properly');
+        this.dispatchableProperties = null;
+        this.unload();
+        this.collectionElement.dispose();
+        Process.removeItem(this);
+        return this;
       }
     })
   );
@@ -402,7 +398,25 @@
         this.items[i].drawCanvas();
       };
       return this;
+    },
+    
+    createNew: function () {
+      var item = this.add();
+      item.load();
+      this.items.dispatchProperty('length');
+      Process.drawLoaded();
+      Twitter.save();
+      item.firstInit = true;
+      item.editCollectionElement();
+    },
+    
+    removeItem: function (item) {
+      this.items.remove(item);
+      this.items.dispatchProperty('length');
+      Process.drawLoaded();
+      Twitter.storage.removeItem(item);
     }
   }));
+  Object.defineProperties(Process.items, IPropertyDispatcher);
   
 }(window));
