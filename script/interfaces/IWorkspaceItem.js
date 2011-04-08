@@ -17,7 +17,7 @@
       name: Trait.required,
       itemType: Trait.required,
       
-      _process: undefined,
+      _process: null,
       
       get process() {
         return this._process;

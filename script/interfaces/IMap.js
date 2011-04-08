@@ -3,7 +3,10 @@
 
   exports.IMap = function (Constructor) {
     return Trait({
-      items: {},
+      _items: null,
+      get items() {
+        return this._items || (this._items = {});
+      },
       
       add: function (options) {
         var item, trait = Trait.override(

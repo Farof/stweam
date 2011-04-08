@@ -2,7 +2,13 @@
   "use strict";
 
   exports.IHasConfig = Trait({
-    config: {},
+    _config: null,
+    get config() {
+      return this._config || (this._config = {});
+    },
+    set config (value) {
+      this._config = value;
+    },
     
     toConfigElement: function () {
       if (!this.configElement) {

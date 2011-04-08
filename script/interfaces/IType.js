@@ -20,7 +20,10 @@
 
       serializedProperties: [],
       
-      config: {},
+      _config: null,
+      get config() {
+        return this._config || (this._config = {});
+      },
 
       initialize: function TweetOutputType(options) {
         this.setOptions(options);

@@ -4,7 +4,7 @@
   exports.ITyped = Trait({
     types: Trait.required,
     
-    _type: undefined,
+    _type: null,
     
     get type() {
       return this._type;
