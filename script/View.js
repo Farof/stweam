@@ -148,8 +148,9 @@
       
       loadProcesses: function () {
         var i, ln;
+        Process.unloadAll();
         for (i = 0, ln = this.sources.length; i < ln; i += 1) {
-          this.sources[i].process.loadInWorkspace();
+          this.sources[i].process.load();
         }
       },
       
@@ -203,7 +204,7 @@
     createNew: function () {
       var item = this.add();
       this.items.dispatchProperty('length');
-      Process.loadedItem.drawCanvas();
+      Process.drawLoaded();
       Twitter.save();
       item.firstInit = true;
       item.editCollectionElement();
@@ -213,7 +214,7 @@
       item.dispose();
       this.items.remove(item);
       this.items.dispatchProperty('length');
-      Process.loadedItem.drawCanvas();
+      Process.drawLoaded();
       Twitter.storage.removeItem(item);
     }
   }));

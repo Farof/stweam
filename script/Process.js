@@ -74,7 +74,7 @@
             events: {
               click: function () {
                 console.log(this);
-                this.source.loadInWorkspace();
+                this.source.load();
               }
             }
           });
@@ -89,29 +89,27 @@
           return item === itemToFind;
         }).length === 1;
       },
-
-      unloadFromWorkspace: function () {
-        throw new Error('to implement');
-
-        // this.loaded = false;
-        // Process.loadedItem = null;
-
-        // return this;
+      
+      get loaded() {
+        return Process.loadedItems.contains(this);
       },
 
-      loadInWorkspace: function () {
+      unload: function () {
+        if (this.loaded) {
+          this.workspaceZone.dispose();
+          Process.loadedItems.remove(this);
+        }
+        return this;
+      },
+
+      load: function () {
         var workspace;
 
         if (!this.loaded) {
           workspace = document.getElementById('workspaceZone');
-          if (workspace.process) {
-            workspace.process.unloadFromWorkspace();
-          }
           workspace.appendChild(this.toWorkspaceElement());
           this.drawCanvas();
-
-          this.loaded = true;
-          Process.loadedItem = this;
+          Process.loadedItems.include(this);
         }
 
         return this;
@@ -370,7 +368,7 @@
   );
   
   exports.Process = ICollection.create(IProcess, Trait({
-    loadedItem: null,
+    loadedItems: [],
     
     getByItem: function (item) {
       var i, ln;
@@ -380,6 +378,30 @@
         }
       }
       return null;
+    },
+    
+    unloadAll: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].unload();
+      };
+      return this;
+    },
+    
+    loadAll: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].load();
+      };
+      return this;
+    },
+    
+    drawLoaded: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].drawCanvas();
+      };
+      return this;
     }
   }));
   
