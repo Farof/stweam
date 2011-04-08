@@ -64,14 +64,14 @@
             },
             keydown: function (e) {
               if (e.keyCode === 13) {
-                this.source.uneditCollectionElement(this);
+                this.blur();
               } else if (e.keyCode === 27) {
                 if (this.source.firstInit) {
                   this.blur();
                   this.source.dispose();
                 } else {
                   this.value = this.source.name;
-                  this.source.uneditCollectionElement(this);
+                  this.blur();
                 }
               }
             }
