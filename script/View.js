@@ -46,7 +46,6 @@
         if (!this.collectionElement) {
           el = new Element('p', {
             'class': 'collection-item view',
-            text: this.name,
             source: this,
             events: {
               click: function (e) {
@@ -64,6 +63,12 @@
               }
             }
           });
+          
+          this.collectionTitleElement = new Element('span', {
+            'class': 'title',
+            text: this.name
+          });
+          el.appendChild(this.collectionTitleElement);
           
           el.appendChild(new Element('span', {
             'class': 'remove',
@@ -122,7 +127,7 @@
         var value = input.value || this.defaultName;
         this.firstInit = false;
         this.name = value;
-        this.collectionElement.textContent = value;
+        this.collectionTitleElement.textContent = value;
         this.collectionEditElement.parentNode.replaceChild(this.collectionElement, this.collectionEditElement);
         this.save();
         this.dispatchProperty('name');
