@@ -1,50 +1,5 @@
 (function (exports) {
-  
-  exports.IHasOutput = Trait({
-    hasOutput: true,
-    
-    outputTweets: Trait.required
-  });
-  
-  exports.IHasInput = Trait({
-    hasInput: true,
-    
-    inputTweets: Trait.required,
-    
-    _input: undefined,
-    
-    get input() {
-      return this._input;
-    },
-    
-    set input(value) {
-      if (this._input) {
-        this._input.output = null;
-      }
-      this._input = value;
-      if (this._input) {
-        this._input.output = this;
-      }
-      if (this.process) {
-        this.process.drawCanvas();
-      }
-    }
-  });
-  
-  exports.IHasConfig = Trait({
-    config: {},
-    
-    toConfigElement: function () {
-      if (!this.configElement) {
-        this.configElement = this.type.toConfigElement(this);
-      }
-      return this.configElement;
-    },
-    
-    saveConfig: function () {
-      console.log('save');
-    }
-  });
+  "use strict";
   
   exports.IWorkspaceItem = Trait.compose(
     IInitializable,
@@ -54,6 +9,7 @@
     Trait.resolve({ serialize: 'workspaceItemSerialize' }, ISerializable),
     ITyped,
     IHasConfig,
+    IDisposable,
     
     Trait({
       isWorkspaceItem: true,
@@ -61,7 +17,7 @@
       name: Trait.required,
       itemType: Trait.required,
       
-      _process: undefined,
+      _process: null,
       
       get process() {
         return this._process;
@@ -103,7 +59,6 @@
         if (this.process) {
           this.process.removeFromWorkspace(this);
           this.process.save();
-          this.process.generate();
         }
       },
       
@@ -153,7 +108,12 @@
         if (value) {
           this[type] = value;
         }
-        this.process.itemUpdated(type, this);
+        if (this.output) {
+          this.output.inputUpdated(type, this);
+        }
+        if (this.workspaceElement) {
+          this.process.itemUpdated(type, this);
+        }
         return this;
       },
       
@@ -221,7 +181,7 @@
             el.style.top = this.canvas.mouseY + 'px';
             this.process.workspace.appendChild(el);
             this.drawLinkToPoint(el);
-            el.parentNode.removeChild(el);
+            el.dispose();
           }
         }
         return this;

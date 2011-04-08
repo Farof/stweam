@@ -34,12 +34,11 @@
       },
 
       generate: function () {
-        this.type.generate.call(this);
-        return this;
+        return this.type.generate(this);
       }
     })
   );
   
-  exports.TweetOutput = ICollection.create(ITweetOutput);
+  exports.TweetOutput = new Collection(ITweetOutput);
   
 }(window));

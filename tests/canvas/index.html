@@ -231,14 +231,13 @@
       };
       
       var setMousePos = function (conf) {
-        var pos = Element.pos(root);
-        conf.mouseX = status.mouseMoveX - pos.x;
-        conf.mouseY = status.mouseMoveY - pos.y;
+        var pos = root.pos();
+        conf.mouseX = status.mouseMoveX - pos.left;
+        conf.mouseY = status.mouseMoveY - pos.top;
         return conf;
       };
       
       var item2conf = function (item) {
-        var pos = Element.pos(item);
         return {
           item: item,
           x: parseInt(item.style.left, 10) + item.scrollWidth / 2,

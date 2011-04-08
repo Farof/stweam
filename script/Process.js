@@ -6,7 +6,16 @@
     IHasOptions,
     IHasUUID,
     Trait.resolve({ serialize: 'autoSerialize' }, ISerializable),
+    IPropertyDispatcher,
+    IDisposable,
+    ICollectionItem,
+    
     Trait({
+      defaultName: 'unamed process',
+      itemType: 'process',
+      
+      items: [],
+      
       initialize: function Process(options) {
         this.setOptions(options);
         this.initUUID();
@@ -21,6 +30,11 @@
               if (!item.process) {
                 item.process = this;
               }
+            }
+            
+            if (!item.type) {
+              this.removeFromWorkspace(item);
+              this.save();
             }
 
             // registering process outputs
@@ -51,35 +65,9 @@
         out.items = this.items.map(function (item) {
           return JSON.stringify(item.serialize());
         });
+        out.collectionIndex = Process.items.indexOf(this);
+        out.minimized = this.workspaceZone ? this.workspaceZone.classList.contains('minimized') : false;
         return out;
-      },
-
-      name: 'unamed process',
-
-      generate: function () {
-        this.outputs.forEach(function (output) {
-          output.generate();
-        });
-        return this;
-      },
-
-      toCollectionElement: function () {
-        var el;
-        if (!this.collectionElement) {
-          el = new Element('p', {
-            'class': 'collection-item process',
-            text: this.name,
-            events: {
-              click: function () {
-                console.log(this);
-                this.loadInWorkspace();
-              }.bind(this)
-            }
-          });
-
-          this.collectionElement = el;
-        }
-        return this.collectionElement;
       },
 
       contains: function (itemToFind) {
@@ -87,29 +75,27 @@
           return item === itemToFind;
         }).length === 1;
       },
-
-      unloadFromWorkspace: function () {
-        throw new Error('to implement');
-
-        // this.loaded = false;
-        // Process.loadedItem = null;
-
-        // return this;
+      
+      get loaded() {
+        return Process.loadedItems.contains(this);
       },
 
-      loadInWorkspace: function () {
-        var workspace;
+      unload: function () {
+        if (this.loaded) {
+          this.workspaceZone.dispose();
+          Process.loadedItems.remove(this);
+        }
+        return this;
+      },
 
+      load: function () {
+        var workspace;
+        
         if (!this.loaded) {
           workspace = document.getElementById('workspaceZone');
-          if (workspace.process) {
-            workspace.process.unloadFromWorkspace();
-          }
           workspace.appendChild(this.toWorkspaceElement());
           this.drawCanvas();
-
-          this.loaded = true;
-          Process.loadedItem = this;
+          Process.loadedItems.include(this);
         }
 
         return this;
@@ -119,12 +105,25 @@
         overItem: null,
         overPath: {}
       },
+      
+      get workspaceZoneID() {
+        return 'workspace:' + this.uid;
+      },
+      
+      get workspaceID() {
+        return 'workHTML:' + this.uid;
+      },
+      
+      get canvasID() {
+        return 'workCanvas:' + this.uid;
+      },
 
       toWorkspaceElement: function () {
         var el, htmlEl, canvasEl, i, ln;
         if (!this.workspaceZone) {
           this.workspaceZone = el = new Element('div', {
-            id: 'workspace',
+            id: this.workspaceZoneID,
+            'class': ('workspace ' + (this.minimized ? 'minimized' : '')),
             process: this,
             events: {
               mousedown: function (e) {
@@ -143,7 +142,7 @@
                 var
                   target = e.target,
                   process = this.process,
-                  item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
 
                 if ((!process.canvasStatus.overItem && item) ||
                     (process.canvasStatus.overItem && item && process.canvasStatus.overItem !== item)) {
@@ -160,14 +159,13 @@
                   process = this.process,
                   status = process.canvasStatus,
                   target = e.target,
-                  item = target.classList.contains('workspace-item') ? target : Element.getParentByClass(target, 'workspace-item');
+                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
                 
                 if (status.linkingFrom) {
                   if (status.overItem && status.linkingFrom.acceptsLinkTo(status.overItem.source)) {
                     status.overItem.source.input = status.linkingFrom;
                     status.linkingFrom.linking = false;
                     process.drawCanvas(e);
-                    process.generate();
                     process.save();
                   } else {
                     status.linkingFrom.linking = false;
@@ -178,7 +176,7 @@
 
               click: function (e) {
                 var
-                  pos = Element.pos(canvasEl),
+                  pos = canvasEl.pos(),
                   process = this.process,
                   status = process.canvasStatus,
                   overSource = status.overPath.source,
@@ -186,25 +184,71 @@
                   
                 if (overSource && overDest) {
                   overDest.input = null;
-                  process.generate();
                   process.save();
                 }
               }
             }
           });
+          
+          this.titlebarElement = new Element('div', {
+            'class': 'titlebar'
+          });
+          
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'title',
+            text: this.name || this.defaultName
+          }));
+          this.addPropertyListener('name', function (value) {
+            this.titlebarElement.querySelector('.title').textContent = value;
+          }.bind(this));
+          
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'close control',
+            text: 'x',
+            source: this,
+            events: {
+              click: function (e) {
+                this.source.unload();
+              }
+            }
+          }));
+          this.titlebarElement.appendChild(new Element('span', {
+            'class': 'minimize control',
+            text: this.workspaceZone.classList.contains('minimized') ? '+' : '-',
+            source: this,
+            events: {
+              click: function (e) {
+                this.source.workspaceZone.classList.toggle('minimized');
+                this.textContent = this.source.workspaceZone.classList.contains('minimized') ? '+' : '-';
+                this.source.drawCanvas();
+                this.source.save();
+              }
+            }
+          }));
+          
+          this.workspaceZone.appendChild(this.titlebarElement);
+          
           this.workspace = htmlEl = new Element('div', {
-            id: 'workHtml',
+            id: this.workspaceID,
+            'class': 'workHtml',
             process: this
           });
           el.appendChild(htmlEl);
+          
+          this.itemsContainer = new Element('div', {
+            'class': 'item-container',
+            source: this
+          });
+          this.workspace.appendChild(this.itemsContainer);
 
           this.canvasEl = canvasEl = new Element('canvas', {
-            id: 'workCanvas',
-            height: '500',
-            width: '600',
+            id: this.canvasID,
+            'class': 'workCanvas',
+            height: '498',
+            width: '598',
             process: this
           });
-          el.appendChild(canvasEl);
+          this.workspace.appendChild(this.canvasEl);
           this.canvas = new Canvas(canvasEl, el);
 
           this.items.forEach(function (item) {
@@ -216,7 +260,7 @@
 
       addToWorkspace: function (item) {
         var el = item.toWorkspaceElement();
-        this.workspace.appendChild(el);
+        this.itemsContainer.appendChild(el);
         this.items.include(item);
         if (item.initialize.name === 'TweetOutput') {
           this.outputs.include(item);
@@ -231,7 +275,7 @@
       handleWorkspaceMousedown: function (event) {
         var item = event.target, strClasse = item.getAttribute('class'), classes = item.classList;
         if (!classes.contains('workspace-item-title-input') && strClasse && strClasse.indexOf('workspace-item-title') > -1) {
-          this.process.dragEvent = new Drag(item.workspaceItem, event, this.process.canvasEl, true);
+          this.process.dragEvent = new Drag(item.source.workspaceElement, event, this.process.canvasEl, true);
         }
       },
 
@@ -307,18 +351,25 @@
 
       itemUpdated: function (updateType, item) {
         this.drawCanvas();
-        this.generate();
         this.save();
       },
       
       save: function () {
         Twitter.save(this);
+      },
+      
+      dispose: function () {
+        this.dispatchableProperties = null;
+        this.unload();
+        this.collectionElement.dispose();
+        Process.removeItem(this);
+        return this;
       }
     })
   );
   
-  var processOverload = Trait({
-    loadedItem: null,
+  exports.Process = new Collection(IProcess, Trait({
+    loadedItems: [],
     
     getByItem: function (item) {
       var i, ln;
@@ -328,9 +379,49 @@
         }
       }
       return null;
+    },
+    
+    unloadAll: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].unload();
+      };
+      return this;
+    },
+    
+    loadAll: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].load();
+      };
+      return this;
+    },
+    
+    drawLoaded: function () {
+      var i, ln;
+      for (i = 0, ln = this.items.length; i < ln; i += 1) {
+        this.items[i].drawCanvas();
+      };
+      return this;
+    },
+    
+    createNew: function () {
+      var item = this.add();
+      item.load();
+      this.items.dispatchProperty('length');
+      Process.drawLoaded();
+      Twitter.save();
+      item.firstInit = true;
+      item.editCollectionElement();
+    },
+    
+    removeItem: function (item) {
+      this.items.remove(item);
+      this.items.dispatchProperty('length');
+      Process.drawLoaded();
+      Twitter.storage.removeItem(item);
     }
-  });
-  
-  exports.Process = ICollection.create(IProcess, processOverload);
+  }));
+  Object.defineProperties(Process.items, IPropertyDispatcher);
   
 }(window));

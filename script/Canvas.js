@@ -15,9 +15,9 @@
     trackMousemove: function (node) {
       this.mousemoveTrackNode = node || this.canvas;
       this.mousemoveTrackNode.addEventListener('mousemove', function (e) {
-        var pos = Element.pos(this.canvas);
-        this.mouseX = e.clientX - pos.x + document.documentElement.scrollLeft;
-        this.mouseY = e.clientY - pos.y + document.documentElement.scrollTop;
+        var pos = this.canvas.pos();
+        this.mouseX = e.clientX - pos.left + document.documentElement.scrollLeft;
+        this.mouseY = e.clientY - pos.top + document.documentElement.scrollTop;
       }.bind(this), false);
     },
     

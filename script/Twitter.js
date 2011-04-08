@@ -69,51 +69,55 @@
     },
     
     init: function () {
-      var lastProcess;
+      var lastProcess, lastView;
       
       Twitter.load();
       
-      lastProcess = this.load('config.lastProcess') || Process.items[0];
-      if (lastProcess) {
-        lastProcess.generate().loadInWorkspace();
+      lastView = View.getById(this.load('config.lastView')) || View.items[0];
+      if (lastView) {
+        lastView.load();
       } else {
-        console.log('no process to load');
+        console.log('no view to load');
       }
     },
     
     load: function () {
-      this.storage.load.apply(this.storage, arguments);
+      return this.storage.load.apply(this.storage, arguments);
     },
     
     save: function () {
-      this.storage.save.apply(this.storage, arguments);
+      return this.storage.save.apply(this.storage, arguments);
     },
     
     bootstrap: function () {
       Process.from({
-        uid: '18',
+        uid: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720',
         name: 'My first Process',
         constructorName: 'Process',
         items: [
           TweetInput.from({ 
-            uid: '15', name: 'global input',
-            process: '18', type: 'global',
+            uid: '0E09ECB8-5F90-4E44-94BA-12386A12099C', name: 'global input',
+            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', type: 'global',
             position: { left: 93, top: 59 },
             config: {}
           }),
           TweetFilter.from({
-            uid: '16', name: 'author filter',
-            process: '18', input: '15', type: 'from_user', 
+            uid: '99C37C42-3E10-40BE-9196-53F3DDB12B34', name: 'author filter',
+            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', input: '0E09ECB8-5F90-4E44-94BA-12386A12099C', type: 'from_user', 
             config: { operator: 'contains', value: 'yo' },
             position: { left: 200, top: 240 }
           }),
           TweetOutput.from({
-            uid: '17', name: 'DOM output',
-            process: '18', input: '16', type: 'DOM',
+            uid: 'C1F44896-0CEC-4454-8EB6-4C790C69C01A', name: 'DOM output',
+            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', input: '99C37C42-3E10-40BE-9196-53F3DDB12B34', type: 'DOM',
             position: { left: 434, top: 348 },
-            config: { node: '#list' }
+            config: { view: '5884739D-04A7-49D3-B91D-871599956172' }
           })
         ]
+      });
+      View.from({
+        uid: '5884739D-04A7-49D3-B91D-871599956172',
+        name: 'My view'
       });
       
       Twitter.save();
@@ -157,9 +161,12 @@
         if (arguments.length === 1) {
           this.saveItem(item);
         } else if (arguments.length === 2) {
-          this.saveKey(key, item);
+          this.saveKey(item, key);
         } else {
           Process.items.forEach(function (item) {
+            this.save(item);
+          }.bind(this));
+          View.items.forEach(function (item) {
             this.save(item);
           }.bind(this));
         }
@@ -180,17 +187,35 @@
       },
       
       load: function (key) {        
-        var items = ['Process'], i, ln;
-        
+        var Classes = ['Process', 'View'], Class, i, ln, items = {}, options;
         if (key) {
           return this.loadKey(key);
         }
         
         for (key in this.db) {
-          for (i = 0, ln = items.length; i < ln; i += 1) {
-            if (key.indexOf(items[i] + ':') > -1) {
-              return this.loadItem(items[i], this.db.getItem(key));
+          for (i = 0, ln = Classes.length; i < ln; i += 1) {
+            Class = Classes[i];
+            if (key.indexOf(Class + ':') > -1) {
+              if (!items[Class]) {
+                items[Class] = [];
+              }
+              try {
+                options = this.db.getItem(key);
+                options = JSON.parse(options);
+                items[Class].push(options);
+              } catch (e) {
+                console.log('error converting to options: ', options, e.message, e);
+              }
             }
+          }
+        }
+        
+        for (Class in items) {
+          items[Class] = items[Class].sort(function (a, b) {
+            return a.collectionIndex > b.collectionIndex;
+          });
+          for (i = 0, ln = items[Class].length; i < ln; i += 1) {
+            this.loadItem(Class, items[Class][i]);
           }
         }
       },
@@ -199,7 +224,6 @@
         var constructor = window[constructorName];
         if (constructor && constructor.from) {
           try {
-            options = JSON.parse(options);
             return constructor.from(options);
           } catch (e) {
             console.log('error loading item: ', constructorName, options, e.message, e);
@@ -217,6 +241,14 @@
           console.log('error loading key: ', key);
           return null;
         }
+      },
+      
+      removeItem: function (item) {
+        try {
+          this.db.removeItem(item.constructorName + ':' + item.uid);
+        } catch (e) {
+          console.log('unable to remove item: ', item, item.constructorName, item.uid);
+        }
       }
     },
     
@@ -226,7 +258,8 @@
   };
   
   document.addEventListener('keyup', function (e) {
-    if (String.fromCharCode(e.keyCode).toLowerCase() === 'h') {
+    var tag = e.target.tagName.toLowerCase();
+    if (tag !== 'input' && String.fromCharCode(e.keyCode).toLowerCase() === 'h') {
       exports.Twitter.help();
     }
   }, false);

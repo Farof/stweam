@@ -68,6 +68,6 @@
   );
   
   
-  exports.Tweet = ICollection.create(ITweet);
+  exports.Tweet = new Collection(ITweet);
   
 }(window));

@@ -227,7 +227,63 @@
     dispose: {
       enumerable: true,
       value: function () {
-        return this.parentNode.removeChild(this);
+        if (this.parentNode) {
+          return this.parentNode.removeChild(this);
+        }
+        return false;
+      }
+    },
+    
+    empty: {
+      enumerable: true,
+      value: function () {
+        while (this.children[0]) {
+          this.removeChild(this.children[0]);
+        }
+        return this;
+      }
+    },
+    
+    getParentByClassName: {
+      enumerable: true,
+      value: function (name) {
+        var node = this.parentNode;
+        while (node) {
+          if (node.classList && node.classList.contains(name)) {
+            return node;
+          }
+          node = node.parentNode;
+        }
+        return null;
+      }
+    },
+    
+    hasChild: {
+      enumerable: true,
+      value: function (child) {
+        var i, ln;
+        for (i = 0, ln = this.children.length; i < ln; i += 1) {
+          if (this.children[i] === child) {
+            return true;
+          }
+        }
+        return false;
+      }
+    },
+    
+    replaces: {
+      enumerable: true,
+      value: function (replaced) {
+        if (replaced.parentNode) {
+          replaced.parentNode.replaceChild(this, replaced);
+        }
+      }
+    },
+    
+    scrollTo: {
+      enumerable: true,
+      value: function (child) {
+        console.log('scroll');
       }
     }
   });
@@ -244,7 +300,6 @@
   
   Object.defineProperties(Number.prototype, {
     between: {
-      enumerable: true,
       value: function (a, b) {
         if (a > b) {
           [a, b] = [b, a];
@@ -256,22 +311,22 @@
   
   Object.defineProperties(Array.prototype, {
     last: {
-      enumerable: true,
       get: function () {
         return this[this.lenght - 1];
       }
     },
     
     contains: {
-      enumerable: true,
       value: function (item) {
         return this.indexOf(item) > -1;
       }
     },
     
     include: {
-      enumerable: true,
-      value: function (item) {
+      value: function (item, pass) {
+        if (!pass && Array.isArray(item)) {
+          return this.merge(item);
+        }
         if (!this.contains(item)) {
           this.push(item);
         }
@@ -279,14 +334,35 @@
       }
     },
     
+    merge: {
+      value: function (items) {
+        var i, ln;
+        for (i = 0, ln = items.length; i < ln; i += 1) {
+          this.include(items[i], true);
+        }
+        return this;
+      }
+    },
+    
     remove: {
-      enumerable: true,
       value: function (item) {
         var i = this.indexOf(item);
         if (i > -1) {
           return this.splice(i, 1);
         }
         return null;
+      }
+    }
+  });
+  
+  Object.defineProperties(Object.prototype, {
+    map: {
+      value: function (func) {
+        var ar = [], key;
+        for (key in this) {
+          ar.push(func(this[key]));
+        }
+        return ar;
       }
     }
   });

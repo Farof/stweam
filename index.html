@@ -3,6 +3,7 @@
   <head>
     <meta encoding="UTF-8" />
     <title>Tweb</title>
+    <link href='http://fonts.googleapis.com/css?family=Arimo:regular,bold' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style/screen.css" media="screen" />
   </head>
   <body>
@@ -18,11 +19,14 @@
     
     <div id="collection">
       <div id="processes" class="collection-category">
-        <p class="collection-title">Processes</p>
+        <p class="collection-title">Processes <span class="add" onclick="Process.createNew();">+</span></p>
+      </div>
+      <div id="views" class="collection-category">
+        <p class="collection-title">Views <span class="add" onclick="View.createNew();">+</span></p>
       </div>
     </div>
     
-    <div id="list">
+    <div id="views-item">
       
     </div>
     
@@ -34,21 +38,21 @@
       <p id="library-title">Library</p>
       
       <div id="input-type-list-box" class="library-category">
-        <p class="library-category-name">InputTypes</p>
+        <p class="library-category-name">Inputs</p>
         <div id="input-type-list" class="library-category-list">
           
         </div>
       </div>
       
       <div id="filter-type-list-box" class="library-category">
-        <p class="library-category-name">FilterTypes</p>
+        <p class="library-category-name">Filters</p>
         <div id="filter-type-list" class="library-category-list">
           
         </div>
       </div>
       
       <div id="output-type-list-box" class="library-category">
-        <p class="library-category-name">OutputTypes</p>
+        <p class="library-category-name">Outputs</p>
         <div id="output-type-list" class="library-category-list">
           
         </div>
@@ -75,15 +79,43 @@
         <h3>Shortcuts</h3>
         <p><span class="shortcut">h</span>: display/hide this help.</p>
       </div>
+      <div>
+        <h3>Troubles?</h3>
+        <p>Some troubles? Start by reloading your cache to get the new source files. If that's not enough, try the "clear data" and "bootstrap" buttons on the top bar to restore a working state.</p>
+        <p>Still stuck? Keep in mind this is a work in progress and help me improve the app by reporting your trouble to me. Twitter is fine, Github is perfect, and my mail is not hard to find if you look for it.</p>
+      </div>
     </div>
   </body>
+  
   <script type="application/x-javascript" src="script/enhancer.js"></script>
+  
   <script type="application/x-javascript" src="script/lib/uuid.js"></script>
   <script type="application/x-javascript" src="script/lib/traits-0.4.js"></script>
+  
   <script type="application/x-javascript" src="script/Interfaces.js"></script>
-  <script type="application/x-javascript" src="script/IWorkspaceItem.js"></script>
-  <script type="application/x-javascript" src="script/Element.js"></script>
-  <script type="application/x-javascript" src="script/WorkspaceElement.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IHasOptions.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IHasUUID.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IMovable.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IDisposable.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IPropertyDispatcher.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IInitializable.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/ISerializable.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/ITyped.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/ICollectionItem.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IType.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/ICollection.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IMap.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IHasOutput.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IHasInput.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IHasConfig.js"></script>
+  <script type="application/x-javascript" src="script/interfaces/IWorkspaceItem.js"></script>
+  
+  <script type="application/x-javascript" src="script/ui/Element.js"></script>
+  <script type="application/x-javascript" src="script/ui/WorkspaceElement.js"></script>
+  <script type="application/x-javascript" src="script/ui/ConfigElement.js"></script>
+  <script type="application/x-javascript" src="script/ui/SelectLine.js"></script>
+  <script type="application/x-javascript" src="script/ui/Input.js"></script>
+  
   <script type="application/x-javascript" src="script/Canvas.js"></script>
   <script type="application/x-javascript" src="script/Drag.js"></script>
   <script type="application/x-javascript" src="script/Tweet.js"></script>
@@ -93,6 +125,7 @@
   <script type="application/x-javascript" src="script/TweetOutput.js"></script>
   <script type="application/x-javascript" src="script/TweetFilterType.js"></script>
   <script type="application/x-javascript" src="script/TweetFilter.js"></script>
+  <script type="application/x-javascript" src="script/View.js"></script>
   <script type="application/x-javascript" src="script/Process.js"></script>
   <script type="application/x-javascript" src="script/Twitter.js"></script>
   <script type="application/x-javascript" src="script/app.js"></script>

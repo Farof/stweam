@@ -19,29 +19,27 @@
     
     title = new Element('p', {
       'class': 'workspace-item-title-zone',
-      workspaceItem: el
+      source: source
     });
     saveTitle = title.save = function (event) {
       var value = this.querySelector('.workspace-item-title-input').value;
       this.querySelector('.workspace-item-title').textContent = value;
       source.updated('name', value);
       this.classList.remove('editing');
-      Process.loadedItem.drawCanvas();
+      source.process.drawCanvas();
     }.bind(title);
     el.appendChild(title);
     
     title.appendChild(new Element('span', {
       'class': 'workspace-item-title',
       text: source.name,
-      workspaceItem: el,
+      source: source,
       events: {
         click: function () {
           if (!this.parentNode.parentNode.dragged) {
             this.parentNode.classList.add('editing');
             this.nextSibling.focus();
-            Process.loadedItem.drawCanvas();
-          } else {
-            
+            source.process.drawCanvas();
           }
         }
       }

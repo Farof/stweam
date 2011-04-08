@@ -12,7 +12,7 @@
     })
   );
   
-  exports.TweetInputType = IMap.create(ITweetInputType);
+  exports.TweetInputType = new Map(ITweetInputType);
   
   
   exports.TweetInputType.add({
@@ -21,7 +21,7 @@
     description: 'All tweets from all sources.',
     
     toConfigElement: function () {
-      return new Element('div');
+      return new ConfigElement();
     },
     
     retrieve: function () {
