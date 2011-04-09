@@ -390,6 +390,10 @@
     }
   });
   
+  Object.defineProperties(NodeList.prototype, {
+    filterFirst: Object.getOwnPropertyDescriptor(Array.prototype, 'filterFirst')
+  });
+  
   Object.defineProperties(Object.prototype, {
     map: {
       value: function (func) {
