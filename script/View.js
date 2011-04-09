@@ -57,14 +57,9 @@
       },
       
       hasProcess: function (process) {
-        var i, ln;
-
-        for (i = 0, ln = this.sources.length; i < ln; i += 1) {
-          if (this.sources[i].process === process) {
-            return true;
-          }
-        }
-        return false;
+        return this.sources.some(function (source) {
+          return source.process === process;
+        });
       },
       
       load: function () {
@@ -120,14 +115,13 @@
       },
       
       populate: function () {
-        var tweets = [], i, ln;
-        for (i = 0, ln = this.sources.length; i < ln; i += 1) {
-          tweets.merge(this.sources[i].generate());
-        }
-        this.tweets = tweets;
+        var i, ln;
+        this.tweets = this.sources.reduce(function (previous, current) {
+          return previous.merge(current.generate());
+        }, []);
         this.listElement.empty();
-        for (i = 0, ln = tweets.length; i < ln; i += 1) {
-          this.listElement.appendChild(tweets[i]);
+        for (i = 0, ln = this.tweets.length; i < ln; i += 1) {
+          this.listElement.appendChild(this.tweets[i]);
         }
       },
       
