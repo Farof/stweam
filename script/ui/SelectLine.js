@@ -26,7 +26,7 @@
     
     if (options.datasource) {
       options.datasource.addPropertyListener('length', function () {
-        this.populate(options.onDatasourceChange(options.datasource), select, value, def);
+        this.populate(options.onDatasourceChange(options.datasource), select, onchange, select.value, def);
       }.bind(this));
     }
     

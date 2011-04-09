@@ -45,6 +45,9 @@
             view = View.getById(item.config.view);
             if (view) {
               view.sources.remove(item);
+              if (view.loaded) {
+                view.populate();
+              }
             }
           }
           
