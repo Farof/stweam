@@ -14,8 +14,21 @@
       defaultName: 'unamed view',
       itemType: 'view',
       
-      sources: [],
-      tweets: [],
+      _sources: null,
+      get sources() {
+        return this._sources || (this._sources = []);
+      },
+      set sources(value) {
+        this._sources = value;
+      },
+      
+      _tweets: null,
+      get tweets() {
+        return this._tweets || (this._tweets = []);
+      },
+      set tweets(value) {
+        this._tweets = value;
+      },
       
       get loaded() {
         return View.loadedItem === this;

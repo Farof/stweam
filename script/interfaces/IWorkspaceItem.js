@@ -51,12 +51,15 @@
       },
       
       dispose: function () {
-        this.input = null;
-        if (this.output) {
-          this.output.input = null;
+        if (this.hasInputs) {
+          this.clearInputs();
+        }
+        if (this.hasOutputs) {
+          this.clearFromOutputs();
         }
         if (this.workspaceElement) {
           this.workspaceElement.source = null;
+          // TODO: find and detach events
           this.workspaceElement.dispose();
         }
         if (this.process) {
@@ -98,7 +101,9 @@
       },
       
       handleMousedown: function (e) {
-        if (this.hasOutput && e.shiftKey) {
+        var t = e.target;
+        
+        if (this.hasOutputs && e.shiftKey) {
           e.stop();
           this.linking = true;
           this.process.workspace.addEventListener('mousemove', this.handleLinkMove, false);
@@ -106,6 +111,8 @@
         } else if (e.altKey) {
           e.stop();
           this.dispose();
+        } else if (t.classList && t.tagName.toLowerCase() !== 'input' && t.getAttribute('class').contains('workspace-item-title')) {
+          this.process.dragEvent = new Drag(this.workspaceElement, e, this.process.canvasEl, true);
         }
       },
       
@@ -132,8 +139,8 @@
           overSource = overItem ? overItem.source : null;
         
         if (this.linking) {
-          if (overItem && overSource !== this.output && this.acceptsLinkFrom(overSource)) {
-            overSource.input = this;
+          if (overItem && !this.outputs.contains(overSource) && this.acceptsLinkTo(overSource)) {
+            overSource.addInput(this);
             process.save();
           }
           this.linking = false;
@@ -147,8 +154,8 @@
         if (value) {
           this[type] = value;
         }
-        if (this.output) {
-          this.output.inputUpdated(type, this);
+        if (this.hasOutputs) {
+          this.updateOutputs(type);
         }
         if (this.workspaceElement) {
           this.process.itemUpdated(type, this);
@@ -191,11 +198,11 @@
       },
       
       acceptsLinkFrom: function (item) {
-        return item !== this;
+        return this.hasInputs;
       },
       
       acceptsLinkTo: function (item) {
-        return item !== this && item.acceptsLinkFrom(this);
+        return (item !== this) && item.acceptsLinkFrom(this);
       },
       
       draw: function () {
@@ -204,13 +211,14 @@
       },
       
       drawLinks: function () {
-        var el, dest;
-        if (this.input) {
-          if (typeof this.input === 'string') {
-            //this.input = this.input;
+        var el, dest, i, ln;
+        
+        if (this.hasInputs) {
+          for (i = 0, ln = this.inputs.length; i < ln; i += 1) {
+            this.drawLinkFromItem(this.inputs[i]);
           }
-          this.drawLinkFromItem(this.input);
         }
+        
         if (this.linking) {
           dest = this.process.canvasStatus.overItem;
           if (dest && dest.source !== this) {

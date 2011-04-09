@@ -14,19 +14,30 @@
       defaultName: 'unamed process',
       itemType: 'process',
       
-      items: [],
+      _items: null,
+      
+      get items() {
+        return this._items || (this._items = []);
+      },
+
+      set items(value) {
+        this._items = value;
+      },
       
       initialize: function Process(options) {
+        var i, ln, j, ln2, k, ln3, item, input;
+        
         this.setOptions(options);
         this.initUUID();
 
         this.outputs = [];
 
         if (this.items) {
-          this.items.forEach(function (item, index, ar) {
+          for (i = 0, ln = this.items.length; i < ln; i += 1) {
+            item = this.items[i];
             // converting serialized items
-            if (typeof item === 'string') {
-              item = ar[index] = Twitter.deserialize(item);
+            if (item.typeOf('string')) {
+              item = this.items[i] = Twitter.deserialize(item);
               if (!item.process) {
                 item.process = this;
               }
@@ -41,16 +52,21 @@
             if (item.initialize.name === 'TweetOutput') {
               this.outputs.include(item);
             }
-          }.bind(this));
+          }
           
-          this.items.forEach(function (item, index, ar) {
-            // mapping inputs uids to objects
-            if (typeof item.input === 'string') {
-              item.input = this.items.filter(function (inputItem) {
-                return inputItem.uid === item.input;
-              })[0] || item.input;
+          for (i = 0, ln = this.items.length; i < ln; i += 1) {
+            item = this.items[i];
+            if (item.hasInputs) {
+              for (j = 0, ln2 = item.inputs.length; j < ln2; j += 1) {
+                input = item.inputs[j];
+                if (input.typeOf('string')) {
+                  item.inputs[j] = (this.items.filter(function (inputItem) {
+                    return inputItem.uid === input;
+                  })[0]) || input;
+                }
+              }
             }
-          }.bind(this));
+          }
         }
         
         document.getElementById('processes').appendChild(this.toCollectionElement());
@@ -127,7 +143,7 @@
             process: this,
             events: {
               mousedown: function (e) {
-                this.process.handleWorkspaceMousedown.call(htmlEl, e);
+                this.process.drawCanvas(e);
               },
 
               mousemove: function (e) {
@@ -135,21 +151,18 @@
               },
               
               mouseup: function (e) {
-                this.process.drawCanvas(e);
-              },
-
-              click: function (e) {
                 var
-                  pos = canvasEl.pos(),
                   process = this.process,
-                  status = process.canvasStatus,
-                  overSource = status.overPath.source,
-                  overDest = status.overPath.dest;
-                  
+                  overPath = process.canvasStatus.overPath,
+                  overSource = overPath.source,
+                  overDest = overPath.dest;
+                
                 if (overSource && overDest) {
-                  overDest.input = null;
+                  overDest.removeInput(overSource);
                   process.save();
                 }
+                
+                this.process.drawCanvas(e);
               }
             }
           });
@@ -234,13 +247,6 @@
       
       removeFromWorkspace: function (item) {
         this.items.remove(item);
-      },
-
-      handleWorkspaceMousedown: function (event) {
-        var item = event.target, strClasse = item.getAttribute('class'), classes = item.classList;
-        if (!classes.contains('workspace-item-title-input') && strClasse && strClasse.indexOf('workspace-item-title') > -1) {
-          this.process.dragEvent = new Drag(item.source.workspaceElement, event, this.process.canvasEl, true);
-        }
       },
 
       canvasConf: {

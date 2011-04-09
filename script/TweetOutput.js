@@ -3,6 +3,7 @@
 
   exports.ITweetOutput = Trait.compose(
     Trait.resolve({ initialize: 'workspaceItemInit',
+                    serialize: 'autoSerialize',
                     getContentChildren: 'getItemContentChildren' }, IWorkspaceItem),
     IHasInput,
     Trait({
@@ -19,14 +20,24 @@
       types: TweetOutputType,
 
       get inputTweets() {
-        return this.input ? this.input.outputTweets : false;
+        return this.inputs.reduce(function (previous, current) {
+          return previous.merge(current.outputTweets);
+        }, []);
       },
 
       set inputTweets(value) {
         throw new Error('read only');
       },
       
-      serializedProperties: ['uid', 'constructorName', 'name', 'input=input.uid', 'type=type.type', 'position', 'config'],
+      serializedProperties: ['uid', 'constructorName', 'name', 'type=type.type', 'position', 'config'],
+      
+      serialize: function () {
+        var out = this.autoSerialize();
+        out.inputs = this.inputs.map(function (input) {
+          return input.uid;
+        });
+        return out;
+      },
 
       getContentChildren: function () {
         var children = this.getItemContentChildren();

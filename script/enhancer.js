@@ -364,6 +364,12 @@
         }
         return ar;
       }
+    },
+    
+    typeOf: {
+      value: function (type) {
+        return typeof this === type;
+      }
     }
   });
   
@@ -378,6 +384,12 @@
         str += '>' + this + '</' + tag + '>';
         
         return str;
+      }
+    },
+    
+    contains: {
+      value: function (str) {
+        return this.indexOf(str) > -1;
       }
     }
   });

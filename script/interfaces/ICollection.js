@@ -3,7 +3,15 @@
 
   exports.ICollection = function (Constructor) {
     return Trait({
-      items: [],
+      _items: null,
+      
+      get items() {
+        return this._items || (this._items = []);
+      },
+
+      set items(value) {
+        this._items = value;
+      },
       
       getById: function (uid) {
         var i, ln;
