@@ -40,6 +40,9 @@
           this._process = Process.getByItem(this);
         }
         
+        this.handleLinkMove = this.handleLinkMove.bind(this);
+        this.handleLinkDrop = this.handleLinkDrop.bind(this);
+        
         return this;
       },
       
@@ -95,13 +98,49 @@
       },
       
       handleMousedown: function (e) {
-        if (this.hasOutput && !this.output && e.shiftKey) {
+        if (this.hasOutput && e.shiftKey) {
           e.stop();
           this.linking = true;
+          this.process.workspace.addEventListener('mousemove', this.handleLinkMove, false);
+          this.process.workspace.addEventListener('mouseup', this.handleLinkDrop, false);
         } else if (e.altKey) {
           e.stop();
           this.dispose();
         }
+      },
+      
+      handleLinkMove: function (e) {
+        var
+          t = e.target,
+          process = this.process,
+          status = process.canvasStatus,
+          item = (t.classList && t.classList.contains('workspace-item')) ? t : t.getParentByClassName('workspace-item');
+        
+        if (item && (!status.overItem || status.overItem !== item)) {
+          status.overItem = item;
+        } else if (status.overItem && !item) {
+          status.overItem = null;
+        }
+      },
+      
+      handleLinkDrop: function (e) {
+        var
+          t = e.target,
+          process = this.process,
+          status = process.canvasStatus,
+          overItem = status.overItem,
+          overSource = overItem ? overItem.source : null;
+        
+        if (this.linking) {
+          if (overItem && overSource !== this.output && this.acceptsLinkFrom(overSource)) {
+            overSource.input = this;
+            process.save();
+          }
+          this.linking = false;
+        }
+        
+        this.process.workspace.removeEventListener('mousemove', this.handleLinkMove, false);
+        this.process.workspace.removeEventListener('mouseup', this.handleLinkDrop, false);
       },
       
       updated: function (type, value) {
@@ -134,7 +173,7 @@
       },
       
       get canvas() {
-        return this.process.canvas;
+        return this.process ? this.process.canvas : null;
       },
       
       set canvas(value) {
@@ -147,7 +186,7 @@
       
       set linking(value) {
         if (this.process) {
-          this.process.canvasStatus.linkingFrom = value ? this : null;
+          this.process.canvasStatus.linkingFrom = (value ? this : null);
         }
       },
       

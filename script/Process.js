@@ -130,48 +130,12 @@
                 this.process.handleWorkspaceMousedown.call(htmlEl, e);
               },
 
-              mouseover: function (e) {
-                
-              },
-              
-              mouseout: function (e) {
-                
-              },
-
               mousemove: function (e) {
-                var
-                  target = e.target,
-                  process = this.process,
-                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
-
-                if ((!process.canvasStatus.overItem && item) ||
-                    (process.canvasStatus.overItem && item && process.canvasStatus.overItem !== item)) {
-                  process.canvasStatus.overItem = item;
-                } else if (process.canvasStatus.overItem && !item) {
-                  process.canvasStatus.overItem = null;
-                }
-
-                process.drawCanvas(e);
+                this.process.drawCanvas(e);
               },
               
               mouseup: function (e) {
-                var
-                  process = this.process,
-                  status = process.canvasStatus,
-                  target = e.target,
-                  item = target.classList.contains('workspace-item') ? target : target.getParentByClassName('workspace-item');
-                
-                if (status.linkingFrom) {
-                  if (status.overItem && status.linkingFrom.acceptsLinkTo(status.overItem.source)) {
-                    status.overItem.source.input = status.linkingFrom;
-                    status.linkingFrom.linking = false;
-                    process.drawCanvas(e);
-                    process.save();
-                  } else {
-                    status.linkingFrom.linking = false;
-                    process.drawCanvas();
-                  }
-                }
+                this.process.drawCanvas(e);
               },
 
               click: function (e) {
