@@ -38,6 +38,13 @@
     
     select.empty();
     
+    select.appendChild(new Element('option', {
+      'class': 'operator-option',
+      text: '<none>',
+      value: '<none>',
+      title: 'select no view'
+    }));
+    
     for (i = 0, ln = source.length; i < ln; i += 1) {
       choice = source[i];
       

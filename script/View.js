@@ -136,6 +136,9 @@
       dispose: function () {
         this.dispatchableProperties = null;
         this.collectionElement.dispose();
+        if (this.listElement) {
+          this.listElement.dispose();
+        }
         View.removeItem(this);
         return this;
       }
@@ -155,8 +158,8 @@
     removeItem: function (item) {
       this.items.remove(item);
       this.items.dispatchProperty('length');
-      Process.drawLoaded();
       Twitter.storage.removeItem(item);
+      Process.drawLoaded();
     }
   }));
   Object.defineProperties(View.items, IPropertyDispatcher);

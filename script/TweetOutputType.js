@@ -38,7 +38,11 @@
       };
       
       return new ConfigElement(
-        new SelectLine('view: ', mapDatasource(View.items), function (e) {
+        new SelectLine('view: ',
+        
+        mapDatasource(View.items),
+        
+        function (e) {
           var view;
           
           if (item.config.view) {
