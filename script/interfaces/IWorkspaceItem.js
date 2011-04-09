@@ -160,7 +160,7 @@
         if (this.workspaceElement) {
           this.process.itemUpdated(type, this);
         }
-        if (this.itemType === 'output') {
+        if (this.itemType === 'output') {
           this.type.refreshOutput(this);
         }
         return this;
