@@ -14,12 +14,14 @@
         change: onchange
       }
     });
+    
     if (value) {
       child.setAttribute('value', value);
     } else {
       child.setAttribute('value', def);
       onchange.call({ value: def });
     }
+    
     line.appendChild(child);
     
     return line;

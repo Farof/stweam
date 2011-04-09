@@ -25,7 +25,7 @@
       },
       
       initialize: function Process(options) {
-        var i, ln, j, ln2, k, ln3, item, input;
+        var i, ln, j, ln2, item, input;
         
         this.setOptions(options);
         this.initUUID();
@@ -87,9 +87,7 @@
       },
 
       contains: function (itemToFind) {
-        return this.items.filter(function (item) {
-          return item === itemToFind;
-        }).length === 1;
+        return this.items.contains(itemToFind);
       },
       
       get loaded() {
@@ -346,13 +344,9 @@
     loadedItems: [],
     
     getByItem: function (item) {
-      var i, ln;
-      for (i = 0, ln = this.items.length; i < ln; i += 1) {
-        if (this.items[i].contains(item)) {
-          return this.items[i];
-        }
-      }
-      return null;
+      return this.items.filterFirst(function (process) {
+        return process.contains(item);
+      });
     },
     
     unloadAll: function () {

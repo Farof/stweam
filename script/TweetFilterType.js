@@ -21,21 +21,33 @@
     
     toConfigElement: function (item) {
       return new ConfigElement(
-        new SelectLine('operator: ', this.operators.map(function (op) {
+        new SelectLine('operator: ',
+        
+        this.operators.map(function (op) {
           return {
             type: op.type,
             label: op.label,
             descript: op.description
           };
-        }), function (e) {
+        }),
+        
+        function (e) {
           item.config.operator = this.value;
           item.updated('operator');
-        }, item.config.operator, this.operator),
+        },
+        
+        item.config.operator,
+        
+        this.operator),
         
         new Input(function (e) {
           item.config.value = this.value;
           item.updated('value');
-        }, item.config.value, '')
+        },
+        
+        item.config.value,
+        
+        '')
       );
     },
     
@@ -63,7 +75,7 @@
         description: 'string found in username (case insensitive)',
         
         check: function (filter, tweet) {
-          return tweet.toLowerCase().indexOf(filter.toLowerCase()) > -1;
+          return tweet.toLowerCase().contains(filter.toLowerCase());
         }
       }
     }
@@ -76,21 +88,33 @@
     
     toConfigElement: function (item) {
       return new ConfigElement(
-        new SelectLine('operator: ', this.operators.map(function (op) {
+        new SelectLine('operator: ',
+        
+        this.operators.map(function (op) {
           return {
             type: op.type,
             label: op.label,
             descript: op.description
           };
-        }), function (e) {
+        }),
+        
+        function (e) {
           item.config.operator = this.value;
           item.updated('operator');
-        }, item.config.operator, this.operator),
+        },
+        
+        item.config.operator,
+        
+        this.operator),
         
         new Input(function (e) {
           item.config.value = this.value;
           item.updated('value');
-        }, item.config.value, '')
+        },
+        
+        item.config.value,
+        
+        '')
       );
     },
     
@@ -118,7 +142,7 @@
         description: 'string found in tweet (case insensitive)',
         
         check: function (filter, tweet) {
-          return tweet.toLowerCase().indexOf(filter.toLowerCase()) > -1;
+          return tweet.toLowerCase().contains(filter.toLowerCase());
         }
       }
     }

@@ -22,9 +22,11 @@
       types: TweetFilterType,
       
       _configElements: null,
+      
       get configElements() {
         return this._configElements || (this._configElements = {});
       },
+      
       set configElements(value) {
         this._configElements = value;
       },
@@ -69,8 +71,7 @@
       },
       
       getContentChildren: function () {
-        var children = this.getItemContentChildren();
-        return children;
+        return this.getItemContentChildren();
       }
     })
   );

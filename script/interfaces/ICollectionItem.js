@@ -56,7 +56,7 @@
         });
         this.collectionEditElement.appendChild(new Element('input', {
           type: this.text,
-          value: this.name || this.defaultName,
+          value: (this.name || this.defaultName),
           source: this,
           events: {
             blur: function () {
@@ -76,7 +76,7 @@
               }
             }
           }
-        }))
+        }));
       }
       return this.collectionEditElement;
     },

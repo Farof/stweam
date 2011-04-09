@@ -55,9 +55,8 @@
       },
       
       toWorkspaceElement: function () {
-        var el;
         if (!this.workspaceElement) {
-          this.workspaceElement = el = new WorkspaceElement(this);
+          this.workspaceElement = new WorkspaceElement(this);
         }
         return this.workspaceElement;
       },

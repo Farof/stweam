@@ -21,12 +21,12 @@
       'class': 'workspace-item-title-zone',
       source: source
     });
-    saveTitle = title.save = function (event) {
+    saveTitle = title.save = function (e) {
       var value = this.querySelector('.workspace-item-title-input').value;
       this.querySelector('.workspace-item-title').textContent = value;
       source.updated('name', value);
       this.classList.remove('editing');
-      source.process.drawCanvas();
+      source.process.drawCanvas(e);
     }.bind(title);
     el.appendChild(title);
     
@@ -35,11 +35,11 @@
       text: source.name,
       source: source,
       events: {
-        click: function () {
+        click: function (e) {
           if (!this.parentNode.parentNode.dragged) {
             this.parentNode.classList.add('editing');
             this.nextSibling.focus();
-            source.process.drawCanvas();
+            source.process.drawCanvas(e);
           }
         }
       }

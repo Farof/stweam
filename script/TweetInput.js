@@ -33,8 +33,7 @@
       },
       
       getContentChildren: function () {
-        var children = this.getItemContentChildren();
-        return children;
+        return this.getItemContentChildren();
       }
     })
   );

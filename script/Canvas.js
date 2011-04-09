@@ -185,7 +185,7 @@
     },
     
     arrow: function (options) {
-      var alpha = Math.atan2(options.width / 2, Math.sqrt(Math.pow(options.radius, 2) - Math.pow(options.width / 2, 2))) + Math.PI;
+      var alpha = Math.atan2(options.width / 2, Math.apytha(options.radius, options.width / 2)) + Math.PI;
       options.angle = options.angle || 0;
       return this.path(options, [{
         type: 'line',

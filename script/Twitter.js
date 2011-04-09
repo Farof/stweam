@@ -35,17 +35,13 @@
     },
     
     includeTweets: function (tweets) {
-      var ids = this.tweetsId;
-      tweets.forEach(function (tweet) {
-        if (ids.indexOf(tweet.id) < 0) {
-          this.tweets.push(tweet);
-        }
-      }.bind(this));
+      this.tweets.merge(tweets);
+      return this;
     },
     
     deserialize: function (serializable) {
-      //console.log('deserialize: ', serializable);
       var options, constructor, item;
+      
       try {
         options = JSON.parse(serializable);
       } catch (e) {
@@ -54,10 +50,12 @@
       }
       
       constructor = exports[options.constructorName];
+      
       if (constructor) {
         if (options.uid) {
           item = constructor.getById(options.uid);
         }
+        
         if (item) {
           return item;
         } else {
@@ -65,6 +63,7 @@
           return item;
         }
       }
+      
       return options;
     },
     
@@ -74,11 +73,14 @@
       Twitter.load();
       
       lastView = View.getById(this.load('config.lastView')) || View.items.first;
+      
       if (lastView) {
         lastView.load();
       } else {
         console.log('no view to load');
       }
+      
+      return this;
     },
     
     load: function () {

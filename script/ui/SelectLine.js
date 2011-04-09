@@ -40,18 +40,20 @@
     
     for (i = 0, ln = source.length; i < ln; i += 1) {
       choice = source[i];
+      
       option = new Element('option', {
         'class': 'operator-option',
         text: choice.label,
         value: choice.type,
         title: choice.description
       });
+      
       if (choice.bind && choice.bind.addPropertyListener) {
-        // memory leak ? make this removable if workspace item is deleted
         choice.bind.addPropertyListener(choice.bindProp, function (value) {
           option.textContent = value;
         });
       }
+      
       select.appendChild(option);
     }
     
