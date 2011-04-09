@@ -364,6 +364,33 @@
         }
         return ar;
       }
+    },
+    
+    typeOf: {
+      value: function (type) {
+        return typeof this === type;
+      }
+    }
+  });
+  
+  Object.defineProperties(String.prototype, {
+    htmlWrap: {
+      value: function (tag, properties) {
+        var str = ('<' + tag), key;
+        
+        for (key in properties) {
+          str += ' ' + key + '="' + properties[key] + '"';
+        }
+        str += '>' + this + '</' + tag + '>';
+        
+        return str;
+      }
+    },
+    
+    contains: {
+      value: function (str) {
+        return this.indexOf(str) > -1;
+      }
     }
   });
   

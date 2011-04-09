@@ -18,7 +18,15 @@
       
       toConfigElement: Trait.required,
 
-      serializedProperties: [],
+      _serializedProperties: null,
+      
+      get serializedProperties() {
+        return this._serializedProperties || (this._serializedProperties = []);
+      },
+
+      set serializedProperties(value) {
+        this._serializedProperties = value;
+      },
       
       _config: null,
       get config() {

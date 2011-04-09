@@ -14,11 +14,24 @@
       defaultName: 'unamed view',
       itemType: 'view',
       
-      sources: [],
-      tweets: [],
+      _sources: null,
+      get sources() {
+        return this._sources || (this._sources = []);
+      },
+      set sources(value) {
+        this._sources = value;
+      },
+      
+      _tweets: null,
+      get tweets() {
+        return this._tweets || (this._tweets = []);
+      },
+      set tweets(value) {
+        this._tweets = value;
+      },
       
       get loaded() {
-        return this.listElement && this.listElement.parentNode;
+        return View.loadedItem === this;
       },
       
       initialize: function View(options) {
@@ -45,19 +58,34 @@
         }.bind(this));
       },
       
+      hasProcess: function (process) {
+        var i, ln;
+
+        for (i = 0, ln = this.sources.length; i < ln; i += 1) {
+          if (this.sources[i].process === process) {
+            return true;
+          }
+        }
+        return false;
+      },
+      
       load: function () {
         var root = document.getElementById('views-item');
-        if (!this.listElement || !root.hasChild(this.listElement)) {
+        if (!this.loaded) {
           root.empty().appendChild(this.toListElement());
           this.listElement.classList.remove('hidden');
           this.populate();
           this.loadProcesses();
+          View.loadedItem = this;
           Twitter.save('config.lastView', this.uid);
         }
         return this;
       },
       
       unload: function () {
+        if (this.loaded) {
+          View.loadedItem = null;
+        }
         if (this.listElement) {
           this.listElement.classList.add('hidden');
         }
