@@ -310,6 +310,12 @@
   });
   
   Object.defineProperties(Array.prototype, {
+    first: {
+      get: function () {
+        return this[0];
+      }
+    },
+    
     last: {
       get: function () {
         return this[this.lenght - 1];
@@ -352,6 +358,21 @@
         }
         return null;
       }
+    },
+    
+    filterFirst: {
+      value: function (func) {
+        var i, ln, found;
+
+        for (i = 0, ln = this.length; i < ln; i += 1) {
+          found = func(this[i]);
+          if (found) {
+            return this[i];
+          }
+        }
+        
+        return null;
+      }
     }
   });
   
@@ -363,12 +384,6 @@
           ar.push(func(this[key]));
         }
         return ar;
-      }
-    },
-    
-    typeOf: {
-      value: function (type) {
-        return typeof this === type;
       }
     }
   });

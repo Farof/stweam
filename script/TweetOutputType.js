@@ -54,7 +54,7 @@
           item.updated('view');
         },
         item.config.view,
-        (View.items[0] ? View.items[0].uid : 0), {
+        (View.items.first ? View.items.first.uid : 0), {
           datasource: View.items,
           onDatasourceChange: mapDatasource
         })

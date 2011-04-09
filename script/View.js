@@ -38,8 +38,6 @@
         this.setOptions(options);
         this.initUUID();
         
-        this.refreshSources();
-        
         document.getElementById('views').appendChild(this.toCollectionElement());
       },
       
@@ -72,8 +70,12 @@
       load: function () {
         var root = document.getElementById('views-item');
         if (!this.loaded) {
-          root.empty().appendChild(this.toListElement());
+          if (View.loadedItem) {
+            View.loadedItem.unload();
+          }
+          root.appendChild(this.toListElement());
           this.listElement.classList.remove('hidden');
+          this.refreshSources();
           this.populate();
           this.loadProcesses();
           View.loadedItem = this;
