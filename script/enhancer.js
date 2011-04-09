@@ -399,6 +399,16 @@
         }
         return ar;
       }
+    },
+    
+    merge: {
+      value: function (source, adds) {
+        var key;
+        for (key in adds) {
+          source[key] = adds[key];
+        }
+        return source;
+      }
     }
   });
   
@@ -419,6 +429,26 @@
     contains: {
       value: function (str) {
         return this.indexOf(str) > -1;
+      }
+    }
+  });
+  
+  Object.defineProperties(Math, {
+    sq: {
+      value: function (n) {
+        return Math.pow(n, 2);
+      }
+    },
+    
+    pytha: {
+      value: function (a, b) {
+        return Math.sqrt(Math.sq(a) + Math.sq(b));
+      }
+    },
+    
+    apytha: {
+      value: function (h, a) {
+        return Math.sqrt(Math.sq(h) - Math.sq(a));
       }
     }
   });
