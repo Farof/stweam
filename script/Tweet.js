@@ -94,6 +94,14 @@
           reg = new RegExp(/(?:\s)((?:@((?:[a-zA-Z0-9\-_]+))))/g);
         
         p.innerHTML = p.innerHTML.replace(reg, ' <a href="https://twitter.com/$2">$1</a>', 'g');
+      },
+      
+      function (text, element) {
+        var
+          p = element.querySelector('.tweet'),
+          reg = new RegExp(/((?:#[\w]+))/g);
+        
+        p.innerHTML = p.innerHTML.replace(reg, ' <a href="https://twitter.com/#!/search?q=$1">$1</a>', 'g');
       }
     ]
   };
