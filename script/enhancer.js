@@ -367,4 +367,19 @@
     }
   });
   
+  Object.defineProperties(String.prototype, {
+    htmlWrap: {
+      value: function (tag, properties) {
+        var str = ('<' + tag), key;
+        
+        for (key in properties) {
+          str += ' ' + key + '="' + properties[key] + '"';
+        }
+        str += '>' + this + '</' + tag + '>';
+        
+        return str;
+      }
+    }
+  });
+  
 }(window));
