@@ -38,24 +38,38 @@
       };
       
       return new ConfigElement(
-        new SelectLine('view: ', mapDatasource(View.items), function (e) {
+        new SelectLine('view: ',
+        
+        mapDatasource(View.items),
+        
+        function (e) {
           var view;
+          
           if (item.config.view) {
             view = View.getById(item.config.view);
             if (view) {
               view.sources.remove(item);
+              if (view.loaded) {
+                view.populate();
+              }
             }
           }
+          
           item.config.view = this.value;
           view = View.getById(item.config.view);
+          
           if (view) {
             view.sources.include(item);
           }
+          
           item.updated('view');
         },
+        
         item.config.view,
-        (View.items[0] ? View.items[0].uid : 0), {
-          datasource: View.items,
+        
+        (View.items.first ? View.items.first.uid : 0),
+        
+        { datasource: View.items,
           onDatasourceChange: mapDatasource
         })
       );

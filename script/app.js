@@ -7,38 +7,6 @@
     });
   }));
   
-  /*var input = TweetInput.add({
-    type: 'global'
-  });*/
-  //var input = Twitter.deserialize('{"uid":"15","constructorName":"TweetInput","type":"global"}');
-  
-  /*var filter = TweetFilter.add({
-    input: input.uid,
-    param: 'from_user',
-    operator: 'contains',
-    value: 'y'
-  });*/
-  //var filter = Twitter.deserialize('{"uid":"16","constructorName":"TweetFilter","input":"15","param":"from_user","operator":"contains","value":"y"}');
-  
-  
-  /*var output = TweetOutput.add({
-    type: 'DOM',
-    input: filter.uid,
-    node: '#list'
-  });*/
-  //var output = Twitter.deserialize('{"uid":"17","constructorName":"TweetOutput","input":"15","type":"DOM","node":"#list"}');
-  
-  /*var process = Process.add({
-    name: 'My first Process',
-    items: [
-      input,
-      filter,
-      output
-    ]
-  });*/
-  
   Twitter.init();
-  
-  //Twitter.storage.describe();
   
 }(window));

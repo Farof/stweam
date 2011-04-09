@@ -26,7 +26,7 @@
     
     if (options.datasource) {
       options.datasource.addPropertyListener('length', function () {
-        this.populate(options.onDatasourceChange(options.datasource), select, value, def);
+        this.populate(options.onDatasourceChange(options.datasource), select, onchange, select.value, def);
       }.bind(this));
     }
     
@@ -38,20 +38,29 @@
     
     select.empty();
     
+    select.appendChild(new Element('option', {
+      'class': 'operator-option',
+      text: '<none>',
+      value: '<none>',
+      title: 'select no view'
+    }));
+    
     for (i = 0, ln = source.length; i < ln; i += 1) {
       choice = source[i];
+      
       option = new Element('option', {
         'class': 'operator-option',
         text: choice.label,
         value: choice.type,
         title: choice.description
       });
+      
       if (choice.bind && choice.bind.addPropertyListener) {
-        // memory leak ? make this removable if workspace item is deleted
         choice.bind.addPropertyListener(choice.bindProp, function (value) {
           option.textContent = value;
         });
       }
+      
       select.appendChild(option);
     }
     

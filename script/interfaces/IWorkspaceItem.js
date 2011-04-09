@@ -17,20 +17,6 @@
       name: Trait.required,
       itemType: Trait.required,
       
-      _process: null,
-      
-      get process() {
-        return this._process;
-      },
-      
-      set process(value) {
-        if (typeof value === 'string') {
-          this._process = Process.getById(value);
-        } else if (typeof value === 'object') {
-          this._process = value;
-        }
-      },
-      
       initialize: function (options) {
         this.setOptions(options);
         this.initUUID();
@@ -69,9 +55,8 @@
       },
       
       toWorkspaceElement: function () {
-        var el;
         if (!this.workspaceElement) {
-          this.workspaceElement = el = new WorkspaceElement(this);
+          this.workspaceElement = new WorkspaceElement(this);
         }
         return this.workspaceElement;
       },

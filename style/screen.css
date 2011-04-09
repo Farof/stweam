@@ -167,6 +167,9 @@ body {
   height: 1px;
   width: 450px;
 }
+.tweet-list.hidden {
+  display: none;
+}
 .tweet-box {
   border-radius: 5px;
   border: 1px solid #3E3D40;
@@ -300,6 +303,7 @@ body {
 }
 .workspace-item-title-zone {
   border-bottom: 2px solid #3E3D40;
+  border-radius: 8px 8px 3px 3px; /* webkit fix */
   padding: 0.2em 0.3em;
   text-align: center;
   white-space: nowrap;

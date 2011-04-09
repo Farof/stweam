@@ -29,6 +29,7 @@
       },
       
       _config: null,
+      
       get config() {
         return this._config || (this._config = {});
       },
@@ -38,6 +39,7 @@
         this.initPosition();
         
         document.getElementById(this.typeGroup + '-type-list').appendChild(this.toLibraryElement());
+        
         return this;
       },
       
@@ -60,7 +62,6 @@
       },
 
       handleElementMousedown: function (e) {
-        
         var
           t = e.target,
           source = t.source,
@@ -82,15 +83,10 @@
           clone = dragEvent.node,
           source = clone.source,
           workspaces = document.querySelectorAll('.workspace'),
-          workspace,
+          workspace = workspaces.filterFirst(function (aWorkspace) {
+            return clone.hover(aWorkspace);
+          }),
           item, pos, i, ln;
-        
-        for (i = 0, ln = workspaces.length; i < ln; i += 1) {
-          if (clone.hover(workspaces[i])) {
-            workspace = workspaces[i];
-            break;
-          }
-        };
         
         if (workspace) {
           pos = workspace.pos();
@@ -111,7 +107,7 @@
       },
 
       handleElementClick: function (e) {
-        console.log('click: ', this.type);
+        
       }
     })
   );

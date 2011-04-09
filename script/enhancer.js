@@ -310,6 +310,12 @@
   });
   
   Object.defineProperties(Array.prototype, {
+    first: {
+      get: function () {
+        return this[0];
+      }
+    },
+    
     last: {
       get: function () {
         return this[this.lenght - 1];
@@ -352,7 +358,40 @@
         }
         return null;
       }
+    },
+    
+    filterFirst: {
+      value: function (func) {
+        var i, ln, found;
+
+        for (i = 0, ln = this.length; i < ln; i += 1) {
+          found = func(this[i]);
+          if (found) {
+            return this[i];
+          }
+        }
+        
+        return null;
+      }
+    },
+    
+    some: {
+      value: function (func) {
+        var i, ln;
+
+        for (i = 0, ln = this.length; i < ln; i += 1) {
+          if (func(this[i])) {
+            return true;
+          }
+        }
+        
+        return false;
+      }
     }
+  });
+  
+  Object.defineProperties(NodeList.prototype, {
+    filterFirst: Object.getOwnPropertyDescriptor(Array.prototype, 'filterFirst')
   });
   
   Object.defineProperties(Object.prototype, {
@@ -366,9 +405,13 @@
       }
     },
     
-    typeOf: {
-      value: function (type) {
-        return typeof this === type;
+    merge: {
+      value: function (source, adds) {
+        var key;
+        for (key in adds) {
+          source[key] = adds[key];
+        }
+        return source;
       }
     }
   });
@@ -390,6 +433,26 @@
     contains: {
       value: function (str) {
         return this.indexOf(str) > -1;
+      }
+    }
+  });
+  
+  Object.defineProperties(Math, {
+    sq: {
+      value: function (n) {
+        return Math.pow(n, 2);
+      }
+    },
+    
+    pytha: {
+      value: function (a, b) {
+        return Math.sqrt(Math.sq(a) + Math.sq(b));
+      }
+    },
+    
+    apytha: {
+      value: function (h, a) {
+        return Math.sqrt(Math.sq(h) - Math.sq(a));
       }
     }
   });

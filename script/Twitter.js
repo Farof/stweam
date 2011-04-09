@@ -35,17 +35,13 @@
     },
     
     includeTweets: function (tweets) {
-      var ids = this.tweetsId;
-      tweets.forEach(function (tweet) {
-        if (ids.indexOf(tweet.id) < 0) {
-          this.tweets.push(tweet);
-        }
-      }.bind(this));
+      this.tweets.merge(tweets);
+      return this;
     },
     
     deserialize: function (serializable) {
-      //console.log('deserialize: ', serializable);
       var options, constructor, item;
+      
       try {
         options = JSON.parse(serializable);
       } catch (e) {
@@ -54,10 +50,12 @@
       }
       
       constructor = exports[options.constructorName];
+      
       if (constructor) {
         if (options.uid) {
           item = constructor.getById(options.uid);
         }
+        
         if (item) {
           return item;
         } else {
@@ -65,20 +63,24 @@
           return item;
         }
       }
+      
       return options;
     },
     
     init: function () {
-      var lastProcess, lastView;
+      var lastView;
       
       Twitter.load();
       
-      lastView = View.getById(this.load('config.lastView')) || View.items[0];
+      lastView = View.getById(this.load('config.lastView')) || View.items.first;
+      
       if (lastView) {
         lastView.load();
       } else {
         console.log('no view to load');
       }
+      
+      return this;
     },
     
     load: function () {
@@ -97,19 +99,19 @@
         items: [
           TweetInput.from({ 
             uid: '0E09ECB8-5F90-4E44-94BA-12386A12099C', name: 'global input',
-            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', type: 'global',
+            type: 'global',
             position: { left: 93, top: 59 },
             config: {}
           }),
           TweetFilter.from({
             uid: '99C37C42-3E10-40BE-9196-53F3DDB12B34', name: 'author filter',
-            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', inputs: ['0E09ECB8-5F90-4E44-94BA-12386A12099C'], type: 'from_user', 
+            inputs: ['0E09ECB8-5F90-4E44-94BA-12386A12099C'], type: 'from_user', 
             config: { operator: 'contains', value: 'yo' },
             position: { left: 200, top: 240 }
           }),
           TweetOutput.from({
             uid: 'C1F44896-0CEC-4454-8EB6-4C790C69C01A', name: 'DOM output',
-            process: '4256AB49-D79B-4293-9B4B-ECB7BD7B6720', inputs: ['99C37C42-3E10-40BE-9196-53F3DDB12B34'], type: 'DOM',
+            inputs: ['99C37C42-3E10-40BE-9196-53F3DDB12B34'], type: 'DOM',
             position: { left: 434, top: 348 },
             config: { view: '5884739D-04A7-49D3-B91D-871599956172' }
           })

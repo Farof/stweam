@@ -14,13 +14,9 @@
       },
       
       getById: function (uid) {
-        var i, ln;
-        for (i = 0, ln = this.items.length; i < ln; i += 1) {
-          if (this.items[i].uid === uid) {
-            return this.items[i];
-          }
-        }
-        return null;
+        return this.items.filterFirst(function (item) {
+          return item.uid === uid;
+        });
       },
       
       add: function (options) {

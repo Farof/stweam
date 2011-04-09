@@ -25,7 +25,7 @@
       },
       
       initialize: function Process(options) {
-        var i, ln, j, ln2, k, ln3, item, input;
+        var i, ln, j, ln2, item, input;
         
         this.setOptions(options);
         this.initUUID();
@@ -36,11 +36,11 @@
           for (i = 0, ln = this.items.length; i < ln; i += 1) {
             item = this.items[i];
             // converting serialized items
-            if (item.typeOf('string')) {
+            if (typeof item === 'string') {
               item = this.items[i] = Twitter.deserialize(item);
-              if (!item.process) {
-                item.process = this;
-              }
+            }
+            if (!item.process) {
+              item.process = this;
             }
             
             if (!item.type) {
@@ -59,10 +59,10 @@
             if (item.hasInputs) {
               for (j = 0, ln2 = item.inputs.length; j < ln2; j += 1) {
                 input = item.inputs[j];
-                if (input.typeOf('string')) {
-                  item.inputs[j] = (this.items.filter(function (inputItem) {
+                if (typeof input === 'string') {
+                  item.inputs[j] = this.items.filterFirst(function (inputItem) {
                     return inputItem.uid === input;
-                  })[0]) || input;
+                  }) || input;
                 }
               }
             }
@@ -87,9 +87,7 @@
       },
 
       contains: function (itemToFind) {
-        return this.items.filter(function (item) {
-          return item === itemToFind;
-        }).length === 1;
+        return this.items.contains(itemToFind);
       },
       
       get loaded() {
@@ -329,8 +327,8 @@
       },
       
       dispose: function () {
-        while (this.items[0]) {
-          this.items[0].dispose();
+        while (this.items.first) {
+          this.items.first.dispose();
         }
         
         this.dispatchableProperties = null;
@@ -346,13 +344,9 @@
     loadedItems: [],
     
     getByItem: function (item) {
-      var i, ln;
-      for (i = 0, ln = this.items.length; i < ln; i += 1) {
-        if (this.items[i].contains(item)) {
-          return this.items[i];
-        }
-      }
-      return null;
+      return this.items.filterFirst(function (process) {
+        return process.contains(item);
+      });
     },
     
     unloadAll: function () {

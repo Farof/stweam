@@ -41,7 +41,7 @@
     description: 'Value is contained into tweet matched property.',
     
     check: function (filterValue, tweetValue) {
-      return tweetValue.indexOf(filterValue) > -1;
+      return tweetValue.contains(filterValue);
     }
   });
   

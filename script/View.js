@@ -38,8 +38,6 @@
         this.setOptions(options);
         this.initUUID();
         
-        this.refreshSources();
-        
         document.getElementById('views').appendChild(this.toCollectionElement());
       },
       
@@ -59,21 +57,20 @@
       },
       
       hasProcess: function (process) {
-        var i, ln;
-
-        for (i = 0, ln = this.sources.length; i < ln; i += 1) {
-          if (this.sources[i].process === process) {
-            return true;
-          }
-        }
-        return false;
+        return this.sources.some(function (source) {
+          return source.process === process;
+        });
       },
       
       load: function () {
         var root = document.getElementById('views-item');
         if (!this.loaded) {
-          root.empty().appendChild(this.toListElement());
+          if (View.loadedItem) {
+            View.loadedItem.unload();
+          }
+          root.appendChild(this.toListElement());
           this.listElement.classList.remove('hidden');
+          this.refreshSources();
           this.populate();
           this.loadProcesses();
           View.loadedItem = this;
@@ -118,14 +115,13 @@
       },
       
       populate: function () {
-        var tweets = [], i, ln;
-        for (i = 0, ln = this.sources.length; i < ln; i += 1) {
-          tweets.merge(this.sources[i].generate());
-        }
-        this.tweets = tweets;
+        var i, ln;
+        this.tweets = this.sources.reduce(function (previous, current) {
+          return previous.merge(current.generate());
+        }, []);
         this.listElement.empty();
-        for (i = 0, ln = tweets.length; i < ln; i += 1) {
-          this.listElement.appendChild(tweets[i]);
+        for (i = 0, ln = this.tweets.length; i < ln; i += 1) {
+          this.listElement.appendChild(this.tweets[i]);
         }
       },
       
@@ -140,6 +136,9 @@
       dispose: function () {
         this.dispatchableProperties = null;
         this.collectionElement.dispose();
+        if (this.listElement) {
+          this.listElement.dispose();
+        }
         View.removeItem(this);
         return this;
       }
@@ -159,8 +158,8 @@
     removeItem: function (item) {
       this.items.remove(item);
       this.items.dispatchProperty('length');
-      Process.drawLoaded();
       Twitter.storage.removeItem(item);
+      Process.drawLoaded();
     }
   }));
   Object.defineProperties(View.items, IPropertyDispatcher);

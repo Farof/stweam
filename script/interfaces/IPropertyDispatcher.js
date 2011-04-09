@@ -3,9 +3,11 @@
 
   exports.IPropertyDispatcher = Trait({
     _dispatchableProperties: null,
+    
     get dispatchableProperties() {
       return this._dispatchableProperties || (this._dispatchableProperties = {});
     },
+    
     set dispatchableProperties(value) {
       this._dispatchableProperties = value;
     },
@@ -18,6 +20,7 @@
           callbacks[i](this[prop], prop);
         }
       }
+      
       return this;
     },
     
