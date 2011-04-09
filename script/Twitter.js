@@ -2,7 +2,7 @@
   "use strict";
   
   exports.Twitter = {
-    appName: 'tweb',
+    appName: 'Stweam',
     
     get uid() {
       return uuid();
