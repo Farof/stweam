@@ -60,9 +60,10 @@
               for (j = 0, ln2 = item.inputs.length; j < ln2; j += 1) {
                 input = item.inputs[j];
                 if (typeof input === 'string') {
-                  item.inputs[j] = this.items.filterFirst(function (inputItem) {
+                  item.addInput(this.items.filterFirst(function (inputItem) {
                     return inputItem.uid === input;
-                  }) || input;
+                  }) || input);
+                  item.inputs.splice(j, 1);
                 }
               }
             }
