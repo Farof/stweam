@@ -85,7 +85,23 @@
           // regexp from John Gruber: http://daringfireball.net/2010/07/improved_regex_for_matching_urls
           reg = new RegExp(/\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`\!()\[\]{};:'"\.,<>\?]))/g);
         
-        p.innerHTML = text.replace(reg, '<a href="$1">$1</a>', 'g');
+        p.innerHTML = p.innerHTML.replace(reg, '<a href="$1">$1</a>', 'g');
+      },
+      
+      function (text, element) {
+        var
+          p = element.querySelector('.tweet'),
+          reg = new RegExp(/(?:\s)((?:@((?:[a-zA-Z0-9\-_]+))))/g);
+        
+        p.innerHTML = p.innerHTML.replace(reg, ' <a href="https://twitter.com/$2">$1</a>', 'g');
+      },
+      
+      function (text, element) {
+        var
+          p = element.querySelector('.tweet'),
+          reg = new RegExp(/((?:#[\w]+))/g);
+        
+        p.innerHTML = p.innerHTML.replace(reg, ' <a href="https://twitter.com/#!/search?q=$1">$1</a>', 'g');
       }
     ]
   };

@@ -91,15 +91,15 @@
         if (workspace) {
           pos = workspace.pos();
           item = exports[source.typeGroupConstructor].add({
-            process: workspace.process,
+            process: workspace.source,
             type: source.type,
             position: {
               left: (source.position.left - pos.left),
               top: (source.position.top - pos.top)
             }
           });
-          workspace.process.addToWorkspace(item);
-          workspace.process.save();
+          workspace.source.addToWorkspace(item);
+          workspace.source.save();
         }
         clone.dispose();
         source.clonedNode = null;
